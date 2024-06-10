@@ -1,0 +1,82 @@
+package app.traced_it.data.local.database
+
+import android.content.Context
+import app.traced_it.R
+import java.text.NumberFormat
+
+data class EntryUnitChoice(val value: Double, val nameResId: Int)
+
+data class EntryUnit(
+    val id: String,
+    val nameResId: Int,
+    val unit: String = "",
+    val choices: List<EntryUnitChoice> = listOf(),
+) {
+    fun format(context: Context, value: Double): String {
+        if (choices.isNotEmpty()) {
+            val choice = choices.find { it.value == value }
+            if (choice != null) {
+                return context.resources.getString(choice.nameResId)
+            }
+        }
+        return NumberFormat.getNumberInstance().format(value)
+    }
+
+    fun parse(context: Context, value: String): Double {
+        if (choices.isNotEmpty()) {
+            val choice = choices.find {
+                context.resources.getString(it.nameResId) == value
+            }
+            if (choice != null) {
+                return choice.value
+            }
+        }
+        return value.toDoubleOrNull() ?: 0.0
+    }
+}
+
+val noneUnit = EntryUnit(
+    id = "NONE",
+    nameResId = R.string.entry_unit_none_name,
+    choices = listOf(
+        EntryUnitChoice(0.0, R.string.entry_unit_none_choice_empty),
+    ),
+)
+val clothingSizeUnit = EntryUnit(
+    id = "CLOTHING_SIZE",
+    nameResId = R.string.entry_unit_clothing_name,
+    choices = listOf(
+        EntryUnitChoice(0.0, R.string.entry_unit_clothing_choice_xs),
+        EntryUnitChoice(1.0, R.string.entry_unit_clothing_choice_s),
+        EntryUnitChoice(2.0, R.string.entry_unit_clothing_choice_m),
+        EntryUnitChoice(3.0, R.string.entry_unit_clothing_choice_l),
+        EntryUnitChoice(4.0, R.string.entry_unit_clothing_choice_xl)
+    )
+)
+val smallNumbersChoiceUnit = EntryUnit(
+    id = "SMALL_NUMBERS_CHOICE",
+    nameResId = R.string.entry_unit_portion_name,
+    choices = listOf(
+        EntryUnitChoice(1.0, R.string.entry_unit_portion_choice_1),
+        EntryUnitChoice(2.0, R.string.entry_unit_portion_choice_2),
+        EntryUnitChoice(3.0, R.string.entry_unit_portion_choice_3),
+        EntryUnitChoice(4.0, R.string.entry_unit_portion_choice_4),
+        EntryUnitChoice(5.0, R.string.entry_unit_portion_choice_5)
+    )
+)
+val doubleUnit = EntryUnit(
+    id = "DOUBLE",
+    nameResId = R.string.entry_unit_double_name,
+)
+val units: List<EntryUnit> = listOf(
+    noneUnit,
+    clothingSizeUnit,
+    smallNumbersChoiceUnit,
+    doubleUnit,
+)
+val defaultVisibleUnit = clothingSizeUnit
+val visibleUnits: List<EntryUnit> = listOf(
+    defaultVisibleUnit,
+    smallNumbersChoiceUnit,
+    doubleUnit
+)
