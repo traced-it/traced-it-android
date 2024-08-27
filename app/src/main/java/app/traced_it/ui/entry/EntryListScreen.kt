@@ -2,6 +2,8 @@ package app.traced_it.ui.entry
 
 import android.content.res.Configuration
 import android.os.Build
+import android.text.format.DateUtils
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,12 +11,17 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,10 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,6 +59,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EntryListScreen(
     onNavigateToAboutScreen: () -> Unit = {},
@@ -63,6 +74,7 @@ fun EntryListScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EntryListScreen(
     allEntriesFlow: StateFlow<PagingData<Entry>>,
@@ -74,6 +86,7 @@ fun EntryListScreen(
 ) {
     val appName = stringResource(R.string.app_name)
     val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
 
     val allEntries = allEntriesFlow.collectAsLazyPagingItems()
@@ -88,10 +101,10 @@ fun EntryListScreen(
     val listState = rememberLazyListState()
     val message by viewModel.message.collectAsStateWithLifecycle()
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    var selectedEntry by remember { mutableStateOf(initialSelectedEntry) }
     val searchExpanded by searchExpandedFlow.collectAsStateWithLifecycle()
     val searchFocusRequester = remember { FocusRequester() }
     val searchQuery by searchQueryFlow.collectAsStateWithLifecycle()
+    var selectedEntry by remember { mutableStateOf(initialSelectedEntry) }
     val snackbarErrorHostState = remember { SnackbarHostState() }
     val snackbarSuccessHostState = remember { SnackbarHostState() }
 
@@ -170,6 +183,10 @@ fun EntryListScreen(
     BackHandler(searchExpanded) {
         viewModel.setSearchExpanded(false)
         viewModel.search("")
+    }
+
+    BackHandler(selectedEntry != null) {
+        selectedEntry = null
     }
 
     TracedScaffold(
@@ -335,9 +352,7 @@ fun EntryListScreen(
                             allEntries.itemCount,
                             allEntries.itemCount,
                         ),
-                        Modifier.padding(
-                            horizontal = Spacing.windowPadding
-                        ),
+                        Modifier.padding(horizontal = Spacing.windowPadding),
                         style = MaterialTheme.typography.labelSmall
                     )
                     TextButton(
@@ -358,7 +373,7 @@ fun EntryListScreen(
                         )
                     ) {
                         Text(
-                            "Export",
+                            stringResource(R.string.list_search_export),
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
@@ -446,6 +461,123 @@ fun EntryListScreen(
                 entryDetailOpen = false
             },
         )
+    }
+
+    if (selectedEntry != null) {
+        ModalBottomSheet(
+            { selectedEntry = null },
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrimColor = BottomSheetDefaults.ScrimColor.copy(alpha = 0.7f),
+            contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
+        ) {
+            ListItem(
+                headlineContent = {
+                    Text(
+                        selectedEntry!!.formatContentWithAmount(context),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                supportingContent = {
+                    Text(
+                        DateUtils.formatDateTime(
+                            context,
+                            selectedEntry!!.createdAt,
+                            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_WEEKDAY or DateUtils.FORMAT_SHOW_TIME
+                        ),
+                        Modifier.padding(vertical = Spacing.small),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                },
+            )
+            HorizontalDivider()
+            ListItem(
+                headlineContent = {
+                    Text(stringResource(R.string.list_item_add))
+                },
+                modifier = Modifier.clickable {
+                    entryDetailAction =
+                        EntryDetailAction.Prefill(selectedEntry!!)
+                    entryDetailOpen = true
+                    selectedEntry = null
+                },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null
+                    )
+                },
+            )
+            ListItem(
+                headlineContent = {
+                    Text(stringResource(R.string.list_item_find_with_same_text))
+                },
+                modifier = Modifier.clickable {
+                    viewModel.setSearchExpanded(true)
+                    viewModel.search(selectedEntry!!.content)
+                    selectedEntry = null
+                },
+                leadingContent = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
+                    )
+                },
+            )
+            ListItem(
+                headlineContent = {
+                    Text(stringResource(R.string.list_item_copy_to_clipboard))
+                },
+                modifier = Modifier.clickable {
+                    selectedEntry?.let {
+                        clipboardManager.setText(
+                            AnnotatedString(it.format(context))
+                        )
+                        // Only show a toast for Android 12 and lower.
+                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                            Toast.makeText(
+                                context,
+                                R.string.list_item_copied_to_clipboard,
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
+                        selectedEntry = null
+                    }
+                },
+                leadingContent = {
+                    Icon(
+                        painterResource(R.drawable.content_copy_24px), null
+                    )
+                },
+            )
+            ListItem(
+                headlineContent = {
+                    Text(stringResource(R.string.list_item_update))
+                },
+                modifier = Modifier.clickable {
+                    entryDetailAction = EntryDetailAction.Edit(selectedEntry!!)
+                    entryDetailOpen = true
+                    selectedEntry = null
+                },
+                leadingContent = {
+                    Icon(Icons.Outlined.Edit, null)
+                },
+            )
+            ListItem(
+                headlineContent = {
+                    Text(stringResource(R.string.list_item_delete))
+                },
+                modifier = Modifier.clickable {
+                    entryToDelete = selectedEntry
+                    selectedEntry = null
+                },
+                leadingContent = {
+                    Icon(Icons.Outlined.Delete, null)
+                },
+            )
+            Spacer(
+                Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
+            )
+        }
     }
 
     if (deleteAllEntriesDialogOpen) {

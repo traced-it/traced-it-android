@@ -36,7 +36,7 @@ height="80">](https://apt.izzysoft.de/packages/app.traced_it)
 - Add text notes with an optional amount (S, M, XL, 1/4, 1/2, 3/4, 5.813…).
 - See all your notes with the time elapsed since you wrote each note.
 - Tap the + button to add a new note with the same text as an existing note.
-- Edit a note, delete it, delete all notes.
+- Edit a note, copy it to clipboard, delete it, delete all notes.
 - Export all notes as a spreadsheet file (CSV format) and import them.
 - Search notes and export found notes.
 
