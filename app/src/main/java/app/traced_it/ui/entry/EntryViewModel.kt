@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material3.SnackbarDuration
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -21,6 +22,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.apache.commons.csv.CSVFormat
@@ -46,6 +48,7 @@ data class Message(
 @HiltViewModel
 class EntryViewModel @Inject constructor(
     private val entryRepository: EntryRepository,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private companion object {
@@ -54,6 +57,8 @@ class EntryViewModel @Inject constructor(
         private const val COLUMN_AMOUNT = "amount"
         private const val COLUMN_CONTENT = "content"
         private const val COLUMN_CREATED_AT = "createdAt"
+        private const val SEARCH_EXPANDED = "searchExpanded"
+        private const val SEARCH_QUERY = "searchQuery"
     }
 
     @Suppress("SpellCheckingInspection")
@@ -66,14 +71,27 @@ class EntryViewModel @Inject constructor(
     private val _highlightedEntryUid = MutableStateFlow<Int?>(null)
     val highlightedEntryUid: StateFlow<Int?> = _highlightedEntryUid
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val allEntries: StateFlow<PagingData<Entry>> = Pager(
-        PagingConfig(pageSize = 20, enablePlaceholders = true)
-    ) {
-        entryRepository.getAll()
-    }.flow.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty()
+    private val _searchExpanded = MutableStateFlow<Boolean>(
+        savedStateHandle.get<Boolean>(SEARCH_EXPANDED) == false
     )
+    val searchExpanded: StateFlow<Boolean> = _searchExpanded
+
+    private val _searchQuery = MutableStateFlow<String>(
+        savedStateHandle.get<String>(SEARCH_QUERY) ?: ""
+    )
+    val searchQuery: StateFlow<String> = _searchQuery
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val allEntries: StateFlow<PagingData<Entry>> =
+        searchQuery.flatMapLatest { searchQuery ->
+            Pager(
+                PagingConfig(pageSize = 20, enablePlaceholders = true)
+            ) {
+                entryRepository.getAll(searchQuery)
+            }.flow
+        }.stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty()
+        )
 
     val latestEntry: StateFlow<Entry?> =
         entryRepository.getLatestEntry()
@@ -193,6 +211,16 @@ class EntryViewModel @Inject constructor(
 
     fun setHighlightedEntryUid(uid: Int?) {
         _highlightedEntryUid.value = uid
+    }
+
+    fun search(searchQuery: String) {
+        _searchQuery.value = searchQuery
+        savedStateHandle[SEARCH_QUERY] = searchQuery
+    }
+
+    fun setSearchExpanded(searchExpanded: Boolean) {
+        _searchExpanded.value = searchExpanded
+        savedStateHandle[SEARCH_EXPANDED] = searchExpanded
     }
 
     private suspend fun forEachEntry(
@@ -441,6 +469,13 @@ class EntryViewModel @Inject constructor(
 
     fun exportAllEntries(context: Context, result: ActivityResult) =
         exportEntries(context, result, entryRepository.getAll())
+
+    fun exportFoundEntries(context: Context, result: ActivityResult) =
+        exportEntries(
+            context,
+            result,
+            entryRepository.getAll(_searchQuery.value)
+        )
 
     private fun exportEntries(
         context: Context,

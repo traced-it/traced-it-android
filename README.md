@@ -38,6 +38,7 @@ height="80">](https://apt.izzysoft.de/packages/app.traced_it)
 - Tap the + button to add a new note with the same text as an existing note.
 - Edit a note, delete it, delete all notes.
 - Export all notes as a spreadsheet file (CSV format) and import them.
+- Search notes and export found notes.
 
 ## Privacy & security
 

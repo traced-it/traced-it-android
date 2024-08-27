@@ -3,6 +3,7 @@ package app.traced_it.ui.entry
 import android.content.Context
 import android.content.res.Resources
 import androidx.compose.material3.SnackbarDuration
+import androidx.lifecycle.SavedStateHandle
 import app.traced_it.R
 import app.traced_it.data.di.FakeEntryRepository
 import app.traced_it.data.local.database.*
@@ -75,7 +76,10 @@ class EntryViewModelTest {
     fun `importEntriesCsv inserts valid entries, skips entries with the same createdAt, and aborts after failing to parse a row`() =
         runTest {
             val entryRepository = FakeEntryRepository(emptyList())
-            val entryViewModel = EntryViewModel(entryRepository)
+            val entryViewModel = EntryViewModel(
+                entryRepository,
+                SavedStateHandle(),
+            )
             val mockContext = mock<Context> {
                 on { resources } doReturn mockResources
             }
@@ -190,7 +194,10 @@ class EntryViewModelTest {
     fun `importEntriesCsv inserts entries from a CSV that has human-readable data in the amount and amountUnit columns`() =
         runTest {
             val entryRepository = FakeEntryRepository(emptyList())
-            val entryViewModel = EntryViewModel(entryRepository)
+            val entryViewModel = EntryViewModel(
+                entryRepository,
+                SavedStateHandle(),
+            )
             val mockContext = mock<Context> {
                 on { resources } doReturn mockResources
             }
@@ -302,7 +309,10 @@ class EntryViewModelTest {
     fun `importEntriesCsv doesn't import any entries and returns an error message when the CSV file is empty`() =
         runTest {
             val entryRepository = FakeEntryRepository(emptyList())
-            val entryViewModel = EntryViewModel(entryRepository)
+            val entryViewModel = EntryViewModel(
+                entryRepository,
+                SavedStateHandle(),
+            )
             val mockResources = mock<Resources> {
                 on { getString(R.string.list_import_finished_empty) } doReturn "Empty CSV file"
                 on { getString(R.string.list_import_finished_delimiter) } doReturn " "
@@ -409,7 +419,10 @@ class EntryViewModelTest {
                     ),
                 )
             )
-            val entryViewModel = EntryViewModel(entryRepository)
+            val entryViewModel = EntryViewModel(
+                entryRepository,
+                SavedStateHandle(),
+            )
             val mockContext = mock<Context> {
                 on { resources } doReturn mockResources
             }

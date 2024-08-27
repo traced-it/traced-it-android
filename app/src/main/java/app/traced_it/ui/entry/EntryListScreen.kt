@@ -12,15 +12,25 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -29,10 +39,7 @@ import app.traced_it.R
 import app.traced_it.data.di.FakeEntryRepository
 import app.traced_it.data.di.defaultFakeEntries
 import app.traced_it.data.local.database.Entry
-import app.traced_it.ui.components.ConfirmationDialog
-import app.traced_it.ui.components.TracedBottomButton
-import app.traced_it.ui.components.TracedScaffold
-import app.traced_it.ui.components.TracedTopAppBar
+import app.traced_it.ui.components.*
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.delay
@@ -49,6 +56,8 @@ fun EntryListScreen(
 ) {
     EntryListScreen(
         allEntriesFlow = viewModel.allEntries,
+        searchExpandedFlow = viewModel.searchExpanded,
+        searchQueryFlow = viewModel.searchQuery,
         onNavigateToAboutScreen = onNavigateToAboutScreen,
         viewModel = viewModel,
     )
@@ -57,8 +66,10 @@ fun EntryListScreen(
 @Composable
 fun EntryListScreen(
     allEntriesFlow: StateFlow<PagingData<Entry>>,
-    initialSelectedEntry: Entry? = null,
     onNavigateToAboutScreen: () -> Unit = {},
+    searchExpandedFlow: StateFlow<Boolean>,
+    searchQueryFlow: StateFlow<String>,
+    initialSelectedEntry: Entry? = null,
     viewModel: EntryViewModel = hiltViewModel(),
 ) {
     val appName = stringResource(R.string.app_name)
@@ -78,6 +89,9 @@ fun EntryListScreen(
     val message by viewModel.message.collectAsStateWithLifecycle()
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var selectedEntry by remember { mutableStateOf(initialSelectedEntry) }
+    val searchExpanded by searchExpandedFlow.collectAsStateWithLifecycle()
+    val searchFocusRequester = remember { FocusRequester() }
+    val searchQuery by searchQueryFlow.collectAsStateWithLifecycle()
     val snackbarErrorHostState = remember { SnackbarHostState() }
     val snackbarSuccessHostState = remember { SnackbarHostState() }
 
@@ -90,6 +104,11 @@ fun EntryListScreen(
         ActivityResultContracts.StartActivityForResult()
     ) {
         viewModel.exportAllEntries(context, it)
+    }
+    val exportFoundLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        viewModel.exportFoundEntries(context, it)
     }
 
     LaunchedEffect(Unit) {
@@ -148,41 +167,122 @@ fun EntryListScreen(
         }
     }
 
+    BackHandler(searchExpanded) {
+        viewModel.setSearchExpanded(false)
+        viewModel.search("")
+    }
+
     TracedScaffold(
         topBar = {
             TracedTopAppBar(
                 title = {
-                    Text(
-                        stringResource(
-                            R.string.list_title,
-                            allEntries.itemCount,
+                    if (searchExpanded) {
+                        TracedTextField(
+                            value = searchQuery,
+                            onValueChange = { viewModel.search(it) },
+                            modifier = Modifier.focusRequester(
+                                searchFocusRequester
+                            ),
+                            textStyle = MaterialTheme.typography.bodyMedium,
+                            placeholder = {
+                                Text(
+                                    stringResource(
+                                        R.string.list_search_input_placeholder
+                                    )
+                                )
+                            },
+                            singleLine = true,
+                            contentPadding = PaddingValues(0.dp),
+                            showTrailingIcon = false,
+                            textColor = MaterialTheme.colorScheme.onBackground,
+                            placeholderColor = MaterialTheme.colorScheme.onBackground,
+                            containerColor = Color.Transparent,
+                            indicatorColor = Color.Transparent
                         )
-                    )
+                        LaunchedEffect(null) {
+                            searchFocusRequester.requestFocus()
+                        }
+                    } else {
+                        Text(
+                            stringResource(
+                                R.string.list_title,
+                                allEntries.itemCount,
+                            )
+                        )
+                    }
                 },
                 actions = {
-                    EntryListMenu(
-                        enabled = allEntries.itemCount > 0,
-                        modifier = Modifier.padding(
-                            end = Spacing.windowPadding - 8.dp
-                        ),
-                        onDeleteAllEntries = {
-                            deleteAllEntriesDialogOpen = true
-                        },
-                        onExportAllEntries = {
-                            viewModel.launchExportEntries(
-                                exportAllLauncher,
-                                context.resources.getString(
-                                    R.string.list_export_all_filename,
-                                    appName,
-                                    Build.MODEL
+                    if (searchExpanded) {
+                        IconButton({
+                            if (searchQuery.isEmpty()) {
+                                viewModel.setSearchExpanded(false)
+                            } else {
+                                viewModel.search("")
+                            }
+                        }) {
+                            Icon(
+                                Icons.Outlined.Clear,
+                                contentDescription = stringResource(
+                                    R.string.list_search_input_clear_content_description
                                 )
                             )
-                        },
-                        onImportEntries = {
-                            viewModel.launchImportEntries(importLauncher)
-                        },
-                        onNavigateToAboutScreen = onNavigateToAboutScreen,
-                    )
+                        }
+                    } else {
+                        IconButton(
+                            { viewModel.setSearchExpanded(true) },
+                            enabled = allEntries.itemCount > 0
+                        ) {
+                            Icon(
+                                Icons.Outlined.Search,
+                                contentDescription = stringResource(
+                                    R.string.list_search_submit
+                                )
+                            )
+                        }
+                        EntryListMenu(
+                            enabled = allEntries.itemCount > 0,
+                            modifier = Modifier.padding(
+                                end = Spacing.windowPadding - 8.dp
+                            ),
+                            onDeleteAllEntries = {
+                                deleteAllEntriesDialogOpen = true
+                            },
+                            onExportAllEntries = {
+                                viewModel.launchExportEntries(
+                                    exportAllLauncher,
+                                    context.resources.getString(
+                                        R.string.list_export_all_filename,
+                                        appName,
+                                        Build.MODEL,
+                                    )
+                                )
+                            },
+                            onImportEntries = {
+                                viewModel.launchImportEntries(importLauncher)
+                            },
+                            onNavigateToAboutScreen = onNavigateToAboutScreen,
+                        )
+                    }
+                },
+                navigationIcon = {
+                    if (searchExpanded) {
+                        IconButton(
+                            onClick = {
+                                viewModel.setSearchExpanded(false)
+                                viewModel.search("")
+                            },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = stringResource(
+                                    R.string.list_search_close_content_description
+                                )
+                            )
+                        }
+                    }
                 },
             )
         },
@@ -223,6 +323,47 @@ fun EntryListScreen(
                 .consumeWindowInsets(innerPadding)
                 .imePadding(),
         ) {
+            if (searchExpanded && searchQuery.isNotEmpty()) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        pluralStringResource(
+                            R.plurals.list_search_found,
+                            allEntries.itemCount,
+                            allEntries.itemCount,
+                        ),
+                        Modifier.padding(
+                            horizontal = Spacing.windowPadding
+                        ),
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                    TextButton(
+                        onClick = {
+                            viewModel.launchExportEntries(
+                                exportFoundLauncher,
+                                context.resources.getString(
+                                    R.string.list_export_found_filename,
+                                    appName,
+                                    Build.MODEL,
+                                )
+                            )
+                        },
+                        modifier = Modifier.padding(end = 8.dp),
+                        enabled = allEntries.itemCount > 0,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    ) {
+                        Text(
+                            "Export",
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
+            }
             HorizontalDivider()
             LazyColumn(
                 state = listState,
@@ -354,7 +495,12 @@ private fun DefaultPreview() {
             allEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
-            viewModel = EntryViewModel(FakeEntryRepository()),
+            searchExpandedFlow = MutableStateFlow(false),
+            searchQueryFlow = MutableStateFlow(""),
+            viewModel = EntryViewModel(
+                FakeEntryRepository(),
+                SavedStateHandle(),
+            ),
         )
     }
 }
@@ -368,7 +514,31 @@ private fun LightPreview() {
             allEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
-            viewModel = EntryViewModel(FakeEntryRepository()),
+            searchExpandedFlow = MutableStateFlow(false),
+            searchQueryFlow = MutableStateFlow(""),
+            viewModel = EntryViewModel(
+                FakeEntryRepository(),
+                SavedStateHandle(),
+            ),
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SearchPreview() {
+    AppTheme {
+        EntryListScreen(
+            allEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
+            searchExpandedFlow = MutableStateFlow(true),
+            searchQueryFlow = MutableStateFlow("ee"),
+            viewModel = EntryViewModel(
+                FakeEntryRepository(),
+                SavedStateHandle(),
+            ),
         )
     }
 }
@@ -383,7 +553,12 @@ private fun SelectedEntryPreview() {
                 PagingData.from(defaultFakeEntries)
             ),
             initialSelectedEntry = defaultFakeEntries[2],
-            viewModel = EntryViewModel(FakeEntryRepository()),
+            searchExpandedFlow = MutableStateFlow(false),
+            searchQueryFlow = MutableStateFlow(""),
+            viewModel = EntryViewModel(
+                FakeEntryRepository(),
+                SavedStateHandle(),
+            ),
         )
     }
 }
@@ -395,7 +570,12 @@ private fun EmptyPreview() {
     AppTheme {
         EntryListScreen(
             allEntriesFlow = MutableStateFlow(PagingData.empty()),
-            viewModel = EntryViewModel(FakeEntryRepository(emptyList())),
+            searchExpandedFlow = MutableStateFlow(false),
+            searchQueryFlow = MutableStateFlow(""),
+            viewModel = EntryViewModel(
+                FakeEntryRepository(emptyList()),
+                SavedStateHandle(),
+            ),
         )
     }
 }
@@ -413,7 +593,12 @@ private fun PortraitPreview() {
             allEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
-            viewModel = EntryViewModel(FakeEntryRepository()),
+            searchExpandedFlow = MutableStateFlow(false),
+            searchQueryFlow = MutableStateFlow(""),
+            viewModel = EntryViewModel(
+                FakeEntryRepository(),
+                SavedStateHandle(),
+            ),
         )
     }
 }

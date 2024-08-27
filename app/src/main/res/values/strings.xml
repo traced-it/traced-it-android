@@ -83,4 +83,13 @@
     <string name="list_message_restored">Note restored</string>
     <string name="list_message_all_restored">All notes restored</string>
     <string name="list_export_all_filename">%1$s notes %2$s.csv</string>
+    <string name="list_export_found_filename">%1$s found notes %2$s.csv</string>
+    <string name="list_search_input_placeholder">Search your notes</string>
+    <string name="list_search_input_clear_content_description">Clear input</string>
+    <string name="list_search_submit">Search</string>
+    <string name="list_search_close_content_description">Close search</string>
+    <plurals name="list_search_found">
+        <item quantity="one">Found %1$d note</item>
+        <item quantity="other">Found %1$d notes</item>
+    </plurals>
 </resources>
