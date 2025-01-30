@@ -2,7 +2,6 @@ package app.traced_it.ui.entry
 
 import android.content.res.Configuration
 import android.os.Build
-import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -11,14 +10,11 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -33,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -172,28 +167,24 @@ fun EntryListScreen(
             }
     }
 
-    BackHandler(entryDetailOpen || selectedEntry != null) {
+    BackHandler(entryDetailOpen || selectedEntry != null || searchExpanded) {
         if (entryDetailOpen) {
             entryDetailOpen = false
-        } else {
+        } else if (selectedEntry != null) {
             selectedEntry = null
+        } else {
+            viewModel.setSearchExpanded(false)
+            viewModel.search("")
         }
-    }
-
-    BackHandler(searchExpanded) {
-        viewModel.setSearchExpanded(false)
-        viewModel.search("")
-    }
-
-    BackHandler(selectedEntry != null) {
-        selectedEntry = null
     }
 
     TracedScaffold(
         topBar = {
             TracedTopAppBar(
                 title = {
-                    if (searchExpanded) {
+                    if (selectedEntry != null) {
+                        Text(stringResource(R.string.list_selected_title))
+                    } else if (searchExpanded) {
                         TracedTextField(
                             value = searchQuery,
                             onValueChange = { viewModel.search(it) },
@@ -229,7 +220,63 @@ fun EntryListScreen(
                     }
                 },
                 actions = {
-                    if (searchExpanded) {
+                    if (selectedEntry != null) {
+                        IconButton({
+                            selectedEntry?.let {
+                                entryDetailAction = EntryDetailAction.Edit(it)
+                                entryDetailOpen = true
+                            }
+                        }) {
+                            Icon(
+                                Icons.Outlined.Edit,
+                                stringResource(R.string.list_item_update),
+                            )
+                        }
+                        IconButton({
+                            selectedEntry?.let {
+                                entryToDelete = it
+                            }
+                        }) {
+                            Icon(
+                                Icons.Outlined.Delete,
+                                stringResource(R.string.list_item_delete),
+                            )
+                        }
+                        SelectedEntryMenu(
+                            modifier = Modifier.padding(
+                                end = Spacing.windowPadding - 8.dp
+                            ),
+                            onAddWithSameText = {
+                                selectedEntry?.let {
+                                    entryDetailAction =
+                                        EntryDetailAction.Prefill(it)
+                                    entryDetailOpen = true
+                                }
+                            },
+                            onCopy = {
+                                selectedEntry?.let {
+                                    clipboardManager.setText(
+                                        AnnotatedString(it.format(context))
+                                    )
+                                    // Only show a toast for Android 12 and lower.
+                                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                                        Toast.makeText(
+                                            context,
+                                            R.string.list_item_copied_to_clipboard,
+                                            Toast.LENGTH_SHORT,
+                                        ).show()
+                                    }
+                                }
+                            },
+                            onFindWithSameText = {
+                                selectedEntry?.let {
+                                    viewModel.setSearchExpanded(true)
+                                    viewModel.search(it.content)
+                                    selectedEntry = null
+                                }
+                            },
+                        )
+                    } else if (searchExpanded) {
                         IconButton({
                             if (searchQuery.isEmpty()) {
                                 viewModel.setSearchExpanded(false)
@@ -296,6 +343,22 @@ fun EntryListScreen(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                 contentDescription = stringResource(
                                     R.string.list_search_close_content_description
+                                )
+                            )
+                        }
+                    } else if (selectedEntry != null) {
+                        IconButton(
+                            onClick = {
+                                selectedEntry = null
+                            },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = stringResource(
+                                    R.string.list_selected_back
                                 )
                             )
                         }
@@ -461,123 +524,6 @@ fun EntryListScreen(
                 entryDetailOpen = false
             },
         )
-    }
-
-    if (selectedEntry != null) {
-        ModalBottomSheet(
-            { selectedEntry = null },
-            containerColor = MaterialTheme.colorScheme.surface,
-            scrimColor = BottomSheetDefaults.ScrimColor.copy(alpha = 0.7f),
-            contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
-        ) {
-            ListItem(
-                headlineContent = {
-                    Text(
-                        selectedEntry!!.formatContentWithAmount(context),
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                },
-                supportingContent = {
-                    Text(
-                        DateUtils.formatDateTime(
-                            context,
-                            selectedEntry!!.createdAt,
-                            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_WEEKDAY or DateUtils.FORMAT_SHOW_TIME
-                        ),
-                        Modifier.padding(vertical = Spacing.small),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                },
-            )
-            HorizontalDivider()
-            ListItem(
-                headlineContent = {
-                    Text(stringResource(R.string.list_item_add))
-                },
-                modifier = Modifier.clickable {
-                    entryDetailAction =
-                        EntryDetailAction.Prefill(selectedEntry!!)
-                    entryDetailOpen = true
-                    selectedEntry = null
-                },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null
-                    )
-                },
-            )
-            ListItem(
-                headlineContent = {
-                    Text(stringResource(R.string.list_item_find_with_same_text))
-                },
-                modifier = Modifier.clickable {
-                    viewModel.setSearchExpanded(true)
-                    viewModel.search(selectedEntry!!.content)
-                    selectedEntry = null
-                },
-                leadingContent = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null
-                    )
-                },
-            )
-            ListItem(
-                headlineContent = {
-                    Text(stringResource(R.string.list_item_copy_to_clipboard))
-                },
-                modifier = Modifier.clickable {
-                    selectedEntry?.let {
-                        clipboardManager.setText(
-                            AnnotatedString(it.format(context))
-                        )
-                        // Only show a toast for Android 12 and lower.
-                        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                            Toast.makeText(
-                                context,
-                                R.string.list_item_copied_to_clipboard,
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                        }
-                        selectedEntry = null
-                    }
-                },
-                leadingContent = {
-                    Icon(
-                        painterResource(R.drawable.content_copy_24px), null
-                    )
-                },
-            )
-            ListItem(
-                headlineContent = {
-                    Text(stringResource(R.string.list_item_update))
-                },
-                modifier = Modifier.clickable {
-                    entryDetailAction = EntryDetailAction.Edit(selectedEntry!!)
-                    entryDetailOpen = true
-                    selectedEntry = null
-                },
-                leadingContent = {
-                    Icon(Icons.Outlined.Edit, null)
-                },
-            )
-            ListItem(
-                headlineContent = {
-                    Text(stringResource(R.string.list_item_delete))
-                },
-                modifier = Modifier.clickable {
-                    entryToDelete = selectedEntry
-                    selectedEntry = null
-                },
-                leadingContent = {
-                    Icon(Icons.Outlined.Delete, null)
-                },
-            )
-            Spacer(
-                Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
-            )
-        }
     }
 
     if (deleteAllEntriesDialogOpen) {

@@ -96,8 +96,10 @@
     <string name="list_search_export">Export</string>
     <string name="list_item_long_tap_message">Long-tap to select note</string>
     <string name="list_item_long_tap_selected_message">Long-tap to deselect note</string>
-    <string name="list_item_long_click_label">Open context menu</string>
+    <string name="list_item_long_click_label">Select note</string>
     <string name="list_item_find_with_same_text">Find notes with the same text</string>
     <string name="list_item_copy_to_clipboard">Copy to clipboard</string>
     <string name="list_item_copied_to_clipboard">Copied</string>
+    <string name="list_selected_back">Deselect note</string>
+    <string name="list_selected_title">Selected note</string>
 </resources>
