@@ -1,9 +1,5 @@
-import java.util.Properties
 import java.io.FileInputStream
-
-val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+import java.util.*
 
 plugins {
     alias(libs.plugins.android.application)
@@ -25,15 +21,6 @@ android {
         versionCode = 0
         versionName = "0.0.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // The following argument makes the Android Test Orchestrator run its
-        // "pm clear" command after each test invocation. This command ensures
-        // that the app's state is completely cleared between tests.
-        testInstrumentationRunnerArguments += mapOf(
-            "clearPackageData" to "true",
-        )
-
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -42,18 +29,48 @@ android {
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
-    }
 
-    testOptions {
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments += mapOf(
+            "clearPackageData" to "true",
+        )
     }
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
+            val keystorePropertiesFile = rootProject.file("keystore.properties")
+            if (keystorePropertiesFile.exists()) {
+                val keystoreProperties = Properties().apply {
+                    load(FileInputStream(keystorePropertiesFile))
+                }
+                storeFile = file(keystoreProperties["storeFile"].toString())
+                storePassword = keystoreProperties["storePassword"].toString()
+                keyAlias = keystoreProperties["keyAlias"].toString()
+                keyPassword = keystoreProperties["keyPassword"].toString()
+            } else {
+                afterEvaluate {
+                    if (gradle.startParameter.taskNames.contains("assembleRelease") ||
+                        gradle.startParameter.taskNames.contains("bundleRelease")) {
+                        throw GradleException("""
+                            Release build requires keystore.properties file.
+                            Expected location: ${keystorePropertiesFile.absolutePath}
+                            File should contain:
+                              storeFile=path/to/keystore.jks
+                              storePassword=your_store_password
+                              keyAlias=your_key_alias
+                              keyPassword=your_key_password
+                        """.trimIndent())
+                    }
+                }
+                storeFile = null
+                storePassword = null
+                keyAlias = null
+                keyPassword = null
+            }
         }
     }
     buildTypes {
@@ -96,6 +113,9 @@ android {
     sourceSets {
         // Adds exported schema location as test app assets.
         getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    }
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 }
 
