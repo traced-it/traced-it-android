@@ -204,7 +204,8 @@ private fun EditPreview() {
 @Preview(
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
-    widthDp = 480
+    widthDp = 1024,
+    heightDp = 768
 )
 @Composable
 private fun PortraitPreview() {

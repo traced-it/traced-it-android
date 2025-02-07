@@ -370,3 +370,20 @@ private fun EmptyPreview() {
         )
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    widthDp = 480
+)
+@Composable
+private fun PortraitPreview() {
+    val fakeEntryRepository = FakeEntryRepository()
+    AppTheme {
+        EntryListScreen(
+            allEntriesFlow = MutableStateFlow(PagingData.empty()),
+            viewModel = EntryViewModel(fakeEntryRepository),
+        )
+    }
+}
