@@ -40,39 +40,6 @@ android {
         )
     }
 
-    signingConfigs {
-        create("release") {
-            val keystorePropertiesFile = rootProject.file("keystore.properties")
-            if (keystorePropertiesFile.exists()) {
-                val keystoreProperties = Properties().apply {
-                    load(FileInputStream(keystorePropertiesFile))
-                }
-                storeFile = file(keystoreProperties["storeFile"].toString())
-                storePassword = keystoreProperties["storePassword"].toString()
-                keyAlias = keystoreProperties["keyAlias"].toString()
-                keyPassword = keystoreProperties["keyPassword"].toString()
-            } else {
-                afterEvaluate {
-                    if (gradle.startParameter.taskNames.contains("assembleRelease") ||
-                        gradle.startParameter.taskNames.contains("bundleRelease")) {
-                        throw GradleException("""
-                            Release build requires keystore.properties file.
-                            Expected location: ${keystorePropertiesFile.absolutePath}
-                            File should contain:
-                              storeFile=path/to/keystore.jks
-                              storePassword=your_store_password
-                              keyAlias=your_key_alias
-                              keyPassword=your_key_password
-                        """.trimIndent())
-                    }
-                }
-                storeFile = null
-                storePassword = null
-                keyAlias = null
-                keyPassword = null
-            }
-        }
-    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
@@ -81,7 +48,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
         }
         getByName("debug") {
             applicationIdSuffix = ".debug"
