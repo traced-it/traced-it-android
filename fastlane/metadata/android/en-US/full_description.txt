@@ -4,24 +4,24 @@ The uncomplicated interface makes the app easy to use even when you're busy or d
 
 PERFECT FOR
 
-• Journaling
-• Tracking daily routines
-• Recording workouts
-• Logging supplements and water intake
-• Measuring cooking ingredients
-• Noting simple lab results
+- Journaling
+- Tracking daily routines
+- Recording workouts
+- Logging supplements and water intake
+- Measuring cooking ingredients
+- Noting simple lab results
 
 FEATURES
 
-• Add text notes with an optional amount (S/M/L, 1x/2x/3x, 5.813…)
-• See all your notes with the time elapsed since you wrote each note
-• Tap the + button to add a new note with the same text as an existing note
-• Edit a note, delete it, delete all notes
-• Export all notes as a spreadsheet file (CSV format) and import them
+- Add text notes with an optional amount (S/M/L, 1x/2x/3x, 5.813…)
+- See all your notes with the time elapsed since you wrote each note
+- Tap the + button to add a new note with the same text as an existing note
+- Edit a note, delete it, delete all notes
+- Export all notes as a spreadsheet file (CSV format) and import them
 
 PRIVACY & SECURITY
 
-• The app doesn't use the internet at all – your notes are stored on your phone only
-• The app doesn't access any information about you and doesn't collect usage data
-• No ads
-• Free and open-source
+- The app doesn't use the internet at all – your notes are stored on your phone only
+- The app doesn't access any information about you and doesn't collect usage data
+- No ads
+- Free and open-source
