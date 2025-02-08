@@ -18,8 +18,8 @@ android {
         applicationId = "app.traced_it"
         minSdk = 25
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.0.2"
 
         vectorDrawables {
             useSupportLibrary = true
