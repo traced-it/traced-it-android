@@ -13,6 +13,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+@Suppress("unused")
 class DatabaseModule {
     @Provides
     fun provideEntryDao(appDatabase: AppDatabase): EntryDao {

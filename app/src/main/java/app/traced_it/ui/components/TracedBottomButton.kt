@@ -72,6 +72,6 @@ private fun DisabledPreview() {
 @Composable
 private fun PortraitPreview() {
     AppTheme {
-            TracedBottomButton("Potrait button", {})
+            TracedBottomButton("Portrait button", {})
     }
 }

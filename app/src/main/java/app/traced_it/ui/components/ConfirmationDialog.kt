@@ -1,7 +1,6 @@
 package app.traced_it.ui.components
 
 import androidx.compose.material3.*
-import androidx.compose.material3.AlertDialogDefaults.textContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier

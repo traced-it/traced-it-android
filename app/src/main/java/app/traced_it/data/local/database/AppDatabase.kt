@@ -2,6 +2,7 @@ package app.traced_it.data.local.database
 
 import androidx.room.*
 
+@Suppress("unused")
 class Converters {
     @TypeConverter
     fun unitIdToUnit(unitId: String): EntryUnit? =
