@@ -9,6 +9,10 @@ numbers.
 The uncomplicated interface makes the app easy to use even when you're busy or
 distracted.
 
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
+alt="Get it on Izzy on Droid"
+height="80">](https://apt.izzysoft.de/packages/app.traced_it)
+
 ## Perfect for
 
 - Journaling
