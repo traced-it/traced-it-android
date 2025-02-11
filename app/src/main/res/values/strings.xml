@@ -48,7 +48,6 @@
     <string name="list_import_finished_delimiter"> </string>
     <string name="detail_unit_label">Choose an amount, if you want</string>
     <string name="detail_unit_dropdown_content_description">Expand list of units</string>
-    <string name="detail_unit_choice_empty"><![CDATA[&#8212;]]></string>
     <string name="input_clear_content_description">Clear input</string>
     <string name="list_delete_all_dialog_dismiss">Dismiss</string>
     <string name="list_delete_dialog_dismiss">Dismiss</string>

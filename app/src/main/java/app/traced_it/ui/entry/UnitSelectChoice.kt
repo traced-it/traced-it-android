@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import app.traced_it.R
 import app.traced_it.data.local.database.EntryUnit
 import app.traced_it.data.local.database.clothingSizeUnit
 import app.traced_it.ui.components.TracedSegmentedButton
@@ -41,9 +40,7 @@ fun UnitSelectChoice(
                 },
             ) {
                 Text(
-                    stringResource(choice.nameResId).ifEmpty {
-                        stringResource(R.string.detail_unit_choice_empty)
-                    },
+                    stringResource(choice.nameResId),
                     modifier = Modifier.testTag("unitSelectChoiceText"),
                     style = MaterialTheme.typography.labelLarge,
                 )
