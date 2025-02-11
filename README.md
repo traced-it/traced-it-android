@@ -1,6 +1,4 @@
-<img src="./fastlane/metadata/android/en-US/images/icon.png" alt="traced it icon" width="80" height="80" align="left">
-
-# traced it
+# ![](./docs/icon-54.png) traced it
 
 A simple app for short text notes, with a prominent timestamp for each entry.
 Add quantities to your notes using preset formats (S/M/L, 1x/2x/3x) or custom
