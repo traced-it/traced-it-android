@@ -194,7 +194,7 @@ fun TracedTextField(
             if (showTrailingIcon && value.isNotEmpty()) {
                 IconButton(
                     { onValueChange("") },
-                    Modifier.padding(end = Spacing.extraSmall)
+                    Modifier.padding(end = Spacing.trailingIconPadding)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.backspace_24px),
