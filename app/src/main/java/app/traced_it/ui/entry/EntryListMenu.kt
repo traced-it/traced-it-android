@@ -41,7 +41,7 @@ fun EntryListMenu(
                 },
             )
             DropdownMenuItem(
-                { Text(stringResource(R.string.list_menu_save)) },
+                { Text(stringResource(R.string.list_menu_export_all)) },
                 {
                     expanded = false
                     onExportAllEntries()

@@ -12,7 +12,7 @@
     <string name="list_item_delete">Delete</string>
     <string name="list_menu">Menu</string>
     <string name="list_menu_import">Import from CSV</string>
-    <string name="list_menu_save">Save as CSV</string>
+    <string name="list_menu_export_all">Save as CSV</string>
     <string name="list_menu_delete_all">Delete all</string>
     <string name="list_title">Your notes (%1$d)</string>
     <string name="list_add">New note</string>
@@ -35,7 +35,7 @@
     <string name="list_item_time_ago_hours_and_minutes">%1$d h %2$02d min ago</string>
     <string name="list_import_failed_column_missing">Missing column \"%1$s\"</string>
     <string name="list_import_failed_column_empty">Empty value of column \"%1$s\"</string>
-    <string name="list_import_failed_column_parsing_error">Failed to the value \"%2$s\" of column \"%1$s\"</string>
+    <string name="list_import_failed_column_parsing_error">Failed to parse value \"%2$s\" of column \"%1$s\"</string>
     <string name="list_import_failed_column_choice_unknown">Value \"%3$s\" of column \"%1$s\" must be one of %2$s</string>
     <plurals name="list_import_finished_imported">
         <item quantity="one">Imported %1$d note.</item>
