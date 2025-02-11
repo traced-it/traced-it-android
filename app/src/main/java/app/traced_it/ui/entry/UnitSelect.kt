@@ -128,7 +128,9 @@ fun UnitSelect(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("0.0") },
+                placeholder = visibleUnit.placeholderResId?.let {
+                    { Text(stringResource(it)) }
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal
                 ),

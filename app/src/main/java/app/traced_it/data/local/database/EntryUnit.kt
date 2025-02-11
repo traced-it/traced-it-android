@@ -11,6 +11,7 @@ data class EntryUnit(
     val nameResId: Int,
     val unit: String = "",
     val choices: List<EntryUnitChoice> = listOf(),
+    val placeholderResId: Int? = null,
 ) {
     fun format(context: Context, value: Double): String {
         if (choices.isNotEmpty()) {
@@ -67,6 +68,7 @@ val smallNumbersChoiceUnit = EntryUnit(
 val doubleUnit = EntryUnit(
     id = "DOUBLE",
     nameResId = R.string.entry_unit_double_name,
+    placeholderResId = R.string.entry_unit_double_placeholder,
 )
 val units: List<EntryUnit> = listOf(
     noneUnit,
