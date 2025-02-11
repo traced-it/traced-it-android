@@ -198,7 +198,7 @@ fun EntryListItem(
                 Icon(
                     imageVector = Icons.Outlined.Edit,
                     contentDescription = stringResource(
-                        R.string.list_item_edit
+                        R.string.list_item_update
                     ),
                 )
             }

@@ -8,7 +8,7 @@
     <string name="detail_update_save">Save</string>
     <string name="detail_add_save">Save</string>
     <string name="detail_content_label">Write your note</string>
-    <string name="list_item_edit">Edit</string>
+    <string name="list_item_update">Update</string>
     <string name="list_item_delete">Delete</string>
     <string name="list_menu">Menu</string>
     <string name="list_menu_import">Import from CSV</string>
