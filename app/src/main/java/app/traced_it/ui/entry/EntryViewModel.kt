@@ -239,7 +239,11 @@ class EntryViewModel @Inject constructor(
                 )
             )
         }
-        val amountUnit = units.find { it.id == amountUnitRaw }
+        val amountUnit = units.find {
+            it.id == amountUnitRaw
+        } ?: units.find {
+            context.resources.getString(it.nameResId) == amountUnitRaw
+        }
         if (amountUnit == null) {
             return ParseResult.Failed(
                 context.resources.getString(
@@ -383,6 +387,11 @@ class EntryViewModel @Inject constructor(
                     break
                 }
             }
+        }
+        if (importedCount == 0 && skippedCount == 0 && failedMessage == null) {
+            failedMessage = context.resources.getString(
+                R.string.list_import_finished_empty
+            )
         }
 
         val messageText = listOfNotNull(
