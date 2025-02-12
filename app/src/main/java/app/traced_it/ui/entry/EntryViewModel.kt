@@ -265,7 +265,7 @@ class EntryViewModel @Inject constructor(
                 )
             )
         }
-        val amount = amountUnit.parse(context, amountRaw)
+        val amount = amountUnit.deserialize(amountRaw)
 
         val content = try {
             record.get(COLUMN_CONTENT)
@@ -482,7 +482,7 @@ class EntryViewModel @Inject constructor(
                 csvDateFormat.format(entry.createdAt),
                 entry.content,
                 entry.amountUnit.format(context, entry.amount),
-                entry.amount,
+                entry.amountUnit.serialize(entry.amount),
                 entry.amountUnit.id,
             )
         }

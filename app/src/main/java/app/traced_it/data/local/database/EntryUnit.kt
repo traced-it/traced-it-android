@@ -3,6 +3,7 @@ package app.traced_it.data.local.database
 import android.content.Context
 import app.traced_it.R
 import java.text.NumberFormat
+import java.text.ParseException
 
 data class EntryUnitChoice(val value: Double, val nameResId: Int)
 
@@ -13,6 +14,8 @@ data class EntryUnit(
     val choices: List<EntryUnitChoice> = listOf(),
     val placeholderResId: Int? = null,
 ) {
+    private val numberFormat = NumberFormat.getNumberInstance()
+
     fun format(context: Context, value: Double): String {
         if (choices.isNotEmpty()) {
             val choice = choices.find { it.value == value }
@@ -20,7 +23,7 @@ data class EntryUnit(
                 return context.resources.getString(choice.nameResId)
             }
         }
-        return NumberFormat.getNumberInstance().format(value)
+        return numberFormat.format(value)
     }
 
     fun parse(context: Context, value: String): Double {
@@ -32,8 +35,16 @@ data class EntryUnit(
                 return choice.value
             }
         }
-        return value.toDoubleOrNull() ?: 0.0
+        return try {
+            numberFormat.parse(value)?.toDouble()
+        } catch (_: ParseException) {
+            null
+        } ?: 0.0
     }
+
+    fun serialize(value: Double): String = value.toString()
+
+    fun deserialize(value: String): Double = value.toDoubleOrNull() ?: 0.0
 }
 
 val noneUnit = EntryUnit(

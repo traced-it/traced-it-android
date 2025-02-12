@@ -214,9 +214,9 @@ class EntryViewModelTest {
             }
             val csv = """
                 createdAt,content,amount,amountUnit
-                2025-02-01T18:00:22.755+0100,"Red apples",,no unit
-                2025-02-01T15:18:43.189+0100,"Yellow bananas",2x,portion
-                2025-02-01T15:16:56.985+0100,"Green kiwis",L,clothing
+                2025-02-01T18:00:22.755+0100,"Red apples",0.0,no unit
+                2025-02-01T15:18:43.189+0100,"Yellow bananas",2.0,portion
+                2025-02-01T15:16:56.985+0100,"Green kiwis",3.0,clothing
                 2025-02-01T15:00:00.000+0100,"Purple grapes",3.14,number
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
