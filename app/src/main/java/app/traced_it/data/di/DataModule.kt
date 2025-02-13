@@ -27,11 +27,19 @@ interface DataModule {
 }
 
 class FakeEntryRepository @Inject constructor() : EntryRepository {
-    var fakeEntries: MutableList<Entry> = defaultFakeEntries.toMutableList()
+    var fakeEntries: MutableList<Entry> = defaultFakeEntries
+        .filter { !it.deleted }
+        .sortedBy { it.createdAt }
+        .reversed()
+        .toMutableList()
 
     @SuppressLint("VisibleForTests")
     override fun getAll(): PagingSource<Int, Entry> {
-        val pagingSourceFactory = this.fakeEntries.asPagingSourceFactory()
+        val pagingSourceFactory = this.fakeEntries
+            .filter { !it.deleted }
+            .sortedBy { it.createdAt }
+            .reversed()
+            .asPagingSourceFactory()
         return pagingSourceFactory()
     }
 
@@ -175,6 +183,16 @@ val defaultFakeEntries = listOf(
             set(Calendar.MINUTE, 3)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
+            time.time
+        },
+    ),
+    Entry(
+        uid = 9,
+        amount = 0.0,
+        amountUnit = noneUnit,
+        content = "Future",
+        createdAt = Calendar.getInstance().run {
+            add(Calendar.DAY_OF_MONTH, 1)
             time.time
         },
     ),

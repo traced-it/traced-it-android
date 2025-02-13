@@ -44,7 +44,7 @@ data class Entry(
         now: Long,
     ): String =
         (now - createdAt).milliseconds.toComponents { hours, minutes, seconds, _ ->
-            if (hours >= 24) {
+            if (hours >= 24 || hours < 0 || minutes < 0 || seconds < 0) {
                 context.resources.getString(
                     R.string.list_item_time_at,
                     DateUtils.formatDateTime(
