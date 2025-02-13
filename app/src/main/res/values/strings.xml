@@ -67,7 +67,7 @@
     <string name="entry_unit_portion_choice_5">5x</string>
     <string name="entry_unit_double_name">number</string>
     <string name="entry_unit_double_placeholder">0.0</string>
-    <string name="entry_unit_none_choice_empty"/>
+    <string name="entry_unit_none_choice_empty" translatable="false"/>
     <string name="entry_formatted_content_with_amount">%1$s (%2$s%3$s)</string>
     <string name="detail_update_title">Update note</string>
     <string name="detail_add_title">New note</string>
