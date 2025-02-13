@@ -104,13 +104,13 @@ interface EntryDao {
     suspend fun delete(uid: Int)
 
     @Query("UPDATE entry SET deleted = 0 WHERE uid = :uid")
-    suspend fun undelete(uid: Int)
+    suspend fun restore(uid: Int)
 
     @Query("UPDATE entry SET deleted = 1")
     suspend fun deleteAll()
 
     @Query("UPDATE entry SET deleted = 0 WHERE deleted = 1")
-    suspend fun undeleteAll()
+    suspend fun restoreAll()
 
     @Query("DELETE FROM entry WHERE deleted = 1")
     suspend fun cleanupDeleted()

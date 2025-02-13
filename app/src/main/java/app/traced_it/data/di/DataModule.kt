@@ -51,7 +51,7 @@ class FakeEntryRepository @Inject constructor() : EntryRepository {
         throw NotImplementedError()
     }
 
-    override suspend fun undelete(uid: Int) {
+    override suspend fun restore(uid: Int) {
         throw NotImplementedError()
     }
 
@@ -59,7 +59,7 @@ class FakeEntryRepository @Inject constructor() : EntryRepository {
         throw NotImplementedError()
     }
 
-    override suspend fun undeleteAll() {
+    override suspend fun restoreAll() {
         throw NotImplementedError()
     }
 

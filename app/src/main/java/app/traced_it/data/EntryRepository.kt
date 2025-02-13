@@ -16,11 +16,11 @@ interface EntryRepository {
 
     suspend fun delete(uid: Int)
 
-    suspend fun undelete(uid: Int)
+    suspend fun restore(uid: Int)
 
     suspend fun deleteAll()
 
-    suspend fun undeleteAll()
+    suspend fun restoreAll()
 
     suspend fun cleanupDeleted()
 }
@@ -40,11 +40,11 @@ class DefaultEntryRepository @Inject constructor(
 
     override suspend fun delete(uid: Int) = entryDao.delete(uid)
 
-    override suspend fun undelete(uid: Int) = entryDao.undelete(uid)
+    override suspend fun restore(uid: Int) = entryDao.restore(uid)
 
     override suspend fun deleteAll() = entryDao.deleteAll()
 
-    override suspend fun undeleteAll() = entryDao.undeleteAll()
+    override suspend fun restoreAll() = entryDao.restoreAll()
 
     override suspend fun cleanupDeleted() = entryDao.cleanupDeleted()
 }

@@ -123,7 +123,7 @@ class EntryViewModel @Inject constructor(
 
     private fun restoreEntry(context: Context, entry: Entry) {
         viewModelScope.launch {
-            entryRepository.undelete(entry.uid)
+            entryRepository.restore(entry.uid)
             setHighlightedEntryUid(entry.uid)
             setMessage(
                 Message(
@@ -156,7 +156,7 @@ class EntryViewModel @Inject constructor(
 
     private fun restoreAllEntries(context: Context) {
         viewModelScope.launch {
-            entryRepository.undeleteAll()
+            entryRepository.restoreAll()
             setMessage(
                 Message(
                     context.resources.getString(R.string.list_message_all_restored)
