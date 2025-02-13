@@ -66,8 +66,13 @@ Signer #1 certificate SHA-256 digest must be
 ## Contributing
 
 We welcome your contributions! To help us organize the work, please start by
-creating a [GitHub issue](https://www.github.com/traced-it/traced-it-android)
-for the bug, feature or translation you'd like to work on.
+creating a [GitHub issue](https://github.com/traced-it/traced-it-android/issues)
+for the bug or feature you'd like to work on.
+
+To translate the app, register at
+[Toolate](https://toolate.othing.xyz/projects/traced-it/), which is an instance
+of the Weblate translation app that we use. Toolate will submit your translation
+as a GitHub pull request.
 
 ## License
 
