@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">traced it</string>
+    <string name="app_name" translatable="false">traced it</string>
     <string name="about_app_icon_content_description">Application icon</string>
     <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> is a non-commercial app made by three friends for fun.</p><br><p>Would you like to share with us how you use the app? Write us an <a href="mailto:android@traced-it.app">email</a>.</p><br><p>Does something not work for you or do you have ideas for improvement? File an <a href="https://github.com/traced-it/traced-it-android/issues">issue</a>.</p><br><p>Distributed under <a href="https://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License 3.0</a> or later. You can find the code and get involved on <a href="https://github.com/traced-it/traced-it-android">GitHub</a>.</p>]]></string>
     <string name="about_title">About</string>
