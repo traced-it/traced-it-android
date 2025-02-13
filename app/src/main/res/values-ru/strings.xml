@@ -33,4 +33,6 @@
     <string name="list_item_time_ago_hours_and_minutes">%1$d часов %2$02d мин назад</string>
     <string name="list_delete_dialog_text">Вы собираетесь удалить заметку «%1$s»</string>
     <string name="list_message_all_deleted">Все заметки были удалены</string>
+    <string name="app_name">Отслеживай это</string>
+    <string name="list_import_failed_column_empty">Пустое значение колонки \"%1$s\"</string>
 </resources>
