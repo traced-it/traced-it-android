@@ -46,7 +46,7 @@
         <item quantity="other">Skipped %1$d notes, because notes with the same timestamps already exist.</item>
     </plurals>
     <string name="list_import_finished_empty">Empty CSV file</string>
-    <string name="list_import_finished_delimiter"> </string>
+    <string name="list_import_finished_delimiter">\u0020</string>
     <string name="detail_unit_label">Choose an amount, if you want</string>
     <string name="detail_unit_dropdown_content_description">Expand list of units</string>
     <string name="input_clear_content_description">Clear input</string>
