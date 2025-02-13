@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="about_app_icon_content_description">Ikona aplikacji</string>
+    <string name="app_name">Prześledzone</string>
+    <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> jest niekomercyjną aplikacją stworzoną przez troje przyjaciół dla przyjemności.</p><br><p>Czy zechciał(a)byś podzielić się z nami, jak z niej korzystasz? Napisz do nas <a href="mailto:android@traced-it.app">maila</a>.</p><br><p>Czy coś się u Ciebie nie sprawdza lub masz pomysły na udoskonalenie? Załóż <a href="https://github.com/traced-it/traced-it-android/issues">temat</a>.</p><br><p>Dystrybuowane na <a href="https://www.gnu.org/licenses/gpl-3.0.txt">Powszechnej Licencji Publicznej GNU 3.0</a> lub późniejszej. Możesz znaleźć kod i zaangażować się na <a href="https://github.com/traced-it/traced-it-android">GitHub'ie</a>.</p>]]></string>
+</resources>
