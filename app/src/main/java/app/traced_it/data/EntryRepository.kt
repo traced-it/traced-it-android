@@ -3,10 +3,13 @@ package app.traced_it.data
 import androidx.paging.PagingSource
 import app.traced_it.data.local.database.Entry
 import app.traced_it.data.local.database.EntryDao
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface EntryRepository {
     fun getAll(): PagingSource<Int, Entry>
+
+    fun getLatestEntry(): Flow<Entry?>
 
     suspend fun findByCreatedAt(createdAt: Long): Entry?
 
@@ -29,6 +32,8 @@ class DefaultEntryRepository @Inject constructor(
     private val entryDao: EntryDao,
 ) : EntryRepository {
     override fun getAll(): PagingSource<Int, Entry> = entryDao.getAll()
+
+    override fun getLatestEntry(): Flow<Entry?> = entryDao.getLatestEntry()
 
     override suspend fun findByCreatedAt(createdAt: Long): Entry? =
         entryDao.findByCreatedAt(createdAt)

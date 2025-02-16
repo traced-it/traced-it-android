@@ -5,6 +5,7 @@ import android.text.format.DateUtils
 import androidx.paging.PagingSource
 import androidx.room.*
 import app.traced_it.R
+import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration.Companion.milliseconds
 
 @Entity
@@ -27,10 +28,7 @@ data class Entry(
             DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE
         )
 
-    fun formatTime(
-        context: Context,
-        now: Long,
-    ): String =
+    fun formatTime(context: Context, now: Long): String =
         (now - createdAt).milliseconds.toComponents { hours, minutes, seconds, _ ->
             if (hours >= 24 || hours < 0 || minutes < 0 || seconds < 0) {
                 context.resources.getString(
@@ -62,10 +60,7 @@ data class Entry(
             }
         }
 
-    fun getHeader(
-        context: Context,
-        prevEntry: Entry?
-    ): String? =
+    fun getHeader(context: Context, prevEntry: Entry?): String? =
         if (prevEntry == null && !DateUtils.isToday(createdAt) ||
                 prevEntry != null && !isSameDay(context, prevEntry)) {
             DateUtils.formatDateTime(context, createdAt, DateUtils.FORMAT_SHOW_DATE)
@@ -78,6 +73,9 @@ data class Entry(
 interface EntryDao {
     @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
     fun getAll(): PagingSource<Int, Entry>
+
+    @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC LIMIT 1")
+    fun getLatestEntry(): Flow<Entry?>
 
     @Query("SELECT * FROM entry WHERE createdAt = :createdAt AND NOT deleted")
     suspend fun findByCreatedAt(createdAt: Long): Entry?

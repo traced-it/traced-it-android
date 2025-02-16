@@ -19,13 +19,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import app.traced_it.R
 import app.traced_it.data.di.defaultFakeEntries
-import app.traced_it.data.local.database.Entry
-import app.traced_it.data.local.database.EntryUnit
-import app.traced_it.data.local.database.defaultVisibleUnit
-import app.traced_it.data.local.database.doubleUnit
-import app.traced_it.data.local.database.noneUnit
-import app.traced_it.data.local.database.smallNumbersChoiceUnit
-import app.traced_it.data.local.database.visibleUnits
+import app.traced_it.data.local.database.*
 import app.traced_it.ui.components.TracedBottomButton
 import app.traced_it.ui.components.TracedScaffold
 import app.traced_it.ui.components.TracedTextField
@@ -41,6 +35,7 @@ sealed class EntryDetailAction(val entry: Entry) {
 @Composable
 fun EntryDetailDialog(
     action: EntryDetailAction,
+    latestEntryUnit: EntryUnit? = null,
     onInsert: (Entry) -> Unit = {},
     onUpdate: (Entry) -> Unit = {},
     onDismiss: () -> Unit = {},
@@ -68,6 +63,7 @@ fun EntryDetailDialog(
     var visibleUnit by remember {
         mutableStateOf(
             action.entry.amountUnit.takeIf { it in visibleUnits }
+                ?: latestEntryUnit.takeIf { it in visibleUnits }
                 ?: defaultVisibleUnit
         )
     }

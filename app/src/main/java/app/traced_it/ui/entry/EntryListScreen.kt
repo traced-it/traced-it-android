@@ -70,6 +70,7 @@ fun EntryListScreen(
     var entryDetailOpen by remember { mutableStateOf(false) }
     var entryToDelete by remember { mutableStateOf<Entry?>(null) }
     val highlightedEntryUid by viewModel.highlightedEntryUid.collectAsStateWithLifecycle()
+    val latestEntry by viewModel.latestEntry.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val message by viewModel.message.collectAsStateWithLifecycle()
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
@@ -275,6 +276,7 @@ fun EntryListScreen(
     ) {
         EntryDetailDialog(
             entryDetailAction,
+            latestEntryUnit = latestEntry?.amountUnit,
             onInsert = {
                 scope.launch {
                     listState.scrollToItem(0)

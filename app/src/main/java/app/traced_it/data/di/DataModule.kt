@@ -10,6 +10,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -42,6 +44,11 @@ class FakeEntryRepository @Inject constructor() : EntryRepository {
             .asPagingSourceFactory()
         return pagingSourceFactory()
     }
+
+    override fun getLatestEntry(): Flow<Entry?> =
+        flowOf(
+            this.fakeEntries.filter { !it.deleted }.maxByOrNull { it.createdAt }
+        )
 
     override suspend fun findByCreatedAt(createdAt: Long): Entry? =
         this.fakeEntries.find { it.createdAt == createdAt }

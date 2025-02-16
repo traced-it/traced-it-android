@@ -75,6 +75,10 @@ class EntryViewModel @Inject constructor(
         viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty()
     )
 
+    val latestEntry: StateFlow<Entry?> =
+        entryRepository.getLatestEntry()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
     fun insertEntry(context: Context, entry: Entry) {
         viewModelScope.launch {
             val newRowId = entryRepository.insert(entry)
