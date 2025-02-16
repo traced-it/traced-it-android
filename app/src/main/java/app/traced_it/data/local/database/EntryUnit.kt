@@ -1,11 +1,25 @@
 package app.traced_it.data.local.database
 
 import android.content.Context
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import app.traced_it.R
 import java.text.NumberFormat
 import java.text.ParseException
 
-data class EntryUnitChoice(val value: Double, val nameResId: Int)
+data class EntryUnitChoice(
+    val value: Double,
+    val nameResId: Int,
+    val htmlResId: Int? = null,
+) {
+    fun format(context: Context) =
+        context.resources.getString(nameResId)
+
+    fun formatHtml(context: Context) =
+        htmlResId?.let {
+            AnnotatedString.fromHtml(context.resources.getString(it))
+        }
+}
 
 data class EntryUnit(
     val id: String,
@@ -16,31 +30,23 @@ data class EntryUnit(
 ) {
     private val numberFormat = NumberFormat.getNumberInstance()
 
-    fun format(context: Context, value: Double): String {
-        if (choices.isNotEmpty()) {
-            val choice = choices.find { it.value == value }
-            if (choice != null) {
-                return context.resources.getString(choice.nameResId)
-            }
-        }
-        return numberFormat.format(value)
-    }
+    fun format(context: Context, value: Double): String =
+        choices.find { it.value == value }
+            ?.format(context)
+            ?: numberFormat.format(value)
 
-    fun parse(context: Context, value: String): Double {
-        if (choices.isNotEmpty()) {
-            val choice = choices.find {
-                context.resources.getString(it.nameResId) == value
-            }
-            if (choice != null) {
-                return choice.value
-            }
-        }
-        return try {
-            numberFormat.parse(value)?.toDouble()
-        } catch (_: ParseException) {
-            null
-        } ?: 0.0
-    }
+    fun formatHtml(context: Context, value: Double): AnnotatedString? =
+        choices.find { it.value == value }
+            ?.formatHtml(context)
+
+    fun parse(context: Context, value: String): Double =
+        choices.find { context.resources.getString(it.nameResId) == value }
+            ?.value
+            ?: try {
+                numberFormat.parse(value)?.toDouble()
+            } catch (_: ParseException) {
+                null
+            } ?: 0.0
 
     fun serialize(value: Double): String = value.toString()
 
@@ -65,6 +71,37 @@ val clothingSizeUnit = EntryUnit(
         EntryUnitChoice(4.0, R.string.entry_unit_clothing_choice_xl)
     )
 )
+val fractionUnit = EntryUnit(
+    id = "FRACTION",
+    nameResId = R.string.entry_unit_fraction_name,
+    choices = listOf(
+        EntryUnitChoice(
+            0.25,
+            R.string.entry_unit_fraction_choice_one_quarter,
+            R.string.entry_unit_fraction_choice_one_quarter_html,
+        ),
+        EntryUnitChoice(
+            0.333,
+            R.string.entry_unit_fraction_choice_one_third,
+            R.string.entry_unit_fraction_choice_one_third_html,
+        ),
+        EntryUnitChoice(
+            0.5,
+            R.string.entry_unit_fraction_choice_one_half,
+            R.string.entry_unit_fraction_choice_one_half_html,
+        ),
+        EntryUnitChoice(
+            0.75,
+            R.string.entry_unit_fraction_choice_three_quarters,
+            R.string.entry_unit_fraction_choice_three_quarters_html,
+        ),
+        EntryUnitChoice(
+            1.0,
+            R.string.entry_unit_fraction_choice_whole,
+            R.string.entry_unit_fraction_choice_whole_html,
+        )
+    )
+)
 val smallNumbersChoiceUnit = EntryUnit(
     id = "SMALL_NUMBERS_CHOICE",
     nameResId = R.string.entry_unit_portion_name,
@@ -84,12 +121,13 @@ val doubleUnit = EntryUnit(
 val units: List<EntryUnit> = listOf(
     noneUnit,
     clothingSizeUnit,
+    fractionUnit,
     smallNumbersChoiceUnit,
     doubleUnit,
 )
 val defaultVisibleUnit = clothingSizeUnit
 val visibleUnits: List<EntryUnit> = listOf(
     defaultVisibleUnit,
-    smallNumbersChoiceUnit,
+    fractionUnit,
     doubleUnit
 )

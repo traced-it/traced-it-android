@@ -30,12 +30,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import app.traced_it.R
 import app.traced_it.data.di.defaultFakeEntries
 import app.traced_it.data.local.database.Entry
+import app.traced_it.data.local.database.noneUnit
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.launch
@@ -145,14 +147,29 @@ fun EntryListItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                entry.formatContentWithAmount(context),
+                buildAnnotatedString {
+                    append(entry.content)
+                    if (entry.amountUnit != noneUnit) {
+                        append(" (")
+                        append(
+                            entry.amountUnit.formatHtml(
+                                context,
+                                entry.amount,
+                            )
+                                ?: entry.amountUnit.format(
+                                    context,
+                                    entry.amount,
+                                )
+                        )
+                        append(")")
+                    }
+                },
                 Modifier.weight(1f),
                 color = contentColor,
             )
             Text(
                 entry.formatTime(context, now),
                 color = contentColor,
-                style = MaterialTheme.typography.bodyLarge,
             )
             Button(
                 onClick = onAddWithSameText,

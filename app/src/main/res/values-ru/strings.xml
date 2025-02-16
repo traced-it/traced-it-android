@@ -35,4 +35,14 @@
     <string name="list_message_all_deleted">Все заметки были удалены</string>
     <string name="app_name">Отслеживай это</string>
     <string name="list_import_failed_column_empty">Пустое значение колонки \"%1$s\"</string>
+    <string name="entry_unit_fraction_choice_one_quarter">¼</string>
+    <string name="entry_unit_fraction_choice_one_quarter_html"><![CDATA[<big>¼</big>]]></string>
+    <string name="entry_unit_fraction_choice_one_third">⅓</string>
+    <string name="entry_unit_fraction_choice_one_third_html"><![CDATA[<big>⅓</big>]]></string>
+    <string name="entry_unit_fraction_choice_one_half">½</string>
+    <string name="entry_unit_fraction_choice_one_half_html"><![CDATA[<big>½</big>]]></string>
+    <string name="entry_unit_fraction_choice_three_quarters">¾</string>
+    <string name="entry_unit_fraction_choice_three_quarters_html"><![CDATA[<big>¾</big>]]></string>
+    <string name="entry_unit_fraction_choice_whole">1</string>
+    <string name="entry_unit_fraction_choice_whole_html">1</string>
 </resources>

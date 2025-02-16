@@ -176,9 +176,23 @@ private fun SmallNumbersChoicePreview() {
     AppTheme {
         Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
             UnitSelect(
-                "4x",
+                "2x",
                 smallNumbersChoiceUnit,
                 smallNumbersChoiceUnit,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FractionPreview() {
+    AppTheme {
+        Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
+            UnitSelect(
+                "⅓",
+                fractionUnit,
+                fractionUnit,
             )
         }
     }

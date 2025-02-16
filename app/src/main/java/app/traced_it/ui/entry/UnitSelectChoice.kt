@@ -1,11 +1,11 @@
 package app.traced_it.ui.entry
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,6 +24,8 @@ fun UnitSelectChoice(
     onAmountRawChange: (newAmountRaw: String) -> Unit = {},
     onDeselect: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+
     SingleChoiceSegmentedButtonRow(modifier) {
         unit.choices.forEachIndexed { index, choice ->
             val choiceName = stringResource(choice.nameResId)
@@ -39,11 +41,10 @@ fun UnitSelectChoice(
                     }
                 },
             ) {
-                Text(
-                    stringResource(choice.nameResId),
-                    modifier = Modifier.testTag("unitSelectChoiceText"),
-                    style = MaterialTheme.typography.labelLarge,
-                )
+                val modifier = Modifier.testTag("unitSelectChoiceText")
+                choice.formatHtml(context)
+                    ?.let { Text(it, modifier) }
+                    ?: Text(choice.format(context), modifier)
             }
         }
     }

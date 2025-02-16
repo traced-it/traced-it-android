@@ -113,8 +113,8 @@ val defaultFakeEntries = listOf(
     ),
     Entry(
         uid = 4,
-        amount = 1.0,
-        amountUnit = smallNumbersChoiceUnit,
+        amount = 0.5,
+        amountUnit = fractionUnit,
         content = "Sleeping pill",
         createdAt = Calendar.getInstance().run {
             add(Calendar.DAY_OF_MONTH, -1)

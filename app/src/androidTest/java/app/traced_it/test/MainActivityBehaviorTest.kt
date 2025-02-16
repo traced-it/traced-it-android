@@ -45,7 +45,7 @@ open class MainActivityBehaviorTest {
         // Change unit
         device.findObject(By.res("unitSelectButton"))?.click()
         val unitMenuItemSelector = By.res("unitSelectDropdownMenuItem").hasChild(
-            By.text("portion")
+            By.text("fraction")
         )
         assertTrue(
             device.wait(Until.hasObject(unitMenuItemSelector), timeout)
@@ -53,7 +53,7 @@ open class MainActivityBehaviorTest {
         device.findObject(unitMenuItemSelector)?.click()
 
         // Select unit choice
-        val unitChoiceTextSelector = By.res("unitSelectChoiceText").text("2x")
+        val unitChoiceTextSelector = By.res("unitSelectChoiceText").text("½")
         assertTrue(
             device.wait(Until.hasObject(unitChoiceTextSelector), timeout)
         )
@@ -64,7 +64,7 @@ open class MainActivityBehaviorTest {
 
         // Check entry list
         val listItemSelector = By.res("entryListItem").hasChild(
-            By.text("Test entry 1 (2x)")
+            By.text("Test entry 1 (½)")
         )
         assertTrue(
             device.wait(Until.hasObject(listItemSelector), timeout)
@@ -79,20 +79,20 @@ open class MainActivityBehaviorTest {
             ?.text = "Test entry 3"
         device.findObject(By.res("unitSelectButton"))?.click()
         val unitMenuItemSelector = By.res("unitSelectDropdownMenuItem").hasChild(
-            By.text("portion")
+            By.text("fraction")
         )
         assertTrue(
             device.wait(Until.hasObject(unitMenuItemSelector), timeout)
         )
         device.findObject(unitMenuItemSelector)?.click()
-        val unitChoiceTextSelector = By.res("unitSelectChoiceText").text("3x")
+        val unitChoiceTextSelector = By.res("unitSelectChoiceText").text("⅓")
         assertTrue(
             device.wait(Until.hasObject(unitChoiceTextSelector), timeout)
         )
         device.findObject(unitChoiceTextSelector)?.click()
         device.findObject(By.res("entryDetailSaveButton"))?.click()
         val listItemSelector = By.res("entryListItem").hasChild(
-            By.text("Test entry 3 (3x)")
+            By.text("Test entry 3 (⅓)")
         )
         assertTrue(
             device.wait(Until.hasObject(listItemSelector), timeout)
@@ -111,8 +111,8 @@ open class MainActivityBehaviorTest {
         assertEquals("Test entry 3", device.findObject(contentSelector)?.text)
 
         // Check and set unit
-        assertTrue(device.hasObject(By.res("unitSelectChoiceText").text("3x")))
-        device.findObject(By.res("unitSelectChoiceText").text("4x"))?.click()
+        assertTrue(device.hasObject(By.res("unitSelectChoiceText").text("⅓")))
+        device.findObject(By.res("unitSelectChoiceText").text("¾"))?.click()
 
         // Save entry
         device.findObject(By.res("entryDetailSaveButton"))?.click()
@@ -122,7 +122,7 @@ open class MainActivityBehaviorTest {
             device.wait(Until.hasObject(listItemSelector), timeout)
         )
         val listItemAddedSelector = By.res("entryListItem").hasChild(
-            By.text("Test entry 3 (4x)")
+            By.text("Test entry 3 (¾)")
         )
         assertTrue(
             device.wait(Until.hasObject(listItemAddedSelector), timeout)

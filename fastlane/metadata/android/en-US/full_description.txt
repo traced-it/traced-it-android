@@ -1,5 +1,5 @@
 A simple app for short text notes, with a prominent timestamp for each entry.
-Add quantities to your notes using preset formats (S/M/L, 1x/2x/3x) or custom numbers.
+Add quantities to your notes using preset formats (S M L XL, ¼ ½ ¼ ¾) or custom numbers.
 
 The uncomplicated interface makes the app easy to use even when you're busy or distracted.
 
@@ -15,7 +15,7 @@ The uncomplicated interface makes the app easy to use even when you're busy or d
 
 <b>FEATURES</b>
 <ul>
-<li>Add text notes with an optional amount (S/M/L, 1x/2x/3x, 5.813…)</li>
+<li>Add text notes with an optional amount (S M L XL, ¼ ½ ¼ ¾, 5.813…)</li>
 <li>See all your notes with the time elapsed since you wrote each note</li>
 <li>Tap the + button to add a new note with the same text as an existing note</li>
 <li>Edit a note, delete it, delete all notes</li>

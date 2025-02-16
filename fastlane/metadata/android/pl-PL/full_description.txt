@@ -1,4 +1,4 @@
-Prosta aplikacja do krótkich notek tekstowych, z wyraźnym znacznikiem czasowym każdego wpisu. Dodawaj ilości do swych notek, korzystając ze wstępnie ustawionych formatów (S/M/L, 1x/2x/3x) lub własnych liczb.
+Prosta aplikacja do krótkich notek tekstowych, z wyraźnym znacznikiem czasowym każdego wpisu. Dodawaj ilości do swych notek, korzystając ze wstępnie ustawionych formatów (S M L XL, ¼ ½ ¼ ¾) lub własnych liczb.
 
 Nieskomplikowany interfejs czyni aplikację łatwą w użyciu nawet gdy jesteś zajęty/a lub nieuważny/a.
 
@@ -14,7 +14,7 @@ Nieskomplikowany interfejs czyni aplikację łatwą w użyciu nawet gdy jesteś 
 
 <b>FUNKCJE</b>
 <ul>
-<li>Dodawaj tekstowe notki z opcjonalną ilością (S/M/L, 1x/2x/3x, 5.813…).</li>
+<li>Dodawaj tekstowe notki z opcjonalną ilością (S M L XL, ¼ ½ ¼ ¾, 5.813…).</li>
 <li>Wszystkie swoje notki zobacz wraz z czasem, jaki upłynął odkąd napisałeś/aś każdą z nich.</li>
 <li>Tapnij przycisk + by dodać nową notkę z takim samym tekstem, jak istniejąca.</li>
 <li>Edytuj notkę, usuń ją, usuń wszystkie notki.</li>

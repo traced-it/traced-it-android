@@ -9,6 +9,7 @@ import app.traced_it.data.local.database.*
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -19,51 +20,63 @@ import java.time.ZoneOffset
 
 class EntryViewModelTest {
 
+    private lateinit var mockResources: Resources
+
+    @Before
+    fun before() {
+        mockResources = mock<Resources> {
+            on { getString(R.string.entry_unit_clothing_name) } doReturn "clothing"
+            on { getString(R.string.entry_unit_fraction_name) } doReturn "fraction"
+            on { getString(R.string.entry_unit_fraction_choice_one_quarter) } doReturn "1/4"
+            on { getString(R.string.entry_unit_fraction_choice_one_third) } doReturn "1/3"
+            on { getString(R.string.entry_unit_fraction_choice_one_half) } doReturn "1/2"
+            on { getString(R.string.entry_unit_fraction_choice_three_quarters) } doReturn "3/4"
+            on { getString(R.string.entry_unit_fraction_choice_whole) } doReturn "1"
+            on { getString(R.string.entry_unit_clothing_choice_xs) } doReturn "XS"
+            on { getString(R.string.entry_unit_clothing_choice_s) } doReturn "S"
+            on { getString(R.string.entry_unit_clothing_choice_m) } doReturn "M"
+            on { getString(R.string.entry_unit_clothing_choice_l) } doReturn "L"
+            on { getString(R.string.entry_unit_clothing_choice_xl) } doReturn "XL"
+            on { getString(R.string.entry_unit_portion_name) } doReturn "portion"
+            on { getString(R.string.entry_unit_portion_choice_1) } doReturn "1x"
+            on { getString(R.string.entry_unit_portion_choice_2) } doReturn "2x"
+            on { getString(R.string.entry_unit_portion_choice_3) } doReturn "3x"
+            on { getString(R.string.entry_unit_portion_choice_4) } doReturn "4x"
+            on { getString(R.string.entry_unit_portion_choice_5) } doReturn "5x"
+            on { getString(R.string.entry_unit_double_name) } doReturn "number"
+            on { getString(R.string.entry_unit_none_name) } doReturn "no unit"
+            on { getString(R.string.entry_unit_none_choice_empty) } doReturn ""
+            on {
+                getString(
+                    R.string.list_import_failed_column_parsing_error,
+                    "createdAt",
+                    "INVALID_DATE"
+                )
+            } doReturn "Failed to parse \"createdAt\" value \"INVALID_DATE\""
+            on { getString(R.string.list_import_finished_delimiter) } doReturn " "
+            on {
+                getQuantityString(
+                    R.plurals.list_import_finished_imported,
+                    5,
+                    5,
+                )
+            } doReturn "Imported 5 notes."
+            on {
+                getQuantityString(
+                    R.plurals.list_import_finished_skipped,
+                    1,
+                    1,
+                )
+            } doReturn "Skipped 1 note."
+        }
+    }
+
     @Test
     fun `importEntriesCsv inserts valid entries, skips entries with the same createdAt, and aborts after failing to parse a row`() =
         runTest {
             val entryRepository = FakeEntryRepository()
             entryRepository.fakeEntries = mutableListOf()
             val entryViewModel = EntryViewModel(entryRepository)
-            val mockResources = mock<Resources> {
-                on { getString(R.string.entry_unit_clothing_name) } doReturn "clothing"
-                on { getString(R.string.entry_unit_clothing_choice_xs) } doReturn "XS"
-                on { getString(R.string.entry_unit_clothing_choice_s) } doReturn "S"
-                on { getString(R.string.entry_unit_clothing_choice_m) } doReturn "M"
-                on { getString(R.string.entry_unit_clothing_choice_l) } doReturn "L"
-                on { getString(R.string.entry_unit_clothing_choice_xl) } doReturn "XL"
-                on { getString(R.string.entry_unit_portion_name) } doReturn "portion"
-                on { getString(R.string.entry_unit_portion_choice_1) } doReturn "1x"
-                on { getString(R.string.entry_unit_portion_choice_2) } doReturn "2x"
-                on { getString(R.string.entry_unit_portion_choice_3) } doReturn "3x"
-                on { getString(R.string.entry_unit_portion_choice_4) } doReturn "4x"
-                on { getString(R.string.entry_unit_portion_choice_5) } doReturn "5x"
-                on { getString(R.string.entry_unit_double_name) } doReturn "number"
-                on { getString(R.string.entry_unit_none_name) } doReturn "no unit"
-                on { getString(R.string.entry_unit_none_choice_empty) } doReturn ""
-                on {
-                    getString(
-                        R.string.list_import_failed_column_parsing_error,
-                        "createdAt",
-                        "INVALID_DATE"
-                    )
-                } doReturn "Failed to parse \"createdAt\" value \"INVALID_DATE\""
-                on { getString(R.string.list_import_finished_delimiter) } doReturn " "
-                on {
-                    getQuantityString(
-                        R.plurals.list_import_finished_imported,
-                        4,
-                        4,
-                    )
-                } doReturn "Imported 4 notes."
-                on {
-                    getQuantityString(
-                        R.plurals.list_import_finished_skipped,
-                        1,
-                        1,
-                    )
-                } doReturn "Skipped 1 note."
-            }
             val mockContext = mock<Context> {
                 on { resources } doReturn mockResources
             }
@@ -74,6 +87,7 @@ class EntryViewModelTest {
                 2025-02-01T15:18:43.189+0100,"Yellow bananas",2x,2.0,SMALL_NUMBERS_CHOICE
                 2025-02-01T15:16:56.985+0100,"Green kiwis",L,3.0,CLOTHING_SIZE
                 2025-02-01T15:00:00.000+0100,"Purple grapes",3.14,3.14,DOUBLE
+                2025-02-01T07:00:00.000+0100,"Pineapple",1/3,0.33,FRACTION
                 INVALID_DATE,"Green kiwis invalid",,0.0,NONE
                 2025-02-01T01:59:38.771+0100,"Green kiwis not processed",,0.0,NONE
             """.trimIndent()
@@ -81,8 +95,7 @@ class EntryViewModelTest {
 
             entryViewModel.importEntriesCsv(mockContext, inputStream)
 
-            assertEquals(4, entryRepository.fakeEntries.size)
-            assertEquals(
+            val expectedEntries = listOf(
                 Entry(
                     amount = 0.0,
                     amountUnit = noneUnit,
@@ -98,9 +111,6 @@ class EntryViewModelTest {
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                 ),
-                entryRepository.fakeEntries[0],
-            )
-            assertEquals(
                 Entry(
                     amount = 2.0,
                     amountUnit = smallNumbersChoiceUnit,
@@ -116,9 +126,6 @@ class EntryViewModelTest {
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                 ),
-                entryRepository.fakeEntries[1],
-            )
-            assertEquals(
                 Entry(
                     amount = 3.0,
                     amountUnit = clothingSizeUnit,
@@ -134,9 +141,6 @@ class EntryViewModelTest {
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                 ),
-                entryRepository.fakeEntries[2],
-            )
-            assertEquals(
                 Entry(
                     amount = 3.14,
                     amountUnit = doubleUnit,
@@ -152,11 +156,32 @@ class EntryViewModelTest {
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                 ),
-                entryRepository.fakeEntries[3],
+                Entry(
+                    amount = 0.33,
+                    amountUnit = fractionUnit,
+                    content = "Pineapple",
+                    createdAt = OffsetDateTime.of(
+                        2025,
+                        2,
+                        1,
+                        7,
+                        0,
+                        0,
+                        0,
+                        ZoneOffset.of("+01:00")
+                    ).toInstant().toEpochMilli(),
+                ),
             )
             assertEquals(
+                expectedEntries.size,
+                entryRepository.fakeEntries.size
+            )
+            for ((expectedEntry, fakeEntry) in expectedEntries zip entryRepository.fakeEntries) {
+                assertEquals(expectedEntry, fakeEntry)
+            }
+            assertEquals(
                 Message(
-                    "Imported 4 notes. Skipped 1 note. Failed to parse \"createdAt\" value \"INVALID_DATE\"",
+                    "Imported ${expectedEntries.size} notes. Skipped 1 note. Failed to parse \"createdAt\" value \"INVALID_DATE\"",
                     type = Message.Type.ERROR,
                     duration = SnackbarDuration.Long,
                 ),
@@ -170,45 +195,6 @@ class EntryViewModelTest {
             val entryRepository = FakeEntryRepository()
             entryRepository.fakeEntries = mutableListOf()
             val entryViewModel = EntryViewModel(entryRepository)
-            val mockResources = mock<Resources> {
-                on { getString(R.string.entry_unit_clothing_name) } doReturn "clothing"
-                on { getString(R.string.entry_unit_clothing_choice_xs) } doReturn "XS"
-                on { getString(R.string.entry_unit_clothing_choice_s) } doReturn "S"
-                on { getString(R.string.entry_unit_clothing_choice_m) } doReturn "M"
-                on { getString(R.string.entry_unit_clothing_choice_l) } doReturn "L"
-                on { getString(R.string.entry_unit_clothing_choice_xl) } doReturn "XL"
-                on { getString(R.string.entry_unit_portion_name) } doReturn "portion"
-                on { getString(R.string.entry_unit_portion_choice_1) } doReturn "1x"
-                on { getString(R.string.entry_unit_portion_choice_2) } doReturn "2x"
-                on { getString(R.string.entry_unit_portion_choice_3) } doReturn "3x"
-                on { getString(R.string.entry_unit_portion_choice_4) } doReturn "4x"
-                on { getString(R.string.entry_unit_portion_choice_5) } doReturn "5x"
-                on { getString(R.string.entry_unit_double_name) } doReturn "number"
-                on { getString(R.string.entry_unit_none_name) } doReturn "no unit"
-                on { getString(R.string.entry_unit_none_choice_empty) } doReturn ""
-                on {
-                    getString(
-                        R.string.list_import_failed_column_parsing_error,
-                        "createdAt",
-                        "INVALID_DATE"
-                    )
-                } doReturn "Failed to parse \"createdAt\" value \"INVALID_DATE\""
-                on { getString(R.string.list_import_finished_delimiter) } doReturn " "
-                on {
-                    getQuantityString(
-                        R.plurals.list_import_finished_imported,
-                        4,
-                        4,
-                    )
-                } doReturn "Imported 4 notes."
-                on {
-                    getQuantityString(
-                        R.plurals.list_import_finished_skipped,
-                        1,
-                        1,
-                    )
-                } doReturn "Skipped 1 note."
-            }
             val mockContext = mock<Context> {
                 on { resources } doReturn mockResources
             }
@@ -218,13 +204,13 @@ class EntryViewModelTest {
                 2025-02-01T15:18:43.189+0100,"Yellow bananas",2.0,portion
                 2025-02-01T15:16:56.985+0100,"Green kiwis",3.0,clothing
                 2025-02-01T15:00:00.000+0100,"Purple grapes",3.14,number
+                2025-02-01T07:00:00.000+0100,"Pineapple",0.33,fraction
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
             entryViewModel.importEntriesCsv(mockContext, inputStream)
 
-            assertEquals(4, entryRepository.fakeEntries.size)
-            assertEquals(
+            val expectedEntries = listOf(
                 Entry(
                     amount = 0.0,
                     amountUnit = noneUnit,
@@ -240,9 +226,6 @@ class EntryViewModelTest {
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                 ),
-                entryRepository.fakeEntries[0],
-            )
-            assertEquals(
                 Entry(
                     amount = 2.0,
                     amountUnit = smallNumbersChoiceUnit,
@@ -258,9 +241,6 @@ class EntryViewModelTest {
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                 ),
-                entryRepository.fakeEntries[1],
-            )
-            assertEquals(
                 Entry(
                     amount = 3.0,
                     amountUnit = clothingSizeUnit,
@@ -276,9 +256,6 @@ class EntryViewModelTest {
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                 ),
-                entryRepository.fakeEntries[2],
-            )
-            assertEquals(
                 Entry(
                     amount = 3.14,
                     amountUnit = doubleUnit,
@@ -294,11 +271,32 @@ class EntryViewModelTest {
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                 ),
-                entryRepository.fakeEntries[3],
+                Entry(
+                    amount = 0.33,
+                    amountUnit = fractionUnit,
+                    content = "Pineapple",
+                    createdAt = OffsetDateTime.of(
+                        2025,
+                        2,
+                        1,
+                        7,
+                        0,
+                        0,
+                        0,
+                        ZoneOffset.of("+01:00")
+                    ).toInstant().toEpochMilli(),
+                ),
             )
             assertEquals(
+                expectedEntries.size,
+                entryRepository.fakeEntries.size
+            )
+            for ((expectedEntry, fakeEntry) in expectedEntries zip entryRepository.fakeEntries) {
+                assertEquals(expectedEntry, fakeEntry)
+            }
+            assertEquals(
                 Message(
-                    "Imported 4 notes.",
+                    "Imported ${expectedEntries.size} notes.",
                     type = Message.Type.SUCCESS,
                     duration = SnackbarDuration.Long,
                 ),

@@ -22,6 +22,9 @@ import app.traced_it.data.di.defaultFakeEntries
 import app.traced_it.data.local.database.Entry
 import app.traced_it.data.local.database.EntryUnit
 import app.traced_it.data.local.database.defaultVisibleUnit
+import app.traced_it.data.local.database.doubleUnit
+import app.traced_it.data.local.database.noneUnit
+import app.traced_it.data.local.database.smallNumbersChoiceUnit
 import app.traced_it.data.local.database.visibleUnits
 import app.traced_it.ui.components.TracedBottomButton
 import app.traced_it.ui.components.TracedScaffold
@@ -45,12 +48,23 @@ fun EntryDetailDialog(
     val context = LocalContext.current
 
     var content by remember { mutableStateOf<String>(action.entry.content) }
-    var amountRaw by remember {
-        mutableStateOf<String>(
-            action.entry.amountUnit.format(context, action.entry.amount)
+    var unit by remember {
+        mutableStateOf<EntryUnit>(
+            if (action.entry.amountUnit in visibleUnits) {
+                action.entry.amountUnit
+            } else if (action.entry.amount != 0.0) {
+                // If we're editing or prefilling an entry that has a deprecated
+                // unit (such as smallNumbersChoiceUnit), convert the unit into
+                // doubleUnit.
+                doubleUnit
+            } else {
+                noneUnit
+            }
         )
     }
-    var unit by remember { mutableStateOf<EntryUnit>(action.entry.amountUnit) }
+    var amountRaw by remember {
+        mutableStateOf<String>(unit.format(context, action.entry.amount))
+    }
     var visibleUnit by remember {
         mutableStateOf(
             action.entry.amountUnit.takeIf { it in visibleUnits }
@@ -137,10 +151,11 @@ fun EntryDetailDialog(
                         R.string.detail_add_save,
                 ),
                 onClick = {
+                    val amount = unit.parse(context, amountRaw)
                     if (action is EntryDetailAction.Edit) {
                         onUpdate(
                             action.entry.copy(
-                                amount = unit.parse(context, amountRaw),
+                                amount = amount,
                                 amountUnit = unit,
                                 content = content,
                             )
@@ -148,7 +163,7 @@ fun EntryDetailDialog(
                     } else {
                         onInsert(
                             Entry(
-                                amount = unit.parse(context, amountRaw),
+                                amount = amount,
                                 amountUnit = unit,
                                 content = content,
                             )
@@ -197,6 +212,23 @@ private fun PrefilledPreview() {
 private fun EditPreview() {
     AppTheme {
         EntryDetailDialog(EntryDetailAction.Edit(defaultFakeEntries[0]))
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun InvisibleUnitPreview() {
+    AppTheme {
+        EntryDetailDialog(
+            EntryDetailAction.Edit(
+                Entry(
+                    content = "Small numbers choice",
+                    amount = 2.0,
+                    amountUnit = smallNumbersChoiceUnit,
+                )
+            )
+        )
     }
 }
 

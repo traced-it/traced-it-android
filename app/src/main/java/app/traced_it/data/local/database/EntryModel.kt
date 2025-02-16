@@ -16,18 +16,6 @@ data class Entry(
     @ColumnInfo(defaultValue = "0") var deleted: Boolean = false,
     @PrimaryKey(autoGenerate = true) val uid: Int = 0,
 ) {
-    fun formatContentWithAmount(context: Context): String =
-        if (amountUnit == noneUnit) {
-            content
-        } else {
-            context.resources.getString(
-                R.string.entry_formatted_content_with_amount,
-                content,
-                amountUnit.format(context, amount),
-                amountUnit.unit,
-            )
-        }
-
     fun isSameDay(context: Context, otherEntry: Entry?): Boolean =
         otherEntry !== null && DateUtils.formatDateTime(
             context,
