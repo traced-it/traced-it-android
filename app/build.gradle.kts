@@ -49,6 +49,9 @@ android {
         getByName("debug") {
             applicationIdSuffix = ".debug"
         }
+        create("demo") {
+            initWith(getByName("debug"))
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

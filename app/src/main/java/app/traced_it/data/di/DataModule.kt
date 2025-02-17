@@ -3,33 +3,39 @@ package app.traced_it.data.di
 import android.annotation.SuppressLint
 import androidx.paging.PagingSource
 import androidx.paging.testing.asPagingSourceFactory
+import app.traced_it.BuildConfig
 import app.traced_it.data.DefaultEntryRepository
 import app.traced_it.data.EntryRepository
 import app.traced_it.data.local.database.*
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import java.util.*
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 @Suppress("unused")
-interface DataModule {
+class DataModule {
 
     @Singleton
-    @Binds
-    fun bindsEntryRepository(
-        entryRepository: DefaultEntryRepository,
-    ): EntryRepository
+    @Provides
+    @Suppress("KotlinConstantConditions")
+    fun provideEntryRepository(entryDao: EntryDao): EntryRepository =
+        if (BuildConfig.BUILD_TYPE == "demo") {
+            FakeEntryRepository(demoEntries)
+        } else {
+            DefaultEntryRepository(entryDao)
+        }
 }
 
-class FakeEntryRepository @Inject constructor() : EntryRepository {
-    var fakeEntries: MutableList<Entry> = defaultFakeEntries
+class FakeEntryRepository(
+    initialFakeEntries: List<Entry> = defaultFakeEntries,
+) : EntryRepository {
+    var fakeEntries: MutableList<Entry> = initialFakeEntries
         .filter { !it.deleted }
         .sortedBy { it.createdAt }
         .reversed()
@@ -84,7 +90,8 @@ class FakeEntryRepository @Inject constructor() : EntryRepository {
 }
 
 // Use java.util.Calendar for compatibility with API 25
-val defaultFakeEntries = listOf(
+
+val demoEntries = listOf(
     Entry(
         uid = 1,
         amount = 4.0,
@@ -174,6 +181,10 @@ val defaultFakeEntries = listOf(
             time.time
         },
     ),
+)
+
+val defaultFakeEntries = listOf(
+    *demoEntries.toTypedArray(),
     Entry(
         uid = 8,
         amount = 0.0,
