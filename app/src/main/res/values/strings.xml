@@ -70,19 +70,18 @@
     <string name="entry_unit_fraction_choice_three_quarters_html"><![CDATA[<big>¾</big>]]></string>
     <string name="entry_unit_fraction_choice_whole">1</string>
     <string name="entry_unit_fraction_choice_whole_html">1</string>
-    <string name="entry_unit_portion_name">portion</string>
-    <string name="entry_unit_portion_choice_1">1x</string>
-    <string name="entry_unit_portion_choice_2">2x</string>
-    <string name="entry_unit_portion_choice_3">3x</string>
-    <string name="entry_unit_portion_choice_4">4x</string>
-    <string name="entry_unit_portion_choice_5">5x</string>
+    <string name="entry_unit_portion_name" translatable="false">portion</string>
+    <string name="entry_unit_portion_choice_1" translatable="false">1x</string>
+    <string name="entry_unit_portion_choice_2" translatable="false">2x</string>
+    <string name="entry_unit_portion_choice_3" translatable="false">3x</string>
+    <string name="entry_unit_portion_choice_4" translatable="false">4x</string>
+    <string name="entry_unit_portion_choice_5" translatable="false">5x</string>
     <string name="entry_unit_double_name">number</string>
     <string name="entry_unit_double_placeholder">0.0</string>
     <string name="entry_unit_none_choice_empty" translatable="false"/>
-    <string name="entry_formatted_content_with_amount">%1$s (%2$s%3$s)</string>
     <string name="detail_update_title">Update note</string>
     <string name="detail_add_title">New note</string>
     <string name="list_message_restored">Note restored</string>
     <string name="list_message_all_restored">All notes restored</string>
-    <string name="list_export_all_filename">traced it notes %1$s.csv</string>
+    <string name="list_export_all_filename">%1$s notes %2$s.csv</string>
 </resources>

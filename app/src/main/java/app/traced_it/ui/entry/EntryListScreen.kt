@@ -59,6 +59,7 @@ fun EntryListScreen(
     onNavigateToAboutScreen: () -> Unit = {},
     viewModel: EntryViewModel = hiltViewModel(),
 ) {
+    val appName = stringResource(R.string.app_name)
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -165,6 +166,7 @@ fun EntryListScreen(
                                 exportAllLauncher,
                                 context.resources.getString(
                                     R.string.list_export_all_filename,
+                                    appName,
                                     Build.MODEL
                                 )
                             )

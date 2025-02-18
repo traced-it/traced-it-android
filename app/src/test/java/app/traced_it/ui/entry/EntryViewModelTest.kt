@@ -87,7 +87,7 @@ class EntryViewModelTest {
                 2025-02-01T15:18:43.189+0100,"Yellow bananas",2x,2.0,SMALL_NUMBERS_CHOICE
                 2025-02-01T15:16:56.985+0100,"Green kiwis",L,3.0,CLOTHING_SIZE
                 2025-02-01T15:00:00.000+0100,"Purple grapes",3.14,3.14,DOUBLE
-                2025-02-01T07:00:00.000+0100,"Pineapple",1/3,0.33,FRACTION
+                2025-02-01T07:00:00.000+0100,"Pineapple",1/3,0.333,FRACTION
                 INVALID_DATE,"Green kiwis invalid",,0.0,NONE
                 2025-02-01T01:59:38.771+0100,"Green kiwis not processed",,0.0,NONE
             """.trimIndent()
@@ -157,7 +157,7 @@ class EntryViewModelTest {
                     ).toInstant().toEpochMilli(),
                 ),
                 Entry(
-                    amount = 0.33,
+                    amount = 0.333,
                     amountUnit = fractionUnit,
                     content = "Pineapple",
                     createdAt = OffsetDateTime.of(
@@ -204,7 +204,7 @@ class EntryViewModelTest {
                 2025-02-01T15:18:43.189+0100,"Yellow bananas",2.0,portion
                 2025-02-01T15:16:56.985+0100,"Green kiwis",3.0,clothing
                 2025-02-01T15:00:00.000+0100,"Purple grapes",3.14,number
-                2025-02-01T07:00:00.000+0100,"Pineapple",0.33,fraction
+                2025-02-01T07:00:00.000+0100,"Pineapple",0.333,fraction
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
@@ -272,7 +272,7 @@ class EntryViewModelTest {
                     ).toInstant().toEpochMilli(),
                 ),
                 Entry(
-                    amount = 0.33,
+                    amount = 0.333,
                     amountUnit = fractionUnit,
                     content = "Pineapple",
                     createdAt = OffsetDateTime.of(
@@ -398,25 +398,23 @@ class EntryViewModelTest {
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                 ),
+                Entry(
+                    amount = 0.333,
+                    amountUnit = fractionUnit,
+                    content = "Pineapple",
+                    createdAt = OffsetDateTime.of(
+                        2025,
+                        2,
+                        1,
+                        7,
+                        0,
+                        0,
+                        0,
+                        ZoneOffset.of("+01:00")
+                    ).toInstant().toEpochMilli(),
+                ),
             )
             val entryViewModel = EntryViewModel(entryRepository)
-            val mockResources = mock<Resources> {
-                on { getString(R.string.entry_unit_clothing_name) } doReturn "clothing"
-                on { getString(R.string.entry_unit_clothing_choice_xs) } doReturn "XS"
-                on { getString(R.string.entry_unit_clothing_choice_s) } doReturn "S"
-                on { getString(R.string.entry_unit_clothing_choice_m) } doReturn "M"
-                on { getString(R.string.entry_unit_clothing_choice_l) } doReturn "L"
-                on { getString(R.string.entry_unit_clothing_choice_xl) } doReturn "XL"
-                on { getString(R.string.entry_unit_portion_name) } doReturn "portion"
-                on { getString(R.string.entry_unit_portion_choice_1) } doReturn "1x"
-                on { getString(R.string.entry_unit_portion_choice_2) } doReturn "2x"
-                on { getString(R.string.entry_unit_portion_choice_3) } doReturn "3x"
-                on { getString(R.string.entry_unit_portion_choice_4) } doReturn "4x"
-                on { getString(R.string.entry_unit_portion_choice_5) } doReturn "5x"
-                on { getString(R.string.entry_unit_double_name) } doReturn "number"
-                on { getString(R.string.entry_unit_none_name) } doReturn "no unit"
-                on { getString(R.string.entry_unit_none_choice_empty) } doReturn ""
-            }
             val mockContext = mock<Context> {
                 on { resources } doReturn mockResources
             }
@@ -437,6 +435,7 @@ class EntryViewModelTest {
                     "2025-02-01T15:18:43.189+0100,Yellow bananas,2x,2.0,SMALL_NUMBERS_CHOICE",
                     "2025-02-01T15:16:56.985+0100,Green kiwis,L,3.0,CLOTHING_SIZE",
                     "2025-02-01T15:00:00.000+0100,Purple grapes,3.14,3.14,DOUBLE",
+                    "2025-02-01T07:00:00.000+0100,Pineapple,1/3,0.333,FRACTION",
                     ""
                 ).joinToString("\r\n"),
                 outputStream.toString(),
