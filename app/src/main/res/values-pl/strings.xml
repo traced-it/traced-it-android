@@ -14,7 +14,7 @@
     <string name="list_item_add">Dodaj nową notkę z tym samym tekstem</string>
     <string name="list_delete_all_dialog_title">Usunąć wszystkie notki?</string>
     <string name="detail_content_label">Napisz swoją notkę</string>
-    <string name="list_add">Nowa notka</string>
+    <string name="list_add">Dodaj notkę</string>
     <string name="nav_back">Powrót do listy notek</string>
     <string name="list_item_update">Aktualizuj</string>
     <string name="list_title">Twoje notki (%1$d)</string>
@@ -65,7 +65,7 @@
     <string name="entry_unit_fraction_choice_whole_html">1</string>
     <string name="entry_unit_double_name">liczba</string>
     <string name="detail_update_title">Uaktualnij notkę</string>
-    <string name="detail_add_title">Nowa notka</string>
+    <string name="detail_add_title">Dodaj notkę</string>
     <string name="list_message_all_restored">Wszystkie notki przywrócono</string>
     <string name="list_export_all_filename">%1$s notki %2$s.csv</string>
     <string name="list_import_finished_delimiter">\u0020</string>

@@ -15,7 +15,7 @@
     <string name="list_menu_export_all">Save as CSV</string>
     <string name="list_menu_delete_all">Delete all</string>
     <string name="list_title">Your notes (%1$d)</string>
-    <string name="list_add">New note</string>
+    <string name="list_add">Add note</string>
     <string name="list_item_add">Add new note with the same text</string>
     <string name="list_delete_all_dialog_title">Delete all notes?</string>
     <string name="list_delete_all_dialog_text">You are about to delete all notes</string>
@@ -80,7 +80,7 @@
     <string name="entry_unit_double_placeholder">0.0</string>
     <string name="entry_unit_none_choice_empty" translatable="false"/>
     <string name="detail_update_title">Update note</string>
-    <string name="detail_add_title">New note</string>
+    <string name="detail_add_title">Add note</string>
     <string name="list_message_restored">Note restored</string>
     <string name="list_message_all_restored">All notes restored</string>
     <string name="list_export_all_filename">%1$s notes %2$s.csv</string>
