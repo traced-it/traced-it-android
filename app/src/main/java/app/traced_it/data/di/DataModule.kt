@@ -53,7 +53,9 @@ class FakeEntryRepository(
 
     override fun getLatestEntry(): Flow<Entry?> =
         flowOf(
-            this.fakeEntries.filter { !it.deleted }.maxByOrNull { it.createdAt }
+            this.fakeEntries
+                .filter { !it.deleted && it.amountUnit != noneUnit }
+                .maxByOrNull { it.createdAt }
         )
 
     override suspend fun findByCreatedAt(createdAt: Long): Entry? =
