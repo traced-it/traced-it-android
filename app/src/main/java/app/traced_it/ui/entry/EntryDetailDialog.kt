@@ -62,7 +62,7 @@ fun EntryDetailDialog(
     }
     var visibleUnit by remember {
         mutableStateOf(
-            action.entry.amountUnit.takeIf { it in visibleUnits }
+            unit.takeIf { it in visibleUnits }
                 ?: latestEntryUnit.takeIf { it in visibleUnits }
                 ?: defaultVisibleUnit
         )
