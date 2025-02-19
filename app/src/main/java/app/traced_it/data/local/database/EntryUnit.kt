@@ -24,7 +24,6 @@ data class EntryUnitChoice(
 data class EntryUnit(
     val id: String,
     val nameResId: Int,
-    val unit: String = "",
     val choices: List<EntryUnitChoice> = listOf(),
     val placeholderResId: Int? = null,
 ) {
