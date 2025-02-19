@@ -5,7 +5,7 @@
     <string name="about_title">About</string>
     <string name="nav_back">Back to the list of notes</string>
     <string name="detail_cancel">Cancel</string>
-    <string name="detail_update_save">Save</string>
+    <string name="detail_update_save">Update</string>
     <string name="detail_add_save">Save</string>
     <string name="detail_content_label">Write your note</string>
     <string name="list_item_update">Update</string>

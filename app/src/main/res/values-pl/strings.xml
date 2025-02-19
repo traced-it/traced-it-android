@@ -4,7 +4,7 @@
     <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> jest niekomercyjną aplikacją stworzoną przez troje przyjaciół dla przyjemności.</p><br><p>Czy zechciał(a)byś podzielić się z nami, jak z niej korzystasz? Napisz do nas <a href="mailto:android@traced-it.app">maila</a>.</p><br><p>Czy coś się u Ciebie nie sprawdza lub masz pomysły na udoskonalenie? Załóż <a href="https://github.com/traced-it/traced-it-android/issues">temat</a>.</p><br><p>Dystrybuowane na <a href="https://www.gnu.org/licenses/gpl-3.0.txt">Powszechnej Licencji Publicznej GNU 3.0</a> lub późniejszej. Możesz znaleźć kod i zaangażować się na <a href="https://github.com/traced-it/traced-it-android">GitHub&rsquo;ie</a>.</p>]]></string>
     <string name="about_title">O aplikacji</string>
     <string name="detail_cancel">Anuluj</string>
-    <string name="detail_update_save">Zapisz</string>
+    <string name="detail_update_save">Uaktualnij</string>
     <string name="detail_add_save">Zapisz</string>
     <string name="list_item_delete">Usuń</string>
     <string name="list_menu">Menu</string>
@@ -16,7 +16,7 @@
     <string name="detail_content_label">Napisz swoją notkę</string>
     <string name="list_add">Dodaj notkę</string>
     <string name="nav_back">Powrót do listy notek</string>
-    <string name="list_item_update">Aktualizuj</string>
+    <string name="list_item_update">Uaktualnij</string>
     <string name="list_title">Twoje notki (%1$d)</string>
     <string name="list_delete_all_dialog_confirm">Usuń wszystkie</string>
     <string name="list_delete_all_dialog_text">Zamierzasz usunąć wszystkie notki</string>
