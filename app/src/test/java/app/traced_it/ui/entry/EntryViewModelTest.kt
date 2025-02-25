@@ -74,8 +74,7 @@ class EntryViewModelTest {
     @Test
     fun `importEntriesCsv inserts valid entries, skips entries with the same createdAt, and aborts after failing to parse a row`() =
         runTest {
-            val entryRepository = FakeEntryRepository()
-            entryRepository.fakeEntries = mutableListOf()
+            val entryRepository = FakeEntryRepository(emptyList())
             val entryViewModel = EntryViewModel(entryRepository)
             val mockContext = mock<Context> {
                 on { resources } doReturn mockResources
@@ -172,11 +171,9 @@ class EntryViewModelTest {
                     ).toInstant().toEpochMilli(),
                 ),
             )
-            assertEquals(
-                expectedEntries.size,
-                entryRepository.fakeEntries.size
-            )
-            for ((expectedEntry, fakeEntry) in expectedEntries zip entryRepository.fakeEntries) {
+            val resultEntries = entryRepository.fakeEntries.first()
+            assertEquals(expectedEntries.size, resultEntries.size)
+            for ((expectedEntry, fakeEntry) in expectedEntries zip resultEntries) {
                 assertEquals(expectedEntry, fakeEntry)
             }
             assertEquals(
@@ -192,8 +189,7 @@ class EntryViewModelTest {
     @Test
     fun `importEntriesCsv inserts entries from a CSV that has human-readable data in the amount and amountUnit columns`() =
         runTest {
-            val entryRepository = FakeEntryRepository()
-            entryRepository.fakeEntries = mutableListOf()
+            val entryRepository = FakeEntryRepository(emptyList())
             val entryViewModel = EntryViewModel(entryRepository)
             val mockContext = mock<Context> {
                 on { resources } doReturn mockResources
@@ -287,11 +283,9 @@ class EntryViewModelTest {
                     ).toInstant().toEpochMilli(),
                 ),
             )
-            assertEquals(
-                expectedEntries.size,
-                entryRepository.fakeEntries.size
-            )
-            for ((expectedEntry, fakeEntry) in expectedEntries zip entryRepository.fakeEntries) {
+            val resultEntries = entryRepository.fakeEntries.first()
+            assertEquals(expectedEntries.size, resultEntries.size)
+            for ((expectedEntry, fakeEntry) in expectedEntries zip resultEntries) {
                 assertEquals(expectedEntry, fakeEntry)
             }
             assertEquals(
@@ -307,8 +301,7 @@ class EntryViewModelTest {
     @Test
     fun `importEntriesCsv doesn't import any entries and returns an error message when the CSV file is empty`() =
         runTest {
-            val entryRepository = FakeEntryRepository()
-            entryRepository.fakeEntries = mutableListOf()
+            val entryRepository = FakeEntryRepository(emptyList())
             val entryViewModel = EntryViewModel(entryRepository)
             val mockResources = mock<Resources> {
                 on { getString(R.string.list_import_finished_empty) } doReturn "Empty CSV file"
@@ -322,7 +315,8 @@ class EntryViewModelTest {
 
             entryViewModel.importEntriesCsv(mockContext, inputStream)
 
-            assertEquals(0, entryRepository.fakeEntries.size)
+            val resultEntries = entryRepository.fakeEntries.first()
+            assertEquals(0, resultEntries.size)
             assertEquals(
                 Message(
                     "Empty CSV file",
@@ -336,83 +330,84 @@ class EntryViewModelTest {
     @Test
     fun `exportEntriesCsv writes all entries`() =
         runTest {
-            val entryRepository = FakeEntryRepository()
-            entryRepository.fakeEntries = mutableListOf(
-                Entry(
-                    amount = 0.0,
-                    amountUnit = noneUnit,
-                    content = "Red apples",
-                    createdAt = OffsetDateTime.of(
-                        2025,
-                        2,
-                        1,
-                        18,
-                        0,
-                        22,
-                        755_000_000,
-                        ZoneOffset.of("+01:00")
-                    ).toInstant().toEpochMilli(),
-                ),
-                Entry(
-                    amount = 2.0,
-                    amountUnit = smallNumbersChoiceUnit,
-                    content = "Yellow bananas",
-                    createdAt = OffsetDateTime.of(
-                        2025,
-                        2,
-                        1,
-                        15,
-                        18,
-                        43,
-                        189_000_000,
-                        ZoneOffset.of("+01:00")
-                    ).toInstant().toEpochMilli(),
-                ),
-                Entry(
-                    amount = 3.0,
-                    amountUnit = clothingSizeUnit,
-                    content = "Green kiwis",
-                    createdAt = OffsetDateTime.of(
-                        2025,
-                        2,
-                        1,
-                        15,
-                        16,
-                        56,
-                        985_000_000,
-                        ZoneOffset.of("+01:00")
-                    ).toInstant().toEpochMilli(),
-                ),
-                Entry(
-                    amount = 3.14,
-                    amountUnit = doubleUnit,
-                    content = "Purple grapes",
-                    createdAt = OffsetDateTime.of(
-                        2025,
-                        2,
-                        1,
-                        15,
-                        0,
-                        0,
-                        0,
-                        ZoneOffset.of("+01:00")
-                    ).toInstant().toEpochMilli(),
-                ),
-                Entry(
-                    amount = 0.333,
-                    amountUnit = fractionUnit,
-                    content = "Pineapple",
-                    createdAt = OffsetDateTime.of(
-                        2025,
-                        2,
-                        1,
-                        7,
-                        0,
-                        0,
-                        0,
-                        ZoneOffset.of("+01:00")
-                    ).toInstant().toEpochMilli(),
-                ),
+            val entryRepository = FakeEntryRepository(
+                listOf(
+                    Entry(
+                        amount = 0.0,
+                        amountUnit = noneUnit,
+                        content = "Red apples",
+                        createdAt = OffsetDateTime.of(
+                            2025,
+                            2,
+                            1,
+                            18,
+                            0,
+                            22,
+                            755_000_000,
+                            ZoneOffset.of("+01:00")
+                        ).toInstant().toEpochMilli(),
+                    ),
+                    Entry(
+                        amount = 2.0,
+                        amountUnit = smallNumbersChoiceUnit,
+                        content = "Yellow bananas",
+                        createdAt = OffsetDateTime.of(
+                            2025,
+                            2,
+                            1,
+                            15,
+                            18,
+                            43,
+                            189_000_000,
+                            ZoneOffset.of("+01:00")
+                        ).toInstant().toEpochMilli(),
+                    ),
+                    Entry(
+                        amount = 3.0,
+                        amountUnit = clothingSizeUnit,
+                        content = "Green kiwis",
+                        createdAt = OffsetDateTime.of(
+                            2025,
+                            2,
+                            1,
+                            15,
+                            16,
+                            56,
+                            985_000_000,
+                            ZoneOffset.of("+01:00")
+                        ).toInstant().toEpochMilli(),
+                    ),
+                    Entry(
+                        amount = 3.14,
+                        amountUnit = doubleUnit,
+                        content = "Purple grapes",
+                        createdAt = OffsetDateTime.of(
+                            2025,
+                            2,
+                            1,
+                            15,
+                            0,
+                            0,
+                            0,
+                            ZoneOffset.of("+01:00")
+                        ).toInstant().toEpochMilli(),
+                    ),
+                    Entry(
+                        amount = 0.333,
+                        amountUnit = fractionUnit,
+                        content = "Pineapple",
+                        createdAt = OffsetDateTime.of(
+                            2025,
+                            2,
+                            1,
+                            7,
+                            0,
+                            0,
+                            0,
+                            ZoneOffset.of("+01:00")
+                        ).toInstant().toEpochMilli(),
+                    ),
+                )
             )
             val entryViewModel = EntryViewModel(entryRepository)
             val mockContext = mock<Context> {
