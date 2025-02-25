@@ -2,5 +2,5 @@
 - Remove unit "portion". Existing entries will be converted to "number".
 - Add unit "fraction" with values 1/4, 1/3, 1/2, 3/4 and 1.
 - Rename unit "clothing" to "size".
-- Add Polish translation (100%).
+- Add Czech, French, German and Polish translations (100%).
 - Add Russian translation (partial).
