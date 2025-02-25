@@ -35,6 +35,12 @@ android {
         testInstrumentationRunnerArguments += mapOf(
             "clearPackageData" to "true",
         )
+
+        // Specify supported locales manually instead of setting
+        // `androidResources.generateLocalConfig = true`, so that languages
+        // whose translations are in progress don't appear among the app's
+        // supported languages.
+        resourceConfigurations += listOf("cs", "de", "en", "fr", "pl", "ru")
     }
 
     buildTypes {
@@ -71,9 +77,6 @@ android {
         kotlinCompilerExtensionVersion =
             libs.versions.androidxComposeCompiler.get()
     }
-    androidResources {
-        generateLocaleConfig = true
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -83,6 +86,7 @@ android {
         // Adds exported schema location as test app assets.
         getByName("androidTest").assets.srcDir("$projectDir/schemas")
     }
+    @Suppress("UnstableApiUsage")
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
