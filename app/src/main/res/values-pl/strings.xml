@@ -80,4 +80,5 @@
     <string name="entry_unit_double_placeholder">0,0</string>
     <string name="entry_unit_clothing_choice_l">L</string>
     <string name="list_message_restored">Notkę przywrócono</string>
+    <string name="entry_unit_fraction_name">ułamek</string>
 </resources>

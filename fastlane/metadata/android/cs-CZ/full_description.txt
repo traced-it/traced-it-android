@@ -1,0 +1,24 @@
+Jednoduchá aplikace pro krátké textové poznámky s výraznou časovou informací u každého záznamu. K poznámkám můžete přidávat množství výběrem z přednastavených možností (S, M, XL, 1/4, 1/2, 3/4) nebo zadáním libovolného čísla.
+
+Díky nekomplikovanému rozhraní se aplikace snadno používá, i když jste zaneprázdněni nebo rozptýleni.
+
+<b>Perfektní pro</b>
+- Psaní deníku
+- Sledování denního režimu
+- Zaznamenávání sportovních tréninků
+- Zaznamenávání doplňků stravy a příjmu vody
+- Odměřování ingrediencí na vaření
+- Zaznamenávání jednoduchých laboratorních výsledků
+
+<b>Funkce</b>
+- Přidávání textových poznámek s volitelným množstvím (S, M, XL, 1/4, 1/2, 3/4, 5,813…)
+- Zobrazení všech poznámek s časem, který uplynul od napsání každé poznámky
+- Klepnutím na tlačítko + přidáte novou poznámku se stejným textem jako má stávající poznámka
+- Upravení poznámky, odstranění poznámky, odstranění všech poznámek
+- Exportování a importování všech poznámek jako tabulkového souboru (formát CSV)
+
+<b>Soukromí a zabezpečení</b>
+- Aplikace vůbec nepoužívá internet - vaše poznámky jsou uloženy pouze ve vašem telefonu
+- Aplikace nemá přístup k žádným informacím o vás a neshromažďuje údaje o používání
+- Bez reklam
+- Zdarma a s otevřeným zdrojovým kódem
