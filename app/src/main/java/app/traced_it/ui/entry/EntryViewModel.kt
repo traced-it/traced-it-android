@@ -180,13 +180,15 @@ class EntryViewModel @Inject constructor(
     }
 
     fun performMessageAction() {
-        _message.value?.onActionPerform?.invoke()
+        val action = _message.value?.onActionPerform
         _message.value = null
+        action?.invoke()
     }
 
     fun dismissMessage() {
-        _message.value?.onDismiss?.invoke()
+        val action = _message.value?.onDismiss
         _message.value = null
+        action?.invoke()
     }
 
     fun setHighlightedEntryUid(uid: Int?) {
