@@ -1,6 +1,6 @@
 A simple app for short text notes, with a prominent timestamp for each entry. Add quantities to your notes using preset formats (S, M, XL, 1/4, 1/2, 3/4) or custom numbers.
 
-The uncomplicated interface makes the app easy to use even when you're busy or distracted.
+The uncomplicated interface makes the app easy to use even when you’re busy or distracted.
 
 <b>Perfect for</b>
 - Journaling
@@ -18,7 +18,7 @@ The uncomplicated interface makes the app easy to use even when you're busy or d
 - Export all notes as a spreadsheet file (CSV format) and import them.
 
 <b>Privacy & security</b>
-- The app doesn't use the internet at all – your notes are stored on your phone only.
-- The app doesn't access any information about you and doesn't collect usage data.
+- The app doesn’t use the internet at all – your notes are stored on your phone only.
+- The app doesn’t access any information about you and doesn’t collect usage data.
 - No ads
 - Free and open-source

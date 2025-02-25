@@ -1,24 +1,24 @@
 Une application simple pour prendre de courtes notes textuelles, avec un horodatage bien visible pour chaque entrée. Ajoutez des quantités à vos notes en utilisant des formats prédéfinis (S, M, XL, 1/4, 1/2, 3/4) ou des nombres personnalisés.
 
-L'interface simple rend l'application facile à utiliser, même lorsque vous êtes occupé ou distrait.
+L’interface simple rend l’application facile à utiliser, même lorsque vous êtes occupé ou distrait.
 
 <b>Parfait pour</b>
 - Tenir un journal
 - Suivre vos habitudes quotidiennes
-- Enregistrer les séances d'entraînement
-- Enregistrer des suppléments et de la consommation d'eau
+- Enregistrer les séances d’entraînement
+- Enregistrer des suppléments et de la consommation d’eau
 - Mesurer les ingrédients de cuisine
 - Noter des résultats de laboratoire simples
 
 <b>Caractéristiques</b>
 - Ajoutez des notes textuelles avec une quantité facultative (S, M, XL, 1/4, 1/2, 3/4, 5,813…).
 - Affichez toutes vos notes avec le temps écoulé depuis que vous avez écrit chaque note.
-- Touchez le bouton + pour ajouter une nouvelle note avec le même texte qu'une note existante.
+- Touchez le bouton + pour ajouter une nouvelle note avec le même texte qu’une note existante.
 - Modifiez une note, supprimez-la, supprimez toutes les notes.
 - Exporter toutes les notes dans un fichier de feuille de calcul (format CSV) et les importer.
 
 <b>Confidentialité et sécurité</b>
-- L'application n'utilise pas du tout l'internet - vos notes sont stockées uniquement sur votre téléphone.
-- L'application n'accède à aucune information vous concernant et ne collecte pas de données d'utilisation.
+- L’application n’utilise pas du tout l’internet – vos notes sont stockées uniquement sur votre téléphone.
+- L’application n’accède à aucune information vous concernant et ne collecte pas de données d’utilisation.
 - Pas de publicité
 - Gratuit et open-source
