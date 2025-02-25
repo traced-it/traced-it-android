@@ -11,14 +11,14 @@ Dank der unkomplizierten Oberfläche ist die App auch dann leicht zu bedienen, w
 - Einfache Laborergebnisse notieren
 
 <b>Features</b>
-- Füge Textnotizen mit einer optionalen Menge hinzu (S, M, XL, 1/4, 1/2, 3/4, 5,813…)
-- Sieh dir alle deine Notizen mit der abgelaufenen Zeit an, seit du jede Notiz geschrieben hast
-- Tippe auf die Schaltfläche +, um eine neue Notiz mit demselben Text wie eine bestehende Notiz hinzuzufügen
-- Bearbeite eine Notiz, lösche sie, lösche alle Notizen
-- Exportiere alle Notizen als Tabellenkalkulationsdatei (CSV-Format) und importiere sie
+- Füge Textnotizen mit einer optionalen Menge hinzu (S, M, XL, 1/4, 1/2, 3/4, 5,813…).
+- Sieh dir alle deine Notizen mit der abgelaufenen Zeit an, seit du jede Notiz geschrieben hast.
+- Tippe auf die Schaltfläche +, um eine neue Notiz mit demselben Text wie eine bestehende Notiz hinzuzufügen.
+- Bearbeite eine Notiz, lösche sie, lösche alle Notizen.
+- Exportiere alle Notizen als Tabellenkalkulationsdatei (CSV-Format) und importiere sie.
 
 <b>Datenschutz & Sicherheit</b>
-- Die App nutzt das Internet überhaupt nicht - deine Notizen werden nur auf deinem Telefon gespeichert
-- Die App greift nicht auf Informationen über dich zu und sammelt keine Nutzungsdaten
+- Die App nutzt das Internet überhaupt nicht – deine Notizen werden nur auf deinem Telefon gespeichert.
+- Die App greift nicht auf Informationen über dich zu und sammelt keine Nutzungsdaten.
 - Keine Werbung
 - Kostenlos und Open-Source

@@ -3,12 +3,12 @@ Prosta aplikacja do krótkich notek tekstowych, z wyraźnym znacznikiem czasowym
 Nieskomplikowany interfejs czyni aplikację łatwą w użyciu nawet gdy jesteś zajęty/a lub nieuważny/a.
 
 <b>Idealne do</b>
-- Prowadzenia dziennika.
-- Śledzenia codziennej rutyny.
-- Spisywania treningów.
-- Notowania spożycia suplementów oraz wody.
-- Mierzenia składników kulinarnych.
-- Notowania prostych wyników eksperymentów laboratoryjnych.
+- Prowadzenia dziennika
+- Śledzenia codziennej rutyny
+- Spisywania treningów
+- Notowania spożycia suplementów oraz wody
+- Mierzenia składników kulinarnych
+- Notowania prostych wyników eksperymentów laboratoryjnych
 
 <b>Funkcje</b>
 - Dodawaj tekstowe notki z opcjonalną ilością (S, M, XL, 1/4, 1/2, 3/4, 5.813…).
@@ -18,7 +18,7 @@ Nieskomplikowany interfejs czyni aplikację łatwą w użyciu nawet gdy jesteś 
 - Eksportuj wszystkie notki jako plik arkuszu kalkulacyjnego (format CSV) oraz importuj je.
 
 <b>Prywatność i bezpieczeństwo</b>
-- Aplikacja w ogóle nie korzysta z Internetu - twoje notki są przechowywane tylko na twoim telefonie.
+- Aplikacja w ogóle nie korzysta z Internetu – twoje notki są przechowywane tylko na twoim telefonie.
 - Aplikacja nie ma dostępu do żadnych informacji na twój temat oraz nie zbiera danych nt. z niej korzystania.
 - Bez reklam
 - Wolna i otwartoźródłowa

@@ -21,7 +21,7 @@
     <string name="list_delete_all_dialog_text">You are about to delete all notes</string>
     <string name="list_delete_all_dialog_confirm">Delete all</string>
     <string name="list_delete_dialog_title">Delete note?</string>
-    <string name="list_delete_dialog_text">You are about to delete the note \"%1$s\"</string>
+    <string name="list_delete_dialog_text">You are about to delete the note &#8220;%1$s&#8221;</string>
     <string name="list_delete_dialog_confirm">Delete note</string>
     <string name="list_message_added">Note added</string>
     <string name="list_message_updated">Note updated</string>
@@ -30,13 +30,13 @@
     <string name="list_message_all_deleted">All notes deleted</string>
     <string name="list_message_all_deleted_action">Undo</string>
     <string name="list_item_time_at">at %1$s</string>
-    <string name="list_item_time_ago_seconds">%1$d s ago</string>
-    <string name="list_item_time_ago_minutes">%1$d min ago</string>
-    <string name="list_item_time_ago_hours_and_minutes">%1$d h %2$02d min ago</string>
-    <string name="list_import_failed_column_missing">Missing column \"%1$s\"</string>
-    <string name="list_import_failed_column_empty">Empty value of column \"%1$s\"</string>
-    <string name="list_import_failed_column_parsing_error">Failed to parse value \"%2$s\" of column \"%1$s\"</string>
-    <string name="list_import_failed_column_choice_unknown">Value \"%3$s\" of column \"%1$s\" must be one of %2$s</string>
+    <string name="list_item_time_ago_seconds">%1$d&#160;s ago</string>
+    <string name="list_item_time_ago_minutes">%1$d&#160;min ago</string>
+    <string name="list_item_time_ago_hours_and_minutes">%1$d&#160;h %2$02d&#160;min ago</string>
+    <string name="list_import_failed_column_missing">Missing column &#8220;%1$s&#8221;</string>
+    <string name="list_import_failed_column_empty">Empty value of column &#8220;%1$s&#8221;</string>
+    <string name="list_import_failed_column_parsing_error">Failed to parse value &#8220;%2$s&#8221; of column &#8220;%1$s&#8221;</string>
+    <string name="list_import_failed_column_choice_unknown">Value &#8220;%3$s&#8221; of column &#8220;%1$s&#8221; must be one of %2$s</string>
     <plurals name="list_import_finished_imported">
         <item quantity="one">Imported %1$d note.</item>
         <item quantity="other">Imported %1$d notes.</item>
@@ -46,7 +46,7 @@
         <item quantity="other">Skipped %1$d notes, because notes with the same timestamps already exist.</item>
     </plurals>
     <string name="list_import_finished_empty">Empty CSV file</string>
-    <string name="list_import_finished_delimiter">\u0020</string>
+    <string name="list_import_finished_delimiter">&#32;</string>
     <string name="detail_unit_label">Choose an amount, if you want</string>
     <string name="detail_unit_dropdown_content_description">Expand list of units</string>
     <string name="input_clear_content_description">Clear input</string>
