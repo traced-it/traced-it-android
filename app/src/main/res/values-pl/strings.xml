@@ -43,6 +43,7 @@
     <string name="list_import_failed_column_choice_unknown">Wartość „%3$s” kolumny „%1$s” musi być jedną z %2$s</string>
     <string name="detail_unit_label">Jeśli chcesz, wybierz ilość</string>
     <string name="list_import_finished_empty">Plik CSV jest pusty</string>
+    <string name="list_import_finished_delimiter"> </string>
     <string name="detail_unit_dropdown_content_description">Rozwiń listę jednostek</string>
     <string name="input_clear_content_description">Wyczyść wpis</string>
     <string name="list_delete_all_dialog_dismiss">Odrzuć</string>
