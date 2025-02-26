@@ -24,7 +24,7 @@ data class EntryUnitChoice(
 data class EntryUnit(
     val id: String,
     val nameResId: Int,
-    val default: Double = 0.0,
+    val defaultValue: Double = 0.0,
     val choices: List<EntryUnitChoice> = listOf(),
 ) {
     private val numberFormat = NumberFormat.getNumberInstance()
@@ -32,7 +32,7 @@ data class EntryUnit(
         .apply { minimumFractionDigits = 1 }
 
     val placeholder: String
-        get() = placeholderNumberFormat.format(default)
+        get() = placeholderNumberFormat.format(defaultValue)
 
     fun format(context: Context, value: Double): String =
         choices.find { it.value == value }
@@ -50,11 +50,11 @@ data class EntryUnit(
                 numberFormat.parse(value)?.toDouble()
             } catch (_: ParseException) {
                 null
-            } ?: default
+            } ?: defaultValue
 
     fun serialize(value: Double): String = value.toString()
 
-    fun deserialize(value: String): Double = value.toDoubleOrNull() ?: default
+    fun deserialize(value: String): Double = value.toDoubleOrNull() ?: defaultValue
 }
 
 val noneUnit = EntryUnit(
