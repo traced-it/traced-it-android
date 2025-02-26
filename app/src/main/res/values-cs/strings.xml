@@ -50,14 +50,12 @@
         <item quantity="other">%1$d poznámek přeskočeno, protože poznámky se stejnými časovými údaji už existují.</item>
     </plurals>
     <string name="list_import_finished_empty">Prázdný soubor CSV</string>
-    <string name="list_import_finished_delimiter"> </string>
     <string name="detail_unit_label">Zvolte množství, pokud chcete</string>
     <string name="detail_unit_dropdown_content_description">Rozbalit seznam jednotek</string>
     <string name="entry_unit_fraction_choice_three_quarters">¾</string>
     <string name="entry_unit_fraction_choice_three_quarters_html"><![CDATA[<big>¾</big>]]></string>
     <string name="entry_unit_fraction_choice_whole">1</string>
     <string name="entry_unit_fraction_choice_whole_html">1</string>
-    <string name="entry_unit_double_placeholder">0,0</string>
     <string name="entry_unit_double_name">číslo</string>
     <string name="entry_unit_none_name">žádná jednotka</string>
     <string name="entry_unit_clothing_name">velikost</string>

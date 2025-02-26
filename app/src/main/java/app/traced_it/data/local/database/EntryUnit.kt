@@ -12,10 +12,10 @@ data class EntryUnitChoice(
     val nameResId: Int,
     val htmlResId: Int? = null,
 ) {
-    fun format(context: Context) =
+    fun format(context: Context): String =
         context.resources.getString(nameResId)
 
-    fun formatHtml(context: Context) =
+    fun formatHtml(context: Context): AnnotatedString? =
         htmlResId?.let {
             AnnotatedString.fromHtml(context.resources.getString(it))
         }
@@ -24,10 +24,15 @@ data class EntryUnitChoice(
 data class EntryUnit(
     val id: String,
     val nameResId: Int,
+    val default: Double = 0.0,
     val choices: List<EntryUnitChoice> = listOf(),
-    val placeholderResId: Int? = null,
 ) {
     private val numberFormat = NumberFormat.getNumberInstance()
+    private val placeholderNumberFormat = NumberFormat.getNumberInstance()
+        .apply { minimumFractionDigits = 1 }
+
+    val placeholder: String
+        get() = placeholderNumberFormat.format(default)
 
     fun format(context: Context, value: Double): String =
         choices.find { it.value == value }
@@ -45,11 +50,11 @@ data class EntryUnit(
                 numberFormat.parse(value)?.toDouble()
             } catch (_: ParseException) {
                 null
-            } ?: 0.0
+            } ?: default
 
     fun serialize(value: Double): String = value.toString()
 
-    fun deserialize(value: String): Double = value.toDoubleOrNull() ?: 0.0
+    fun deserialize(value: String): Double = value.toDoubleOrNull() ?: default
 }
 
 val noneUnit = EntryUnit(
@@ -115,7 +120,6 @@ val smallNumbersChoiceUnit = EntryUnit(
 val doubleUnit = EntryUnit(
     id = "DOUBLE",
     nameResId = R.string.entry_unit_double_name,
-    placeholderResId = R.string.entry_unit_double_placeholder,
 )
 val units: List<EntryUnit> = listOf(
     noneUnit,
