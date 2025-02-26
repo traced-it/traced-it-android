@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_app_icon_content_description">Значок приложения</string>
-    <string name="about_title">О&#160;приложении</string>
-    <string name="nav_back">Вернемся к&#160;списку заметок</string>
+    <string name="about_title">О приложении</string>
+    <string name="nav_back">Вернемся к списку заметок</string>
     <string name="detail_cancel">Отмена</string>
     <string name="detail_update_save">Обновить</string>
     <string name="detail_add_save">Сохранить</string>
@@ -14,7 +14,7 @@
     <string name="list_menu_delete_all">Удалить все</string>
     <string name="list_title">Ваши заметки (%1$d)</string>
     <string name="list_add">Добавить заметку</string>
-    <string name="list_item_add">Добавить новую заметку с&#160;тем же текстом</string>
+    <string name="list_item_add">Добавить новую заметку с тем же текстом</string>
     <string name="list_delete_all_dialog_title">Удалить все заметки?</string>
     <string name="list_delete_all_dialog_text">Вы собираетесь удалить все заметки</string>
     <string name="list_delete_all_dialog_confirm">Удалить все</string>
@@ -25,12 +25,12 @@
     <string name="list_message_deleted">Заметка удалена</string>
     <string name="list_message_deleted_action">Вернуть</string>
     <string name="list_message_all_deleted_action">Вернуть</string>
-    <string name="list_item_time_at">в&#160;%1$s</string>
-    <string name="list_item_time_ago_seconds">%1$d&#160;с назад</string>
-    <string name="list_item_time_ago_minutes">%1$d&#160;мин назад</string>
+    <string name="list_item_time_at">в %1$s</string>
+    <string name="list_item_time_ago_seconds">%1$d с назад</string>
+    <string name="list_item_time_ago_minutes">%1$d мин назад</string>
     <string name="list_import_failed_column_missing">Отсутствие столбца «%1$s»</string>
     <string name="list_menu_import">Импорт из CSV</string>
-    <string name="list_item_time_ago_hours_and_minutes">%1$d&#160;ч %2$02d&#160;мин назад</string>
+    <string name="list_item_time_ago_hours_and_minutes">%1$d ч %2$02d мин назад</string>
     <string name="list_delete_dialog_text">Вы собираетесь удалить заметку «%1$s»</string>
     <string name="list_message_all_deleted">Все заметки были удалены</string>
     <string name="list_import_failed_column_empty">Пустое значение колонки «%1$s»</string>
