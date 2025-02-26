@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_app_icon_content_description">Icône de l&#8217;application</string>
-    <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> est une application non commerciale créée par trois ami·es pour le plaisir.</p><br><p>Vous souhaitez nous faire part de votre utilisation de l&#8217;application&#160;? Écrivez-nous un <a href="mailto:android@traced-it.app">email</a>.</p><br><p>Quelque chose ne fonctionne pas pour vous ou vous avez des idées d&#8217;amélioration&#160;? Déposez un <a href="https://github.com/traced-it/traced-it-android/issues">problème</a>.</p><br><p>Distribué sous <a href="https://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License 3.0</a> ou une version ultérieure. Vous pouvez trouver le code et participer sur <a href="https://github.com/traced-it/traced-it-android">GitHub</a>.</p>]]></string>
+    <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> est une application non commerciale créée par trois ami·es pour le plaisir.</p><br><p>Vous souhaitez nous faire part de votre utilisation de l&#8217;application&#8239;? Écrivez-nous un <a href="mailto:android@traced-it.app">email</a>.</p><br><p>Quelque chose ne fonctionne pas pour vous ou vous avez des idées d&#8217;amélioration&#8239;? Déposez un <a href="https://github.com/traced-it/traced-it-android/issues">problème</a>.</p><br><p>Distribué sous <a href="https://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License 3.0</a> ou une version ultérieure. Vous pouvez trouver le code et participer sur <a href="https://github.com/traced-it/traced-it-android">GitHub</a>.</p>]]></string>
     <string name="about_title">À&#160;propos</string>
     <string name="nav_back">Retour à&#160;la liste des notes</string>
     <string name="detail_cancel">Annuler</string>
@@ -17,10 +17,10 @@
     <string name="list_title">Vos notes (%1$d)</string>
     <string name="list_add">Ajouter une note</string>
     <string name="list_item_add">Ajouter une nouvelle note avec le même texte</string>
-    <string name="list_delete_all_dialog_title">Supprimer toutes les notes&#160;?</string>
+    <string name="list_delete_all_dialog_title">Supprimer toutes les notes&#8239;?</string>
     <string name="list_delete_all_dialog_text">Vous êtes en train de supprimer toutes les notes</string>
     <string name="list_delete_all_dialog_confirm">Supprimer tout</string>
-    <string name="list_delete_dialog_title">Supprimer la note&#160;?</string>
+    <string name="list_delete_dialog_title">Supprimer la note&#8239;?</string>
     <string name="list_delete_dialog_text">Vous êtes en train de supprimer la note «%1$s»</string>
     <string name="list_delete_dialog_confirm">Supprimer la note</string>
     <string name="list_message_added">Note ajoutée</string>
