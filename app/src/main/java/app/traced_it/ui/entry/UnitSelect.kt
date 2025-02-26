@@ -128,9 +128,7 @@ fun UnitSelect(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = visibleUnit.placeholderResId?.let {
-                    { Text(stringResource(it)) }
-                },
+                placeholder = { Text(visibleUnit.placeholder) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal
                 ),
@@ -201,6 +199,20 @@ private fun FractionPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun DoublePreview() {
+    AppTheme {
+        Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
+            UnitSelect(
+                "",
+                doubleUnit,
+                doubleUnit,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, locale = "fr-rFR")
+@Composable
+private fun DoubleFrenchPreview() {
     AppTheme {
         Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
             UnitSelect(
