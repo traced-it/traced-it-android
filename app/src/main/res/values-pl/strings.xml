@@ -2,16 +2,16 @@
 <resources>
     <string name="about_app_icon_content_description">Ikona aplikacji</string>
     <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> jest niekomercyjną aplikacją stworzoną przez troje przyjaciół dla przyjemności.</p><br><p>Czy zechciał(a)byś podzielić się z&#160;nami, jak z niej korzystasz? Napisz do nas <a href="mailto:android@traced-it.app">maila</a>.</p><br><p>Czy coś się u&#160;Ciebie nie sprawdza lub masz pomysły na udoskonalenie? Załóż <a href="https://github.com/traced-it/traced-it-android/issues">temat</a>.</p><br><p>Dystrybuowane na <a href="https://www.gnu.org/licenses/gpl-3.0.txt">Powszechnej Licencji Publicznej GNU 3.0</a> lub późniejszej. Możesz znaleźć kod i zaangażować się na <a href="https://github.com/traced-it/traced-it-android">GitHub&rsquo;ie</a>.</p>]]></string>
-    <string name="about_title">O&#160;aplikacji</string>
+    <string name="about_title">O aplikacji</string>
     <string name="detail_cancel">Anuluj</string>
     <string name="detail_update_save">Uaktualnij</string>
     <string name="detail_add_save">Zapisz</string>
     <string name="list_item_delete">Usuń</string>
     <string name="list_menu">Menu</string>
-    <string name="list_menu_import">Importuj z&#160;CSV</string>
+    <string name="list_menu_import">Importuj z CSV</string>
     <string name="list_menu_export_all">Zapisz jako CSV</string>
     <string name="list_menu_delete_all">Usuń wszystko</string>
-    <string name="list_item_add">Dodaj nową notkę z&#160;tym samym tekstem</string>
+    <string name="list_item_add">Dodaj nową notkę z tym samym tekstem</string>
     <string name="list_delete_all_dialog_title">Usunąć wszystkie notki?</string>
     <string name="detail_content_label">Napisz swoją notkę</string>
     <string name="list_add">Dodaj notkę</string>
@@ -21,26 +21,26 @@
     <string name="list_delete_all_dialog_confirm">Usuń wszystkie</string>
     <string name="list_delete_all_dialog_text">Zamierzasz usunąć wszystkie notki</string>
     <string name="list_delete_dialog_title">Usunąć notkę?</string>
-    <string name="list_delete_dialog_text">Zamierzasz usunąć notkę &#8222;%1$s&#8221;</string>
+    <string name="list_delete_dialog_text">Zamierzasz usunąć notkę „%1$s”</string>
     <string name="list_delete_dialog_confirm">Usuń notkę</string>
     <string name="list_message_updated">Notkę uaktualniono</string>
     <string name="list_message_deleted">Notkę usunięto</string>
     <string name="list_message_deleted_action">Cofnij</string>
     <string name="list_message_all_deleted">Wszystkie notki usunięto</string>
     <string name="list_message_all_deleted_action">Cofnij</string>
-    <string name="list_item_time_at">o&#160;%1$s</string>
-    <string name="list_item_time_ago_seconds">%1$d&#160;s temu</string>
-    <string name="list_item_time_ago_minutes">%1$d&#160;min. temu</string>
-    <string name="list_item_time_ago_hours_and_minutes">%1$d&#160;h %2$02d&#160;min. temu</string>
-    <string name="list_import_failed_column_empty">Pusta wartość kolumny &#8222;%1$s&#8221;</string>
-    <string name="list_import_failed_column_parsing_error">Nie udało się sparsować wartości &#8222;%2$s&#8221; kolumny &#8222;%1$s&#8221;</string>
+    <string name="list_item_time_at">o %1$s</string>
+    <string name="list_item_time_ago_seconds">%1$d s temu</string>
+    <string name="list_item_time_ago_minutes">%1$d min. temu</string>
+    <string name="list_item_time_ago_hours_and_minutes">%1$d h %2$02d min. temu</string>
+    <string name="list_import_failed_column_empty">Pusta wartość kolumny „%1$s”</string>
+    <string name="list_import_failed_column_parsing_error">Nie udało się sparsować wartości „%2$s” kolumny „%1$s”</string>
     <plurals name="list_import_finished_imported">
         <item quantity="one">Zaimportowano %1$d notkę.</item>
         <item quantity="few">Zaimportowano %1$d notki.</item>
         <item quantity="many">Zaimportowano %1$d notek.</item>
         <item quantity="other">Zaimportowano %1$d notek.</item>
     </plurals>
-    <string name="list_import_failed_column_choice_unknown">Wartość &#8222;%3$s&#8221; kolumny &#8222;%1$s&#8221; musi być jedną z&#160;%2$s</string>
+    <string name="list_import_failed_column_choice_unknown">Wartość „%3$s” kolumny „%1$s” musi być jedną z %2$s</string>
     <string name="detail_unit_label">Jeśli chcesz, wybierz ilość</string>
     <string name="list_import_finished_empty">Plik CSV jest pusty</string>
     <string name="detail_unit_dropdown_content_description">Rozwiń listę jednostek</string>
@@ -68,14 +68,13 @@
     <string name="detail_add_title">Dodaj notkę</string>
     <string name="list_message_all_restored">Wszystkie notki przywrócono</string>
     <string name="list_export_all_filename">%1$s notki %2$s.csv</string>
-    <string name="list_import_finished_delimiter">&#32;</string>
     <string name="list_message_added">Notkę dodano</string>
-    <string name="list_import_failed_column_missing">Brakująca kolumna &#8222;%1$s&#8221;</string>
+    <string name="list_import_failed_column_missing">Brakująca kolumna „%1$s”</string>
     <plurals name="list_import_finished_skipped">
-        <item quantity="one">Pominięto %1$d notkę, gdyż notka o&#160;takim samym znaczniku czasowym już istnieje.</item>
-        <item quantity="few">Pominięto %1$d notki, gdyż notki o&#160;takich samych znacznikach czasowych już istnieją.</item>
-        <item quantity="many">Pominięto %1$d notek, gdyż notki o&#160;takich samych znacznikach czasowych już istnieją.</item>
-        <item quantity="other">Pominięto %1$d notek, gdyż notki o&#160;takich samych znacznikach czasowych już istnieją.</item>
+        <item quantity="one">Pominięto %1$d notkę, gdyż notka o takim samym znaczniku czasowym już istnieje.</item>
+        <item quantity="few">Pominięto %1$d notki, gdyż notki o takich samych znacznikach czasowych już istnieją.</item>
+        <item quantity="many">Pominięto %1$d notek, gdyż notki o takich samych znacznikach czasowych już istnieją.</item>
+        <item quantity="other">Pominięto %1$d notek, gdyż notki o takich samych znacznikach czasowych już istnieją.</item>
     </plurals>
     <string name="entry_unit_double_placeholder">0,0</string>
     <string name="entry_unit_clothing_choice_l">L</string>
