@@ -49,7 +49,6 @@
     <string name="entry_unit_fraction_choice_one_half">½</string>
     <string name="entry_unit_fraction_choice_one_half_html"><![CDATA[<big>½</big>]]></string>
     <string name="list_import_finished_empty">Leere CSV-Datei</string>
-    <string name="list_import_finished_delimiter"> </string>
     <string name="input_clear_content_description">Eingabe löschen</string>
     <string name="entry_unit_none_name">keine Einheit</string>
     <string name="entry_unit_fraction_choice_three_quarters">¾</string>
