@@ -7,9 +7,9 @@
     <string name="detail_add_save">Speichern</string>
     <string name="about_app_icon_content_description">Anwendungssymbol</string>
     <string name="list_item_time_at">um %1$s</string>
-    <string name="list_item_time_ago_seconds">vor %1$d&#160;s</string>
-    <string name="list_item_time_ago_hours_and_minutes">vor %1$d&#160;h %2$02d&#160;min</string>
-    <string name="list_item_time_ago_minutes">vor %1$d&#160;min</string>
+    <string name="list_item_time_ago_seconds">vor %1$d s</string>
+    <string name="list_item_time_ago_hours_and_minutes">vor %1$d h %2$02d min</string>
+    <string name="list_item_time_ago_minutes">vor %1$d min</string>
     <plurals name="list_import_finished_imported">
         <item quantity="one">%1$d Notiz wurde importiert.</item>
         <item quantity="other">%1$d Notizen wurden importiert.</item>
@@ -30,10 +30,10 @@
     <string name="list_message_updated">Notiz aktualisiert</string>
     <string name="list_message_deleted">Notiz gelöscht</string>
     <string name="list_message_all_deleted">Alle Notizen gelöscht</string>
-    <string name="list_import_failed_column_missing">Fehlende Spalte &#8222;%1$s&#8220;</string>
-    <string name="list_import_failed_column_empty">Leerer Wert der Spalte &#8222;%1$s&#8220;</string>
-    <string name="list_import_failed_column_parsing_error">Der Wert &#8222;%2$s&#8220; der Spalte &#8222;%1$s&#8220; konnte nicht analysiert werden</string>
-    <string name="list_import_failed_column_choice_unknown">Der Wert &#8222;%3$s&#8220; der Spalte &#8222;%1$s&#8220; muss einer der folgenden sein %2$s</string>
+    <string name="list_import_failed_column_missing">Fehlende Spalte „%1$s“</string>
+    <string name="list_import_failed_column_empty">Leerer Wert der Spalte „%1$s“</string>
+    <string name="list_import_failed_column_parsing_error">Der Wert „%2$s“ der Spalte „%1$s“ konnte nicht analysiert werden</string>
+    <string name="list_import_failed_column_choice_unknown">Der Wert „%3$s“ der Spalte „%1$s“ muss einer der folgenden sein %2$s</string>
     <plurals name="list_import_finished_skipped">
         <item quantity="one">%1$d Notiz wurde übersprungen, weil bereits eine Notiz mit demselben Zeitstempel existiert.</item>
         <item quantity="other">%1$d Notizen wurden übersprungen, weil bereits Notizen mit denselben Zeitstempeln existieren.</item>
@@ -49,7 +49,6 @@
     <string name="entry_unit_fraction_choice_one_half">½</string>
     <string name="entry_unit_fraction_choice_one_half_html"><![CDATA[<big>½</big>]]></string>
     <string name="list_import_finished_empty">Leere CSV-Datei</string>
-    <string name="list_import_finished_delimiter">&#32;</string>
     <string name="input_clear_content_description">Eingabe löschen</string>
     <string name="entry_unit_none_name">keine Einheit</string>
     <string name="entry_unit_fraction_choice_three_quarters">¾</string>
@@ -76,5 +75,5 @@
     <string name="detail_unit_label">Wähle eine Menge, wenn du willst</string>
     <string name="detail_unit_dropdown_content_description">Liste der Einheiten aufklappen</string>
     <string name="list_delete_all_dialog_text">Du bist dabei, alle Notizen zu löschen</string>
-    <string name="list_delete_dialog_text">Du bist dabei, die Notiz &#8222;%1$s&#8220; zu löschen</string>
+    <string name="list_delete_dialog_text">Du bist dabei, die Notiz „%1$s“ zu löschen</string>
 </resources>

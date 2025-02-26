@@ -2,7 +2,7 @@
 <resources>
     <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> je nekomerční aplikace vytvořená třemi přáteli pro zábavu.</p><br><p>Chcete se s&#160;námi podělit o&#160;to, jak aplikaci používáte? Napište nám <a href="mailto:android@traced-it.app">e-mail</a>.</p><br><p>Nefunguje vám něco nebo máte nápady na vylepšení? Nahlaste <a href="https://github.com/traced-it/traced-it-android/issues">problém</a>.</p><br><p>Distribuováno pod <a href="https://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License 3.0</a> nebo novější. Kód najdete na <a href="https://github.com/traced-it/traced-it-android">GitHubu</a>, kde se také můžete zapojit do vývoje.</p>]]></string>
     <string name="about_app_icon_content_description">Ikona aplikace</string>
-    <string name="about_title">O&#160;aplikaci</string>
+    <string name="about_title">O aplikaci</string>
     <string name="detail_add_save">Uložit</string>
     <string name="nav_back">Zpět na seznam poznámek</string>
     <string name="detail_cancel">Zrušit</string>
@@ -11,7 +11,7 @@
     <string name="list_item_update">Upravit</string>
     <string name="list_item_delete">Odstranit</string>
     <string name="list_menu">Menu</string>
-    <string name="list_menu_import">Import z&#160;CSV</string>
+    <string name="list_menu_import">Import z CSV</string>
     <string name="list_menu_export_all">Uložit jako CSV</string>
     <string name="list_menu_delete_all">Odstranit vše</string>
     <string name="list_add">Přidat poznámku</string>
@@ -21,7 +21,7 @@
     <string name="list_delete_all_dialog_confirm">Odstranit vše</string>
     <string name="list_delete_all_dialog_text">Chystáte se odstranit všechny poznámky</string>
     <string name="list_delete_dialog_title">Odstranit poznámku?</string>
-    <string name="list_delete_dialog_text">Chystáte se odstranit poznámku &#8222;%1$s&#8220;</string>
+    <string name="list_delete_dialog_text">Chystáte se odstranit poznámku „%1$s“</string>
     <string name="list_delete_dialog_confirm">Odstranit poznámku</string>
     <string name="list_message_added">Poznámka přidána</string>
     <string name="list_message_updated">Poznámka upravena</string>
@@ -29,14 +29,14 @@
     <string name="list_message_deleted_action">Vrátit</string>
     <string name="list_message_all_deleted_action">Vrátit</string>
     <string name="list_message_all_deleted">Všechny poznámky odstraněny</string>
-    <string name="list_item_time_at">v&#160;%1$s</string>
-    <string name="list_item_time_ago_seconds">před %1$d&#160;s</string>
-    <string name="list_item_time_ago_minutes">před %1$d&#160;min</string>
-    <string name="list_item_time_ago_hours_and_minutes">před %1$d&#160;h %2$02d&#160;min</string>
-    <string name="list_import_failed_column_missing">Chybí sloupec &#8220;%1$s&#8220;</string>
-    <string name="list_import_failed_column_empty">Prázdná hodnota sloupce &#8220;%1$s&#8220;</string>
-    <string name="list_import_failed_column_parsing_error">Nepodařilo se analyzovat hodnotu &#8220;%2$s&#8220; sloupce &#8220;%1$s&#8220;</string>
-    <string name="list_import_failed_column_choice_unknown">Hodnota &#8220;%3$s&#8220; sloupce &#8220;%1$s&#8220; musí být jedna z&#160;následujících hodnot %2$s</string>
+    <string name="list_item_time_at">v %1$s</string>
+    <string name="list_item_time_ago_seconds">před %1$d s</string>
+    <string name="list_item_time_ago_minutes">před %1$d min</string>
+    <string name="list_item_time_ago_hours_and_minutes">před %1$d h %2$02d min</string>
+    <string name="list_import_failed_column_missing">Chybí sloupec “%1$s“</string>
+    <string name="list_import_failed_column_empty">Prázdná hodnota sloupce “%1$s“</string>
+    <string name="list_import_failed_column_parsing_error">Nepodařilo se analyzovat hodnotu “%2$s“ sloupce “%1$s“</string>
+    <string name="list_import_failed_column_choice_unknown">Hodnota “%3$s“ sloupce “%1$s“ musí být jedna z následujících hodnot %2$s</string>
     <plurals name="list_import_finished_imported">
         <item quantity="one">%1$d poznámka importována.</item>
         <item quantity="few">%1$d poznámky importovány.</item>
@@ -50,7 +50,6 @@
         <item quantity="other">%1$d poznámek přeskočeno, protože poznámky se stejnými časovými údaji už existují.</item>
     </plurals>
     <string name="list_import_finished_empty">Prázdný soubor CSV</string>
-    <string name="list_import_finished_delimiter">&#32;</string>
     <string name="detail_unit_label">Zvolte množství, pokud chcete</string>
     <string name="detail_unit_dropdown_content_description">Rozbalit seznam jednotek</string>
     <string name="entry_unit_fraction_choice_three_quarters">¾</string>
