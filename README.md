@@ -7,6 +7,9 @@ numbers.
 The uncomplicated interface makes the app easy to use even when you're busy or
 distracted.
 
+📢 **We're looking for testers! If you use the Google Play store and would like to
+help us, please submit this [Google Form](https://docs.google.com/forms/d/e/1FAIpQLSe4O_-f0mjtfLFWXkf5zThnPeEb8hQU-sHt_HXwKbOc6X02eg/viewform?usp=header).**
+
 [<img src="https://f-droid.org/badge/get-it-on.png"
 alt="Get it on F-Droid"
 height="80">](https://f-droid.org/packages/app.traced_it/)
