@@ -1,14 +1,15 @@
 # ![](./docs/icon-54.png) traced it
 
 A simple app for short text notes, with a prominent timestamp for each entry.
-Add quantities to your notes using preset formats (S/M/L, 1x/2x/3x) or custom
-numbers.
+Add quantities to your notes using preset formats (S, M, XL, 1/4, 1/2, 3/4) or
+custom numbers.
 
-The uncomplicated interface makes the app easy to use even when you're busy or
+The uncomplicated interface makes the app easy to use even when you’re busy or
 distracted.
 
-📢 **We're looking for testers! If you use the Google Play store and would like to
-help us, please submit this [Google Form](https://docs.google.com/forms/d/e/1FAIpQLSe4O_-f0mjtfLFWXkf5zThnPeEb8hQU-sHt_HXwKbOc6X02eg/viewform?usp=header).**
+📢 **We’re looking for testers! If you use the Google Play store and would like
+to help us, please submit this [Google
+Form](https://docs.google.com/forms/d/e/1FAIpQLSe4O_-f0mjtfLFWXkf5zThnPeEb8hQU-sHt_HXwKbOc6X02eg/viewform?usp=header).**
 
 [<img src="https://f-droid.org/badge/get-it-on.png"
 alt="Get it on F-Droid"
@@ -28,18 +29,18 @@ height="80">](https://apt.izzysoft.de/packages/app.traced_it)
 
 ## Features
 
-- Add text notes with an optional amount (S/M/L, 1x/2x/3x, 5.813…)
-- See all your notes with the time elapsed since you wrote each note
-- Tap the + button to add a new note with the same text as an existing note
-- Edit a note, delete it, delete all notes
-- Export all notes as a spreadsheet file (CSV format) and import them
+- Add text notes with an optional amount (S, M, XL, 1/4, 1/2, 3/4, 5.813…).
+- See all your notes with the time elapsed since you wrote each note.
+- Tap the + button to add a new note with the same text as an existing note.
+- Edit a note, delete it, delete all notes.
+- Export all notes as a spreadsheet file (CSV format) and import them.
 
 ## Privacy & security
 
-- The app doesn't use the internet at all – your notes are stored on your phone
-  only
-- The app doesn't access any information about you and doesn't collect usage
-  data
+- The app doesn’t use the internet at all – your notes are stored on your phone
+  only.
+- The app doesn’t access any information about you and doesn’t collect usage
+  data.
 - No ads
 - Free and open-source
 
