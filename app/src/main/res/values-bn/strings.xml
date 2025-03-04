@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_app_icon_content_description">অ্যাপ্লিকেশন আইকন</string>
+    <string name="detail_add_save">সংরক্ষণ</string>
+    <string name="detail_content_label">আপনার নোট লিখুন</string>
+    <string name="list_item_update">আপডেট</string>
+    <string name="list_item_delete">ডিলিট</string>
+    <string name="list_menu">মেনু</string>
+    <string name="list_menu_import">CSV থেকে ফাইল আনুন</string>
+    <string name="list_menu_delete_all">সব গুলো ডিলিট করে দিন</string>
+    <string name="list_title">আপনার নোটস গুলো (%1$d)</string>
+    <string name="list_delete_all_dialog_title">সব গুলো নোটস ডিলিট করে দিন?</string>
+    <string name="list_delete_all_dialog_text">আপনি সব গুলো নোটস ডিলিট করে দিচ্ছেন</string>
+    <string name="list_delete_dialog_title">নোট ডিলিট?</string>
+    <string name="list_delete_dialog_text">আপনি “%1$s” নোট ডিলিট করে দিচ্ছেন</string>
+    <string name="list_delete_dialog_confirm">নোট ডিলিট</string>
+    <string name="list_message_added">নোট যুক্ত হয়ে গেলো</string>
+    <string name="list_message_deleted">নোট ডিলিট হয়েছে</string>
+    <string name="list_message_all_deleted_action">ফিরে যান</string>
+    <string name="nav_back">নোটসে ফিরে যান</string>
+    <string name="list_message_deleted_action">পূর্বাবস্থায় ফিরে যান</string>
+    <string name="detail_cancel">বাতিল</string>
+    <string name="detail_update_save">আপডেট</string>
+    <string name="list_message_all_deleted">সবগুলো নোট ডিলিট করা হয়েছে</string>
+    <string name="list_menu_export_all">CSV ফরম্যাট এ সংরক্ষণ করুন</string>
+    <string name="list_delete_all_dialog_confirm">সবগুলো ডিলিট করে দিন</string>
+    <string name="list_add">নোট যুক্ত করুন</string>
+    <string name="list_message_updated">নোট আপডেট করা হয়েছে</string>
+    <string name="list_item_add">হুবহু শব্দ দিয়ে আরেকটি নোট তৈরি করুন</string>
+</resources>

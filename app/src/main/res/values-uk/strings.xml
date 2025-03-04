@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_app_icon_content_description">Значок програми</string>
+    <string name="about_title">В</string>
+    <string name="detail_cancel">Відмінивши</string>
+    <string name="detail_update_save">Оновлення</string>
+    <string name="detail_add_save">Зберігши</string>
+    <string name="detail_content_label">Напишіть свою записку</string>
+    <string name="nav_back">Повернутися до списку нотаток</string>
+</resources>
