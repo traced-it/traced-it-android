@@ -14,6 +14,10 @@ Form](https://docs.google.com/forms/d/e/1FAIpQLSe4O_-f0mjtfLFWXkf5zThnPeEb8hQU-s
 [<img src="https://f-droid.org/badge/get-it-on.png"
 alt="Get it on F-Droid"
 height="80">](https://f-droid.org/packages/app.traced_it/)
+[<img
+src="https://user-images.githubusercontent.com/663460/26973090-f8fdc986-4d14-11e7-995a-e7c5e79ed925.png"
+alt="Get APK from GitHub"
+height="80">](https://github.com/traced-it/traced-it-android/releases/latest/download/app.traced_it.apk)
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
 alt="Get it on Izzy on Droid"
 height="80">](https://apt.izzysoft.de/packages/app.traced_it)
@@ -57,18 +61,14 @@ width="270">](./fastlane/metadata/android/en-US/images/phoneScreenshots/3.png)
 alt="Screenshot of the interface to export notes"
 width="270">](./fastlane/metadata/android/en-US/images/phoneScreenshots/4.png)
 
-## Installation
+## APK signature
 
-Download an APK from GitHub and verify its signature:
+The APK released on GitHub and F-Droid is signed with a certificate with the
+following SHA-256 fingerprint:
 
-[![GitHub](https://img.shields.io/github/v/release/traced-it/traced-it-android?logo=github&label=GitHub)](https://github.com/traced-it/traced-it-android/releases/latest/download/app.traced_it.apk)
-
-```shell
-apksigner verify --print-certs app.traced_it.apk
 ```
-
-Signer #1 certificate SHA-256 digest must be
-`d102417bced85dfb23c49ec1e1915963d17cf3d4c028b754877943cc9b865aa9`.
+d102417bced85dfb23c49ec1e1915963d17cf3d4c028b754877943cc9b865aa9
+```
 
 ## Contributing
 
