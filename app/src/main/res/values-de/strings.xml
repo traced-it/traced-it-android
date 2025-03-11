@@ -3,7 +3,7 @@
     <string name="about_title">Über</string>
     <string name="nav_back">Zurück zur Liste der Notizen</string>
     <string name="detail_cancel">Abbrechen</string>
-    <string name="detail_update_save">Aktualisieren</string>
+    <string name="detail_update_save">Bearbeiten</string>
     <string name="detail_add_save">Speichern</string>
     <string name="about_app_icon_content_description">Anwendungssymbol</string>
     <string name="list_item_time_at">um %1$s</string>
@@ -14,7 +14,7 @@
         <item quantity="one">%1$d Notiz wurde importiert.</item>
         <item quantity="other">%1$d Notizen wurden importiert.</item>
     </plurals>
-    <string name="list_item_update">Aktualisieren</string>
+    <string name="list_item_update">Bearbeiten</string>
     <string name="list_item_delete">Löschen</string>
     <string name="list_menu">Menü</string>
     <string name="list_menu_import">Import aus CSV</string>
@@ -27,7 +27,7 @@
     <string name="list_delete_dialog_title">Notiz löschen?</string>
     <string name="list_delete_dialog_confirm">Notiz löschen</string>
     <string name="list_message_added">Notiz hinzugefügt</string>
-    <string name="list_message_updated">Notiz aktualisiert</string>
+    <string name="list_message_updated">Notiz bearbeitet</string>
     <string name="list_message_deleted">Notiz gelöscht</string>
     <string name="list_message_all_deleted">Alle Notizen gelöscht</string>
     <string name="list_import_failed_column_missing">Fehlende Spalte „%1$s“</string>
@@ -61,7 +61,7 @@
     <string name="entry_unit_fraction_name">Bruch</string>
     <string name="list_message_deleted_action">Zurücknehmen</string>
     <string name="list_message_all_deleted_action">Zurücknehmen</string>
-    <string name="detail_update_title">Notiz aktualisieren</string>
+    <string name="detail_update_title">Notiz bearbeiten</string>
     <string name="detail_add_title">Notiz hinzufügen</string>
     <string name="list_message_restored">Notiz wiederhergestellt</string>
     <string name="list_message_all_restored">Alle Notizen wiederhergestellt</string>
