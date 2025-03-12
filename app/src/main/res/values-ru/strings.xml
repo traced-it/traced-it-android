@@ -46,4 +46,27 @@
     <string name="entry_unit_fraction_choice_whole_html">1</string>
     <string name="detail_update_title">Обновить заметку</string>
     <string name="detail_add_title">Добавить заметку</string>
+    <string name="list_import_finished_empty">Пустой CSV файл</string>
+    <string name="detail_unit_label">Выберите сумму, если хотите</string>
+    <string name="input_clear_content_description">Четкий ввод данных</string>
+    <string name="list_delete_all_dialog_dismiss">Увольнять</string>
+    <string name="entry_unit_double_name">номер</string>
+    <string name="list_message_restored">Записка восстановлена</string>
+    <string name="list_message_all_restored">Все заметки восстановлены</string>
+    <string name="entry_unit_clothing_name">размер</string>
+    <string name="detail_unit_dropdown_content_description">Расширить список объектов</string>
+    <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> это некоммерческое приложение, созданное тремя друзьями для развлечения.</p><br><p>Не хотели бы вы поделиться с нами тем, как вы используете приложение? Напишите нам <a href="mailto:android@traced-it.app">электронная почта</a>.</p><br><p>У вас что-то не работает или у вас есть идеи по улучшению? Отправьте запрос <a href="https://github.com/traced-it/traced-it-android/issues">вопрос</a>.</p><br><p>Распространяется под <a href="https://www.gnu.org/licenses/gpl-3.0.txt">GNU Общая публичная лицензия 3.0</a> или позже. Вы можете найти код и принять участие на <a href="https://github.com/traced-it/traced-it-android">GitHub</a>.</p>]]></string>
+    <plurals name="list_import_finished_imported">
+        <item quantity="one">Импортированная %1$d записи.</item>
+        <item quantity="few">Импортированные %1$d записи.</item>
+        <item quantity="many">Импортированные %1$d записи.</item>
+        <item quantity="other">Импортированные %1$d записи.</item>
+    </plurals>
+    <string name="list_delete_dialog_dismiss">Увольнять</string>
+    <string name="entry_unit_clothing_choice_xs">XS</string>
+    <string name="entry_unit_clothing_choice_s">S</string>
+    <string name="entry_unit_clothing_choice_m">M</string>
+    <string name="entry_unit_clothing_choice_l">L</string>
+    <string name="entry_unit_clothing_choice_xl">XL</string>
+    <string name="list_export_all_filename">%1$s заметки %2$s.csv</string>
 </resources>
