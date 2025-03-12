@@ -21,7 +21,7 @@
     <string name="list_delete_all_dialog_text">Vous êtes en train de supprimer toutes les notes</string>
     <string name="list_delete_all_dialog_confirm">Supprimer tout</string>
     <string name="list_delete_dialog_title">Supprimer la note ?</string>
-    <string name="list_delete_dialog_text">Vous êtes en train de supprimer la note «%1$s»</string>
+    <string name="list_delete_dialog_text">Vous êtes en train de supprimer la note « %1$s »</string>
     <string name="list_delete_dialog_confirm">Supprimer la note</string>
     <string name="list_message_added">Note ajoutée</string>
     <string name="list_message_updated">Note modifiée</string>
@@ -33,10 +33,10 @@
     <string name="list_item_time_ago_seconds">il y a %1$d s</string>
     <string name="list_item_time_ago_minutes">il y a %1$d min</string>
     <string name="list_item_time_ago_hours_and_minutes">il y a %1$d h %2$02d min</string>
-    <string name="list_import_failed_column_missing">Colonne «%1$s» manquante</string>
-    <string name="list_import_failed_column_empty">Valeur vide de la colonne «%1$s»</string>
-    <string name="list_import_failed_column_parsing_error">Échec de l’analyse de la valeur «%2$s» de la colonne «%1$s»</string>
-    <string name="list_import_failed_column_choice_unknown">La valeur «%3$s» de la colonne «%1$s» doit être l’une des suivantes %2$s</string>
+    <string name="list_import_failed_column_missing">Colonne « %1$s » manquante</string>
+    <string name="list_import_failed_column_empty">Valeur vide de la colonne « %1$s »</string>
+    <string name="list_import_failed_column_parsing_error">Échec de l’analyse de la valeur « %2$s » de la colonne « %1$s »</string>
+    <string name="list_import_failed_column_choice_unknown">La valeur « %3$s » de la colonne « %1$s » doit être l’une des suivantes %2$s</string>
     <plurals name="list_import_finished_imported">
         <item quantity="one">%1$d note importée.</item>
         <item quantity="many">%1$d notes importées.</item>
