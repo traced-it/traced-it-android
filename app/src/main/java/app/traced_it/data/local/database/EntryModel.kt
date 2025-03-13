@@ -31,14 +31,7 @@ data class Entry(
     fun formatTime(context: Context, now: Long): String =
         (now - createdAt).milliseconds.toComponents { hours, minutes, seconds, _ ->
             if (hours >= 24 || hours < 0 || minutes < 0 || seconds < 0) {
-                context.resources.getString(
-                    R.string.list_item_time_at,
-                    DateUtils.formatDateTime(
-                        context,
-                        createdAt,
-                        DateUtils.FORMAT_SHOW_TIME,
-                    ),
-                )
+                formatExactTime(context)
             } else if (hours == 0L) {
                 if (minutes == 0) {
                     context.resources.getString(
@@ -60,10 +53,25 @@ data class Entry(
             }
         }
 
+    fun formatExactTime(context: Context): String =
+        context.resources.getString(
+            R.string.list_item_time_at,
+            DateUtils.formatDateTime(
+                context,
+                createdAt,
+                DateUtils.FORMAT_SHOW_TIME,
+            ),
+        )
+
     fun getHeader(context: Context, prevEntry: Entry?): String? =
         if (prevEntry == null && !DateUtils.isToday(createdAt) ||
-                prevEntry != null && !isSameDay(context, prevEntry)) {
-            DateUtils.formatDateTime(context, createdAt, DateUtils.FORMAT_SHOW_DATE)
+            prevEntry != null && !isSameDay(context, prevEntry)
+        ) {
+            DateUtils.formatDateTime(
+                context,
+                createdAt,
+                DateUtils.FORMAT_SHOW_DATE
+            )
         } else {
             null
         }

@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -54,6 +55,8 @@ fun EntryListItem(
     now: Long = System.currentTimeMillis(),
     highlighted: Boolean = false,
     odd: Boolean = false,
+    selected: Boolean = false,
+    onToggle: () -> Unit = {},
     onUpdate: () -> Unit = {},
     onDelete: () -> Unit = {},
     onAddWithSameText: () -> Unit = {},
@@ -62,12 +65,18 @@ fun EntryListItem(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val containerColor = if (odd) {
+    val containerColor = if (selected) {
+        MaterialTheme.colorScheme.tertiaryContainer
+    } else if (odd) {
         MaterialTheme.colorScheme.surfaceContainerHigh
     } else {
         Color.Transparent
     }
-    val contentColor = MaterialTheme.colorScheme.onSurface
+    val contentColor = if (selected) {
+        MaterialTheme.colorScheme.onTertiaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
     val highlightedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
     val animatedBackground = remember { Animatable(Color.Transparent) }
 
@@ -127,6 +136,7 @@ fun EntryListItem(
             Modifier
                 .testTag("entryListItem")
                 .background(animatedBackground.value)
+                .clickable { onToggle() }
                 .fillMaxWidth()
                 .padding(
                     horizontal = Spacing.windowPadding,
@@ -168,7 +178,10 @@ fun EntryListItem(
                 color = contentColor,
             )
             Text(
-                entry.formatTime(context, now),
+                if (selected)
+                    entry.formatExactTime(context)
+                else
+                    entry.formatTime(context, now),
                 color = contentColor,
             )
             Button(
@@ -275,6 +288,7 @@ private fun DefaultPreview() {
             EntryListItem(
                 entry = defaultFakeEntries[3],
                 prevEntry = defaultFakeEntries[2],
+                selected = true,
             )
         }
     }

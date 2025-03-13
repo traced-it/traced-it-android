@@ -1,0 +1,1 @@
+- New feature: Tap a note to show exact time.

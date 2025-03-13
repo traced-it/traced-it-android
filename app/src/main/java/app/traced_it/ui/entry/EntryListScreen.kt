@@ -26,6 +26,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import app.traced_it.R
 import app.traced_it.data.di.FakeEntryRepository
+import app.traced_it.data.di.defaultFakeEntries
 import app.traced_it.data.local.database.Entry
 import app.traced_it.ui.components.ConfirmationDialog
 import app.traced_it.ui.components.TracedBottomButton
@@ -41,6 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EntryListScreen(
     onNavigateToAboutScreen: () -> Unit = {},
+    initialSelectedEntry: Entry? = null,
     viewModel: EntryViewModel = hiltViewModel(),
 ) {
     val appName = stringResource(R.string.app_name)
@@ -59,6 +61,7 @@ fun EntryListScreen(
     val listState = rememberLazyListState()
     val message by viewModel.message.collectAsStateWithLifecycle()
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    var selectedEntry by remember { mutableStateOf(initialSelectedEntry) }
     val snackbarErrorHostState = remember { SnackbarHostState() }
     val snackbarSuccessHostState = remember { SnackbarHostState() }
 
@@ -121,8 +124,12 @@ fun EntryListScreen(
             }
     }
 
-    BackHandler(entryDetailOpen) {
-        entryDetailOpen = false
+    BackHandler(entryDetailOpen || selectedEntry != null) {
+        if (entryDetailOpen) {
+            entryDetailOpen = false
+        } else {
+            selectedEntry = null
+        }
     }
 
     TracedScaffold(
@@ -221,6 +228,7 @@ fun EntryListScreen(
                             now = now,
                             highlighted = highlightedEntryUid == entry.uid,
                             odd = index % 2 != 0,
+                            selected = selectedEntry == entry,
                             onAddWithSameText = {
                                 entryDetailAction =
                                     EntryDetailAction.Prefill(entry)
@@ -231,6 +239,11 @@ fun EntryListScreen(
                             },
                             onHighlightingFinished = {
                                 viewModel.setHighlightedEntryUid(null)
+                            },
+                            onToggle = {
+                                selectedEntry = entry.takeIf {
+                                    selectedEntry != entry
+                                }
                             },
                             onUpdate = {
                                 entryDetailAction =
@@ -266,11 +279,13 @@ fun EntryListScreen(
             onInsert = {
                 scope.launch {
                     listState.scrollToItem(0)
+                    selectedEntry = null
                     entryDetailOpen = false
                     viewModel.insertEntry(context, it)
                 }
             },
             onUpdate = {
+                selectedEntry = null
                 entryDetailOpen = false
                 viewModel.updateEntry(context, it)
             },
@@ -309,6 +324,7 @@ fun EntryListScreen(
             onDismissRequest = { entryToDelete = null },
             onConfirmation = {
                 entryToDelete = null
+                selectedEntry = null
                 viewModel.deleteEntry(context, entryToDeleteCopy)
             },
         )
@@ -334,6 +350,18 @@ private fun DefaultPreview() {
 private fun LightPreview() {
     AppTheme {
         EntryListScreen(
+            viewModel = EntryViewModel(FakeEntryRepository()),
+        )
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SelectedEntryPreview() {
+    AppTheme {
+        EntryListScreen(
+            initialSelectedEntry = defaultFakeEntries[2],
             viewModel = EntryViewModel(FakeEntryRepository()),
         )
     }
