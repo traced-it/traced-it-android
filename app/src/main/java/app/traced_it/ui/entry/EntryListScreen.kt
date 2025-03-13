@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import app.traced_it.R
@@ -35,6 +36,8 @@ import app.traced_it.ui.components.TracedTopAppBar
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -42,14 +45,27 @@ import kotlinx.coroutines.launch
 @Composable
 fun EntryListScreen(
     onNavigateToAboutScreen: () -> Unit = {},
+    viewModel: EntryViewModel = hiltViewModel(),
+) {
+    EntryListScreen(
+        allEntriesFlow = viewModel.allEntries,
+        onNavigateToAboutScreen = onNavigateToAboutScreen,
+        viewModel = viewModel,
+    )
+}
+
+@Composable
+fun EntryListScreen(
+    allEntriesFlow: StateFlow<PagingData<Entry>>,
     initialSelectedEntry: Entry? = null,
+    onNavigateToAboutScreen: () -> Unit = {},
     viewModel: EntryViewModel = hiltViewModel(),
 ) {
     val appName = stringResource(R.string.app_name)
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val allEntries = viewModel.allEntries.collectAsLazyPagingItems()
+    val allEntries = allEntriesFlow.collectAsLazyPagingItems()
     var deleteAllEntriesDialogOpen by remember { mutableStateOf(false) }
     var entryDetailAction by remember {
         mutableStateOf<EntryDetailAction>(EntryDetailAction.Prefill(Entry()))
@@ -339,6 +355,9 @@ fun EntryListScreen(
 private fun DefaultPreview() {
     AppTheme {
         EntryListScreen(
+            allEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
             viewModel = EntryViewModel(FakeEntryRepository()),
         )
     }
@@ -350,6 +369,9 @@ private fun DefaultPreview() {
 private fun LightPreview() {
     AppTheme {
         EntryListScreen(
+            allEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
             viewModel = EntryViewModel(FakeEntryRepository()),
         )
     }
@@ -361,6 +383,9 @@ private fun LightPreview() {
 private fun SelectedEntryPreview() {
     AppTheme {
         EntryListScreen(
+            allEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
             initialSelectedEntry = defaultFakeEntries[2],
             viewModel = EntryViewModel(FakeEntryRepository()),
         )
@@ -373,6 +398,7 @@ private fun SelectedEntryPreview() {
 private fun EmptyPreview() {
     AppTheme {
         EntryListScreen(
+            allEntriesFlow = MutableStateFlow(PagingData.empty()),
             viewModel = EntryViewModel(FakeEntryRepository(emptyList())),
         )
     }
@@ -388,6 +414,9 @@ private fun EmptyPreview() {
 private fun PortraitPreview() {
     AppTheme {
         EntryListScreen(
+            allEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
             viewModel = EntryViewModel(FakeEntryRepository()),
         )
     }
