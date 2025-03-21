@@ -27,7 +27,6 @@ fun TracedBottomButton(
         Button(
             onClick = onClick,
             modifier = modifier
-                .windowInsetsPadding(WindowInsets.navigationBars)
                 .padding(Spacing.small)
                 .width(400.dp)
                 .height(Spacing.bottomButtonHeight),

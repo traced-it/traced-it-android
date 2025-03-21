@@ -190,8 +190,7 @@ fun EntryListScreen(
             SnackbarHost(
                 hostState = snackbarSuccessHostState,
                 modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = Spacing.bottomButtonHeight),
+                    .padding(bottom = Spacing.bottomButtonHeight + Spacing.small + Spacing.small),
                 snackbar = { snackbarData ->
                     Snackbar(
                         snackbarData = snackbarData,
@@ -205,8 +204,7 @@ fun EntryListScreen(
             SnackbarHost(
                 hostState = snackbarErrorHostState,
                 modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(bottom = Spacing.bottomButtonHeight),
+                    .padding(bottom = Spacing.bottomButtonHeight + Spacing.small + Spacing.small),
                 snackbar = { snackbarData ->
                     Snackbar(
                         snackbarData = snackbarData,
@@ -277,9 +275,7 @@ fun EntryListScreen(
                     entryDetailAction = EntryDetailAction.Prefill(Entry())
                     entryDetailOpen = true
                 },
-                modifier = Modifier
-                    .testTag("entryListNewEntryButton")
-                    .windowInsetsPadding(WindowInsets.navigationBars),
+                modifier = Modifier.testTag("entryListNewEntryButton"),
             )
         }
     }
