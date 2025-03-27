@@ -54,7 +54,8 @@ data class EntryUnit(
 
     fun serialize(value: Double): String = value.toString()
 
-    fun deserialize(value: String): Double = value.toDoubleOrNull() ?: defaultValue
+    fun deserialize(value: String): Double =
+        value.toDoubleOrNull() ?: defaultValue
 }
 
 val noneUnit = EntryUnit(
@@ -72,8 +73,8 @@ val clothingSizeUnit = EntryUnit(
         EntryUnitChoice(1.0, R.string.entry_unit_clothing_choice_s),
         EntryUnitChoice(2.0, R.string.entry_unit_clothing_choice_m),
         EntryUnitChoice(3.0, R.string.entry_unit_clothing_choice_l),
-        EntryUnitChoice(4.0, R.string.entry_unit_clothing_choice_xl)
-    )
+        EntryUnitChoice(4.0, R.string.entry_unit_clothing_choice_xl),
+    ),
 )
 val fractionUnit = EntryUnit(
     id = "FRACTION",
@@ -103,8 +104,8 @@ val fractionUnit = EntryUnit(
             1.0,
             R.string.entry_unit_fraction_choice_whole,
             R.string.entry_unit_fraction_choice_whole_html,
-        )
-    )
+        ),
+    ),
 )
 val smallNumbersChoiceUnit = EntryUnit(
     id = "SMALL_NUMBERS_CHOICE",
@@ -114,8 +115,8 @@ val smallNumbersChoiceUnit = EntryUnit(
         EntryUnitChoice(2.0, R.string.entry_unit_portion_choice_2),
         EntryUnitChoice(3.0, R.string.entry_unit_portion_choice_3),
         EntryUnitChoice(4.0, R.string.entry_unit_portion_choice_4),
-        EntryUnitChoice(5.0, R.string.entry_unit_portion_choice_5)
-    )
+        EntryUnitChoice(5.0, R.string.entry_unit_portion_choice_5),
+    ),
 )
 val doubleUnit = EntryUnit(
     id = "DOUBLE",
@@ -132,5 +133,5 @@ val defaultVisibleUnit = clothingSizeUnit
 val visibleUnits: List<EntryUnit> = listOf(
     defaultVisibleUnit,
     fractionUnit,
-    doubleUnit
+    doubleUnit,
 )

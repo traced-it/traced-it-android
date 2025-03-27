@@ -133,6 +133,7 @@ fun EntryDetailDialog(
                     onAmountRawChange = { amountRaw = it },
                     onUnitChange = { unit = it },
                     onVisibleUnitChange = { newVisibleUnit ->
+                        unit = noneUnit
                         visibleUnit = newVisibleUnit
                         amountRaw = ""
                     },
