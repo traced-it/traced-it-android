@@ -1,7 +1,6 @@
 package app.traced_it.ui.entry
 
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.EaseOutQuint
@@ -10,7 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -28,10 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -66,7 +63,6 @@ fun EntryListItem(
     onHighlightingFinished: () -> Unit = {},
 ) {
     val context = LocalContext.current
-    val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
 
     val containerColor = if (selected) {
@@ -140,25 +136,7 @@ fun EntryListItem(
             Modifier
                 .testTag("entryListItem")
                 .background(animatedBackground.value)
-                .combinedClickable(
-                    onClick = {
-                        Toast.makeText(
-                            context,
-                            if (selected)
-                                R.string.list_item_long_tap_selected_message
-                            else
-                                R.string.list_item_long_tap_message,
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                    },
-                    onLongClick = {
-                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onToggle()
-                    },
-                    onLongClickLabel = stringResource(
-                        R.string.list_item_long_click_label
-                    ),
-                )
+                .clickable { onToggle() }
                 .fillMaxWidth()
                 .padding(
                     horizontal = Spacing.windowPadding,
