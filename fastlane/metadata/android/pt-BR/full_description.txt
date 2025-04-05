@@ -1,0 +1,27 @@
+Um aplicativo simples para anotações curtas de texto com um registro proeminente de data e hora para cada item. Adicione quantidades a suas anotações usando formatos pré-definidos (P, M, XG, 1/4, 1/2, 3/4) ou números personalizados.
+
+A interface descomplicada torna o aplicativo fácil de usar mesmo quando você está ocupado ou distraído.
+
+PERFEITO PARA
+
+- Manter um diário pessoal
+- Acompanhar hábitos diários
+- Gravar exercícios
+- Registrar a ingestão de suplementos e água
+- Medir ingredientes na cozinha
+- Anotar resultados simples de laboratório
+
+FUNCIONALIDADES
+
+- Adicione notas de texto com um valor opcional (P, M, XG, 1/4, 1/2, 3/4, 5.813…).
+- Veja todas as suas anotações com o tempo decorrido desde que você escreveu cada uma.
+- Toque o botão + para adicionar uma nova anotação com o mesmo texto que uma anotação existente.
+- Edite uma anotação, remova-a, remova todas as anotações.
+- Exporte todas as anotações como uma planilha (formato CSV) e importe-as.
+
+PRIVACIDADE & SEGURANÇA
+
+- O aplicativo não usa a internet em nenhum momento – suas anotações são armazenadas em seu celular somente.
+- O aplicativo não acessa nenhuma informação sobre você e não coleta dados de uso.
+- Sem anúncios
+- Grátis e open-source
