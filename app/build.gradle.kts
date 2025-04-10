@@ -40,7 +40,7 @@ android {
         // `androidResources.generateLocalConfig = true`, so that languages
         // whose translations are in progress don't appear among the app's
         // supported languages.
-        resourceConfigurations += listOf("cs", "de", "en", "fr", "pl", "ru")
+        resourceConfigurations += listOf("cs", "de", "en", "fr", "pl", "pt-rBR", "ru")
     }
 
     buildTypes {
