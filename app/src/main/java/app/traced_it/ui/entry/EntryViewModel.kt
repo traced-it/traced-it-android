@@ -71,15 +71,11 @@ class EntryViewModel @Inject constructor(
     private val _highlightedEntryUid = MutableStateFlow<Int?>(null)
     val highlightedEntryUid: StateFlow<Int?> = _highlightedEntryUid
 
-    private val _searchExpanded = MutableStateFlow<Boolean>(
-        savedStateHandle.get<Boolean>(SEARCH_EXPANDED) == false
-    )
-    val searchExpanded: StateFlow<Boolean> = _searchExpanded
+    val searchExpanded: StateFlow<Boolean> =
+        savedStateHandle.getStateFlow(SEARCH_EXPANDED, false)
 
-    private val _searchQuery = MutableStateFlow<String>(
-        savedStateHandle.get<String>(SEARCH_QUERY) ?: ""
-    )
-    val searchQuery: StateFlow<String> = _searchQuery
+    val searchQuery: StateFlow<String> =
+        savedStateHandle.getStateFlow(SEARCH_QUERY, "")
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val allEntries: StateFlow<PagingData<Entry>> =
@@ -214,12 +210,10 @@ class EntryViewModel @Inject constructor(
     }
 
     fun search(searchQuery: String) {
-        _searchQuery.value = searchQuery
         savedStateHandle[SEARCH_QUERY] = searchQuery
     }
 
     fun setSearchExpanded(searchExpanded: Boolean) {
-        _searchExpanded.value = searchExpanded
         savedStateHandle[SEARCH_EXPANDED] = searchExpanded
     }
 
@@ -474,7 +468,7 @@ class EntryViewModel @Inject constructor(
         exportEntries(
             context,
             result,
-            entryRepository.getAll(_searchQuery.value)
+            entryRepository.getAll(searchQuery.value)
         )
 
     private fun exportEntries(
