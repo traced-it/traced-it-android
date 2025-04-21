@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface EntryRepository {
-    fun getAll(searchQuery: String = ""): PagingSource<Int, Entry>
+    fun getAll(filterQuery: String = ""): PagingSource<Int, Entry>
 
     fun getLatestEntry(): Flow<Entry?>
 
@@ -31,9 +31,9 @@ interface EntryRepository {
 class DefaultEntryRepository @Inject constructor(
     private val entryDao: EntryDao,
 ) : EntryRepository {
-    override fun getAll(searchQuery: String): PagingSource<Int, Entry> =
-        if (searchQuery.isNotEmpty()) {
-            entryDao.findByContent(searchQuery)
+    override fun getAll(filterQuery: String): PagingSource<Int, Entry> =
+        if (filterQuery.isNotEmpty()) {
+            entryDao.findByContent(filterQuery)
         } else {
             entryDao.getAll()
         }

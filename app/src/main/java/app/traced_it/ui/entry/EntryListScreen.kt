@@ -62,8 +62,8 @@ fun EntryListScreen(
 ) {
     EntryListScreen(
         allEntriesFlow = viewModel.allEntries,
-        searchExpandedFlow = viewModel.searchExpanded,
-        searchQueryFlow = viewModel.searchQuery,
+        filterExpandedFlow = viewModel.filterExpanded,
+        filterQueryFlow = viewModel.filterQuery,
         onNavigateToAboutScreen = onNavigateToAboutScreen,
         viewModel = viewModel,
     )
@@ -74,8 +74,8 @@ fun EntryListScreen(
 fun EntryListScreen(
     allEntriesFlow: StateFlow<PagingData<Entry>>,
     onNavigateToAboutScreen: () -> Unit = {},
-    searchExpandedFlow: StateFlow<Boolean>,
-    searchQueryFlow: StateFlow<String>,
+    filterExpandedFlow: StateFlow<Boolean>,
+    filterQueryFlow: StateFlow<String>,
     initialSelectedEntry: Entry? = null,
     viewModel: EntryViewModel = hiltViewModel(),
 ) {
@@ -91,14 +91,14 @@ fun EntryListScreen(
     }
     var entryDetailOpen by remember { mutableStateOf(false) }
     var entryToDelete by remember { mutableStateOf<Entry?>(null) }
+    val filterExpanded by filterExpandedFlow.collectAsStateWithLifecycle()
+    val filterFocusRequester = remember { FocusRequester() }
+    val filterQuery by filterQueryFlow.collectAsStateWithLifecycle()
     val highlightedEntryUid by viewModel.highlightedEntryUid.collectAsStateWithLifecycle()
     val latestEntry by viewModel.latestEntry.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val message by viewModel.message.collectAsStateWithLifecycle()
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    val searchExpanded by searchExpandedFlow.collectAsStateWithLifecycle()
-    val searchFocusRequester = remember { FocusRequester() }
-    val searchQuery by searchQueryFlow.collectAsStateWithLifecycle()
     var selectedEntry by remember { mutableStateOf(initialSelectedEntry) }
     val snackbarErrorHostState = remember { SnackbarHostState() }
     val snackbarSuccessHostState = remember { SnackbarHostState() }
@@ -167,14 +167,14 @@ fun EntryListScreen(
             }
     }
 
-    BackHandler(entryDetailOpen || selectedEntry != null || searchExpanded) {
+    BackHandler(entryDetailOpen || selectedEntry != null || filterExpanded) {
         if (entryDetailOpen) {
             entryDetailOpen = false
         } else if (selectedEntry != null) {
             selectedEntry = null
         } else {
-            viewModel.setSearchExpanded(false)
-            viewModel.search("")
+            viewModel.setFilterExpanded(false)
+            viewModel.filter("")
             scope.launch {
                 listState.scrollToItem(0)
             }
@@ -187,23 +187,23 @@ fun EntryListScreen(
                 title = {
                     if (selectedEntry != null) {
                         Text(stringResource(R.string.list_selected_title))
-                    } else if (searchExpanded) {
+                    } else if (filterExpanded) {
                         TracedTextField(
-                            value = searchQuery,
+                            value = filterQuery,
                             onValueChange = {
-                                viewModel.search(it)
+                                viewModel.filter(it)
                                 scope.launch {
                                     listState.scrollToItem(0)
                                 }
                             },
                             modifier = Modifier.focusRequester(
-                                searchFocusRequester
+                                filterFocusRequester
                             ),
                             textStyle = MaterialTheme.typography.bodyMedium,
                             placeholder = {
                                 Text(
                                     stringResource(
-                                        R.string.list_search_input_placeholder
+                                        R.string.list_filter_input_placeholder
                                     )
                                 )
                             },
@@ -216,7 +216,7 @@ fun EntryListScreen(
                             indicatorColor = Color.Transparent
                         )
                         LaunchedEffect(null) {
-                            searchFocusRequester.requestFocus()
+                            filterFocusRequester.requestFocus()
                         }
                     } else {
                         Text(
@@ -278,8 +278,8 @@ fun EntryListScreen(
                             },
                             onFindWithSameText = {
                                 selectedEntry?.let {
-                                    viewModel.setSearchExpanded(true)
-                                    viewModel.search(it.content)
+                                    viewModel.setFilterExpanded(true)
+                                    viewModel.filter(it.content)
                                     scope.launch {
                                         listState.scrollToItem(0)
                                     }
@@ -287,12 +287,12 @@ fun EntryListScreen(
                                 }
                             },
                         )
-                    } else if (searchExpanded) {
+                    } else if (filterExpanded) {
                         IconButton({
-                            if (searchQuery.isEmpty()) {
-                                viewModel.setSearchExpanded(false)
+                            if (filterQuery.isEmpty()) {
+                                viewModel.setFilterExpanded(false)
                             } else {
-                                viewModel.search("")
+                                viewModel.filter("")
                                 scope.launch {
                                     listState.scrollToItem(0)
                                 }
@@ -301,19 +301,19 @@ fun EntryListScreen(
                             Icon(
                                 Icons.Outlined.Clear,
                                 contentDescription = stringResource(
-                                    R.string.list_search_input_clear_content_description
+                                    R.string.list_filter_input_clear_content_description
                                 )
                             )
                         }
                     } else {
                         IconButton(
-                            { viewModel.setSearchExpanded(true) },
+                            { viewModel.setFilterExpanded(true) },
                             enabled = allEntries.itemCount > 0
                         ) {
                             Icon(
                                 Icons.Outlined.Search,
                                 contentDescription = stringResource(
-                                    R.string.list_search_submit
+                                    R.string.list_filter_submit
                                 )
                             )
                         }
@@ -343,11 +343,11 @@ fun EntryListScreen(
                     }
                 },
                 navigationIcon = {
-                    if (searchExpanded) {
+                    if (filterExpanded) {
                         IconButton(
                             onClick = {
-                                viewModel.setSearchExpanded(false)
-                                viewModel.search("")
+                                viewModel.setFilterExpanded(false)
+                                viewModel.filter("")
                                 scope.launch {
                                     listState.scrollToItem(0)
                                 }
@@ -359,7 +359,7 @@ fun EntryListScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                 contentDescription = stringResource(
-                                    R.string.list_search_close_content_description
+                                    R.string.list_filter_close_content_description
                                 )
                             )
                         }
@@ -420,7 +420,7 @@ fun EntryListScreen(
                 .consumeWindowInsets(innerPadding)
                 .imePadding(),
         ) {
-            if (searchExpanded && searchQuery.isNotEmpty()) {
+            if (filterExpanded && filterQuery.isNotEmpty()) {
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -428,7 +428,7 @@ fun EntryListScreen(
                 ) {
                     Text(
                         pluralStringResource(
-                            R.plurals.list_search_found,
+                            R.plurals.list_filter_found,
                             allEntries.itemCount,
                             allEntries.itemCount,
                         ),
@@ -453,7 +453,7 @@ fun EntryListScreen(
                         )
                     ) {
                         Text(
-                            stringResource(R.string.list_search_export),
+                            stringResource(R.string.list_filter_export),
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
@@ -590,8 +590,8 @@ private fun DefaultPreview() {
             allEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
-            searchExpandedFlow = MutableStateFlow(false),
-            searchQueryFlow = MutableStateFlow(""),
+            filterExpandedFlow = MutableStateFlow(false),
+            filterQueryFlow = MutableStateFlow(""),
             viewModel = EntryViewModel(
                 FakeEntryRepository(),
                 SavedStateHandle(),
@@ -609,8 +609,8 @@ private fun LightPreview() {
             allEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
-            searchExpandedFlow = MutableStateFlow(false),
-            searchQueryFlow = MutableStateFlow(""),
+            filterExpandedFlow = MutableStateFlow(false),
+            filterQueryFlow = MutableStateFlow(""),
             viewModel = EntryViewModel(
                 FakeEntryRepository(),
                 SavedStateHandle(),
@@ -622,14 +622,14 @@ private fun LightPreview() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun SearchPreview() {
+private fun FilterPreview() {
     AppTheme {
         EntryListScreen(
             allEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
-            searchExpandedFlow = MutableStateFlow(true),
-            searchQueryFlow = MutableStateFlow("ee"),
+            filterExpandedFlow = MutableStateFlow(true),
+            filterQueryFlow = MutableStateFlow("ee"),
             viewModel = EntryViewModel(
                 FakeEntryRepository(),
                 SavedStateHandle(),
@@ -648,8 +648,8 @@ private fun SelectedEntryPreview() {
                 PagingData.from(defaultFakeEntries)
             ),
             initialSelectedEntry = defaultFakeEntries[2],
-            searchExpandedFlow = MutableStateFlow(false),
-            searchQueryFlow = MutableStateFlow(""),
+            filterExpandedFlow = MutableStateFlow(false),
+            filterQueryFlow = MutableStateFlow(""),
             viewModel = EntryViewModel(
                 FakeEntryRepository(),
                 SavedStateHandle(),
@@ -665,8 +665,8 @@ private fun EmptyPreview() {
     AppTheme {
         EntryListScreen(
             allEntriesFlow = MutableStateFlow(PagingData.empty()),
-            searchExpandedFlow = MutableStateFlow(false),
-            searchQueryFlow = MutableStateFlow(""),
+            filterExpandedFlow = MutableStateFlow(false),
+            filterQueryFlow = MutableStateFlow(""),
             viewModel = EntryViewModel(
                 FakeEntryRepository(emptyList()),
                 SavedStateHandle(),
@@ -688,8 +688,8 @@ private fun PortraitPreview() {
             allEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
-            searchExpandedFlow = MutableStateFlow(false),
-            searchQueryFlow = MutableStateFlow(""),
+            filterExpandedFlow = MutableStateFlow(false),
+            filterQueryFlow = MutableStateFlow(""),
             viewModel = EntryViewModel(
                 FakeEntryRepository(),
                 SavedStateHandle(),

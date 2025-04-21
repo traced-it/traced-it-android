@@ -109,9 +109,9 @@ interface EntryDao {
     fun getLatestEntry(): Flow<Entry?>
 
     @Query(
-        "SELECT * FROM entry WHERE content LIKE '%' || :searchQuery || '%' ORDER BY createdAt DESC"
+        "SELECT * FROM entry WHERE content LIKE '%' || :filterQuery || '%' ORDER BY createdAt DESC"
     )
-    fun findByContent(searchQuery: String): PagingSource<Int, Entry>
+    fun findByContent(filterQuery: String): PagingSource<Int, Entry>
 
     @Query("SELECT * FROM entry WHERE createdAt = :createdAt AND NOT deleted")
     suspend fun findByCreatedAt(createdAt: Long): Entry?

@@ -57,8 +57,8 @@ class EntryViewModel @Inject constructor(
         private const val COLUMN_AMOUNT = "amount"
         private const val COLUMN_CONTENT = "content"
         private const val COLUMN_CREATED_AT = "createdAt"
-        private const val SEARCH_EXPANDED = "searchExpanded"
-        private const val SEARCH_QUERY = "searchQuery"
+        private const val FILTER_EXPANDED = "filerExpanded"
+        private const val FILTER_QUERY = "filterQuery"
     }
 
     @Suppress("SpellCheckingInspection")
@@ -71,19 +71,19 @@ class EntryViewModel @Inject constructor(
     private val _highlightedEntryUid = MutableStateFlow<Int?>(null)
     val highlightedEntryUid: StateFlow<Int?> = _highlightedEntryUid
 
-    val searchExpanded: StateFlow<Boolean> =
-        savedStateHandle.getStateFlow(SEARCH_EXPANDED, false)
+    val filterExpanded: StateFlow<Boolean> =
+        savedStateHandle.getStateFlow(FILTER_EXPANDED, false)
 
-    val searchQuery: StateFlow<String> =
-        savedStateHandle.getStateFlow(SEARCH_QUERY, "")
+    val filterQuery: StateFlow<String> =
+        savedStateHandle.getStateFlow(FILTER_QUERY, "")
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val allEntries: StateFlow<PagingData<Entry>> =
-        searchQuery.flatMapLatest { searchQuery ->
+        filterQuery.flatMapLatest { filterQuery ->
             Pager(
                 PagingConfig(pageSize = 20, enablePlaceholders = true)
             ) {
-                entryRepository.getAll(searchQuery)
+                entryRepository.getAll(filterQuery)
             }.flow
         }.stateIn(
             viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty()
@@ -209,12 +209,12 @@ class EntryViewModel @Inject constructor(
         _highlightedEntryUid.value = uid
     }
 
-    fun search(searchQuery: String) {
-        savedStateHandle[SEARCH_QUERY] = searchQuery
+    fun filter(filterQuery: String) {
+        savedStateHandle[FILTER_QUERY] = filterQuery
     }
 
-    fun setSearchExpanded(searchExpanded: Boolean) {
-        savedStateHandle[SEARCH_EXPANDED] = searchExpanded
+    fun setFilterExpanded(filterExpanded: Boolean) {
+        savedStateHandle[FILTER_EXPANDED] = filterExpanded
     }
 
     private suspend fun forEachEntry(
@@ -468,7 +468,7 @@ class EntryViewModel @Inject constructor(
         exportEntries(
             context,
             result,
-            entryRepository.getAll(searchQuery.value)
+            entryRepository.getAll(filterQuery.value)
         )
 
     private fun exportEntries(
