@@ -94,13 +94,13 @@ class FakeEntryRepository(
         lastPagingSource?.invalidate()
     }
 
-    override fun getAll(filterQuery: String): PagingSource<Int, Entry> =
+    override fun getAll(unsafeFilterQuery: String): PagingSource<Int, Entry> =
         ListFlowPagingSource(
-            if (filterQuery.isEmpty()) {
+            if (unsafeFilterQuery.isEmpty()) {
                 fakeEntries
             } else {
                 fakeEntries.mapLatest {
-                    it.filter { filterQuery in it.content }
+                    it.filter { unsafeFilterQuery in it.content }
                 }
             }
         ).also {

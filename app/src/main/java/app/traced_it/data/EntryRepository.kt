@@ -3,11 +3,12 @@ package app.traced_it.data
 import androidx.paging.PagingSource
 import app.traced_it.data.local.database.Entry
 import app.traced_it.data.local.database.EntryDao
+import app.traced_it.data.local.database.sanitizeSQLiteMatchQuery
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface EntryRepository {
-    fun getAll(filterQuery: String = ""): PagingSource<Int, Entry>
+    fun getAll(unsafeFilterQuery: String = ""): PagingSource<Int, Entry>
 
     fun getLatestEntry(): Flow<Entry?>
 
@@ -31,9 +32,9 @@ interface EntryRepository {
 class DefaultEntryRepository @Inject constructor(
     private val entryDao: EntryDao,
 ) : EntryRepository {
-    override fun getAll(filterQuery: String): PagingSource<Int, Entry> =
-        if (filterQuery.isNotEmpty()) {
-            entryDao.findByContent(filterQuery)
+    override fun getAll(unsafeFilterQuery: String): PagingSource<Int, Entry> =
+        if (unsafeFilterQuery.isNotEmpty()) {
+            entryDao.findByContent(sanitizeSQLiteMatchQuery(unsafeFilterQuery))
         } else {
             entryDao.getAll()
         }
