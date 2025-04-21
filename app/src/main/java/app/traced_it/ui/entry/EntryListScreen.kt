@@ -175,6 +175,9 @@ fun EntryListScreen(
         } else {
             viewModel.setSearchExpanded(false)
             viewModel.search("")
+            scope.launch {
+                listState.scrollToItem(0)
+            }
         }
     }
 
@@ -187,7 +190,12 @@ fun EntryListScreen(
                     } else if (searchExpanded) {
                         TracedTextField(
                             value = searchQuery,
-                            onValueChange = { viewModel.search(it) },
+                            onValueChange = {
+                                viewModel.search(it)
+                                scope.launch {
+                                    listState.scrollToItem(0)
+                                }
+                            },
                             modifier = Modifier.focusRequester(
                                 searchFocusRequester
                             ),
@@ -272,6 +280,9 @@ fun EntryListScreen(
                                 selectedEntry?.let {
                                     viewModel.setSearchExpanded(true)
                                     viewModel.search(it.content)
+                                    scope.launch {
+                                        listState.scrollToItem(0)
+                                    }
                                     selectedEntry = null
                                 }
                             },
@@ -282,6 +293,9 @@ fun EntryListScreen(
                                 viewModel.setSearchExpanded(false)
                             } else {
                                 viewModel.search("")
+                                scope.launch {
+                                    listState.scrollToItem(0)
+                                }
                             }
                         }) {
                             Icon(
@@ -334,6 +348,9 @@ fun EntryListScreen(
                             onClick = {
                                 viewModel.setSearchExpanded(false)
                                 viewModel.search("")
+                                scope.launch {
+                                    listState.scrollToItem(0)
+                                }
                             },
                             colors = IconButtonDefaults.iconButtonColors(
                                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
