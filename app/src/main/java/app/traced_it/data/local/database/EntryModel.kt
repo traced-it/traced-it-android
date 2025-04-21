@@ -100,6 +100,13 @@ data class Entry(
         }
 }
 
+@Entity(tableName = "entry_fts")
+@Fts4(contentEntity = Entry::class)
+data class EntryFTS(
+    @ColumnInfo(name = "content")
+    val content: String
+)
+
 @Dao
 interface EntryDao {
     @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
@@ -108,9 +115,12 @@ interface EntryDao {
     @Query("SELECT * FROM entry WHERE NOT deleted AND amountUnit != 'NONE' ORDER BY createdAt DESC LIMIT 1")
     fun getLatestEntry(): Flow<Entry?>
 
-    @Query(
-        "SELECT * FROM entry WHERE content LIKE '%' || :filterQuery || '%' ORDER BY createdAt DESC"
-    )
+    @Query("""
+        SELECT * FROM entry
+        JOIN entry_fts ON entry_fts.rowid = entry.uid
+        WHERE entry_fts MATCH :filterQuery
+        ORDER BY createdAt DESC
+    """)
     fun findByContent(filterQuery: String): PagingSource<Int, Entry>
 
     @Query("SELECT * FROM entry WHERE createdAt = :createdAt AND NOT deleted")
