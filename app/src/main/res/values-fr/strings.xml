@@ -16,7 +16,7 @@
     <string name="list_menu_delete_all">Supprimer tout</string>
     <string name="list_title">Vos notes (%1$d)</string>
     <string name="list_add">Ajouter une note</string>
-    <string name="list_item_add">Ajouter une nouvelle note avec le même texte</string>
+    <string name="list_item_add">Ajouter une note avec le même texte</string>
     <string name="list_delete_all_dialog_title">Supprimer toutes les notes ?</string>
     <string name="list_delete_all_dialog_text">Vous êtes en train de supprimer toutes les notes</string>
     <string name="list_delete_all_dialog_confirm">Supprimer tout</string>
@@ -77,4 +77,17 @@
     <string name="list_message_all_restored">Toutes les notes restaurées</string>
     <string name="detail_add_title">Ajouter une note</string>
     <string name="list_export_all_filename">%1$s notes %2$s.csv</string>
+    <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
+    <string name="list_filter_input_placeholder">Filtrez vos notes</string>
+    <string name="list_filter_close_content_description">Fermer le filtre</string>
+    <plurals name="list_filter_found">
+        <item quantity="one">%1$d note trouvée</item>
+        <item quantity="many">%1$d notes trouvées</item>
+        <item quantity="other">%1$d notes trouvées</item>
+    </plurals>
+    <string name="list_export_found_filename">%1$s notes filtrées %2$s.csv</string>
+    <string name="list_filter_input_clear_content_description">Effacer la saisie</string>
+    <string name="list_filter_submit">Filtrer</string>
+    <string name="list_filter_export">Sauvegarder</string>
+    <string name="list_item_long_click_label">Sélectionnez une note</string>
 </resources>
