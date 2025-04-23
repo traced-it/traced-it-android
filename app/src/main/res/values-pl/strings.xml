@@ -11,7 +11,7 @@
     <string name="list_menu_import">Importuj z CSV</string>
     <string name="list_menu_export_all">Zapisz jako CSV</string>
     <string name="list_menu_delete_all">Usuń wszystko</string>
-    <string name="list_item_add">Dodaj nową notkę z tym samym tekstem</string>
+    <string name="list_item_add">Dodaj nową notkę z tym samym tekstem</string>
     <string name="list_delete_all_dialog_title">Usunąć wszystkie notki?</string>
     <string name="detail_content_label">Napisz swoją notkę</string>
     <string name="list_add">Dodaj notkę</string>

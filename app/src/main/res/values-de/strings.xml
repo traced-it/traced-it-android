@@ -21,7 +21,7 @@
     <string name="list_menu_export_all">Als CSV speichern</string>
     <string name="list_menu_delete_all">Alle löschen</string>
     <string name="list_add">Notiz hinzufügen</string>
-    <string name="list_item_add">Neue Notiz mit demselben Text hinzufügen</string>
+    <string name="list_item_add">Notiz mit demselben Text hinzufügen</string>
     <string name="list_delete_all_dialog_title">Alle Notizen löschen?</string>
     <string name="list_delete_all_dialog_confirm">Alle löschen</string>
     <string name="list_delete_dialog_title">Notiz löschen?</string>
@@ -75,4 +75,21 @@
     <string name="detail_unit_dropdown_content_description">Liste der Einheiten aufklappen</string>
     <string name="list_delete_all_dialog_text">Du bist dabei, alle Notizen zu löschen</string>
     <string name="list_delete_dialog_text">Du bist dabei, die Notiz „%1$s“ zu löschen</string>
+    <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
+    <string name="list_export_found_filename">%1$s Gefilterte Notizen %2$s.csv</string>
+    <string name="list_filter_input_placeholder">Filtere deine Notizen</string>
+    <string name="list_filter_input_clear_content_description">Eingabe löschen</string>
+    <string name="list_filter_submit">Filtern</string>
+    <string name="list_filter_close_content_description">Filter schließen</string>
+    <plurals name="list_filter_found">
+        <item quantity="one">%1$d Notiz gefunden</item>
+        <item quantity="other">%1$d Notizen gefunden</item>
+    </plurals>
+    <string name="list_filter_export">Speichern</string>
+    <string name="list_item_copy_to_clipboard">In Zwischenablage kopieren</string>
+    <string name="list_item_find_with_similar_content">Ähnliche Notizen filtern</string>
+    <string name="list_item_long_click_label">Notiz auswählen</string>
+    <string name="list_item_copied_to_clipboard">Kopiert</string>
+    <string name="list_selected_back">Notiz abwählen</string>
+    <string name="list_selected_title">Ausgewählte Notiz</string>
 </resources>
