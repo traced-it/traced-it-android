@@ -196,9 +196,9 @@ fun EntryListScreen(
                                     listState.scrollToItem(0)
                                 }
                             },
-                            modifier = Modifier.focusRequester(
-                                filterFocusRequester
-                            ),
+                            modifier = Modifier
+                                .focusRequester(filterFocusRequester)
+                                .testTag("entryListFilterQueryTextField"),
                             textStyle = MaterialTheme.typography.bodyMedium,
                             placeholder = {
                                 Text(
@@ -308,7 +308,9 @@ fun EntryListScreen(
                     } else {
                         IconButton(
                             { viewModel.setFilterExpanded(true) },
-                            enabled = allEntries.itemCount > 0
+                            modifier = Modifier
+                                .testTag("entryListFilterExpandButton"),
+                            enabled = allEntries.itemCount > 0,
                         ) {
                             Icon(
                                 Icons.Outlined.Search,

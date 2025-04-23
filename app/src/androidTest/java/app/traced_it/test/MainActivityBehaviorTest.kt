@@ -209,4 +209,103 @@ open class MainActivityBehaviorTest {
             device.wait(Until.gone(listItemSelector), timeout)
         )
     }
+
+    @Test
+    fun filtersEntries() {
+        // Create first entry
+        device.findObject(By.res("entryListNewEntryButton"))?.click()
+        By.res("entryDetailContentTextField").let { contentTextFieldSelector ->
+            device.wait(Until.hasObject(contentTextFieldSelector), timeout)
+            device.findObject(contentTextFieldSelector)
+                ?.text = "Apples Oranges"
+        }
+        device.findObject(By.res("entryDetailSaveButton"))?.click()
+        val firstListItemSelector = By.res("entryListItem").hasChild(
+            By.text("Apples Oranges")
+        )
+        assertTrue(
+            device.wait(Until.hasObject(firstListItemSelector), timeout)
+        )
+
+        // Create second entry
+        device.findObject(By.res("entryListNewEntryButton"))?.click()
+        By.res("entryDetailContentTextField").let { contentTextFieldSelector ->
+            device.wait(Until.hasObject(contentTextFieldSelector), timeout)
+            device.findObject(contentTextFieldSelector)
+                ?.text = "Oranges Bananas"
+        }
+        device.findObject(By.res("entryDetailSaveButton"))?.click()
+        val secondListItemSelector = By.res("entryListItem").hasChild(
+            By.text("Oranges Bananas")
+        )
+        assertTrue(
+            device.wait(Until.hasObject(secondListItemSelector), timeout)
+        )
+
+        // Expand filter
+        By.res("entryListFilterExpandButton").let { filterExpandButtonSelector ->
+            device.wait(Until.hasObject(filterExpandButtonSelector), timeout)
+            device.findObject(filterExpandButtonSelector)?.click()
+        }
+
+        // Filter by a term that only the first entry contains
+        device.findObject(By.res("entryListFilterQueryTextField"))
+            ?.text = "apple"
+
+        // Check that only the first entry is displayed
+        assertTrue(
+            device.wait(Until.gone(secondListItemSelector), timeout)
+        )
+        assertTrue(
+            device.wait(Until.hasObject(firstListItemSelector), timeout)
+        )
+        assertTrue(
+            device.wait(Until.hasObject(By.text("Found 1 note")), timeout)
+        )
+
+        // Filter by a term that only the second entry contains
+        device.findObject(By.res("entryListFilterQueryTextField"))
+            ?.text = "banana"
+
+        // Check that only the second entry is displayed
+        assertTrue(
+            device.wait(Until.gone(firstListItemSelector), timeout)
+        )
+        assertTrue(
+            device.wait(Until.hasObject(secondListItemSelector), timeout)
+        )
+        assertTrue(
+            device.wait(Until.hasObject(By.text("Found 1 note")), timeout)
+        )
+
+        // Filter by a term that both entries contain
+        device.findObject(By.res("entryListFilterQueryTextField"))
+            ?.text = "orange"
+
+        // Check that both entries are displayed
+        assertTrue(
+            device.wait(Until.hasObject(firstListItemSelector), timeout)
+        )
+        assertTrue(
+            device.wait(Until.hasObject(secondListItemSelector), timeout)
+        )
+        assertTrue(
+            device.wait(Until.hasObject(By.text("Found 2 notes")), timeout)
+        )
+
+        // Filter by a term that no entry contains
+        device.findObject(By.res("entryListFilterQueryTextField"))
+            ?.text = "spam"
+
+        // Check that no entries are displayed
+        assertTrue(
+            device.wait(Until.gone(firstListItemSelector), timeout)
+        )
+        assertTrue(
+            device.wait(Until.gone(secondListItemSelector), timeout)
+        )
+        assertTrue(
+            device.wait(Until.hasObject(By.text("Found 0 notes")), timeout)
+        )
+    }
 }
