@@ -94,8 +94,6 @@
         <item quantity="other">Found %1$d notes</item>
     </plurals>
     <string name="list_filter_export">Save</string>
-    <string name="list_item_long_tap_message">Long-tap to select note</string>
-    <string name="list_item_long_tap_selected_message">Long-tap to deselect note</string>
     <string name="list_item_long_click_label">Select note</string>
     <string name="list_item_find_with_similar_content">Filter similar notes</string>
     <string name="list_item_copy_to_clipboard">Copy to clipboard</string>
