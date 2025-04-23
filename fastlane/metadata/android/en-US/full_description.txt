@@ -18,7 +18,7 @@ FEATURES
 - Tap the + button to add a new note with the same text as an existing note.
 - Edit a note, copy it to clipboard, delete it, delete all notes.
 - Export all notes as a spreadsheet file (CSV format) and import them.
-- Filter notes and export filtered notes.
+- Filter notes and export the filtered notes.
 
 PRIVACY & SECURITY
 

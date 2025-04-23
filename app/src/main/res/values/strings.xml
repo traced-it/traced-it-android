@@ -84,7 +84,7 @@
     <string name="list_message_restored">Note restored</string>
     <string name="list_message_all_restored">All notes restored</string>
     <string name="list_export_all_filename">%1$s notes %2$s.csv</string>
-    <string name="list_export_found_filename">%1$s found notes %2$s.csv</string>
+    <string name="list_export_found_filename">%1$s filtered notes %2$s.csv</string>
     <string name="list_filter_input_placeholder">Filter your notes</string>
     <string name="list_filter_input_clear_content_description">Clear input</string>
     <string name="list_filter_submit">Filter</string>
@@ -93,7 +93,7 @@
         <item quantity="one">Found %1$d note</item>
         <item quantity="other">Found %1$d notes</item>
     </plurals>
-    <string name="list_filter_export">Export</string>
+    <string name="list_filter_export">Save</string>
     <string name="list_item_long_tap_message">Long-tap to select note</string>
     <string name="list_item_long_tap_selected_message">Long-tap to deselect note</string>
     <string name="list_item_long_click_label">Select note</string>
