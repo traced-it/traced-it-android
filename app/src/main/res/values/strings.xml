@@ -16,7 +16,7 @@
     <string name="list_menu_delete_all">Delete all</string>
     <string name="list_title">Your notes (%1$d)</string>
     <string name="list_add">Add note</string>
-    <string name="list_item_add">Add new note with the same text</string>
+    <string name="list_item_add">Add note with same text</string>
     <string name="list_delete_all_dialog_title">Delete all notes?</string>
     <string name="list_delete_all_dialog_text">You are about to delete all notes</string>
     <string name="list_delete_all_dialog_confirm">Delete all</string>
@@ -97,7 +97,7 @@
     <string name="list_item_long_tap_message">Long-tap to select note</string>
     <string name="list_item_long_tap_selected_message">Long-tap to deselect note</string>
     <string name="list_item_long_click_label">Select note</string>
-    <string name="list_item_find_with_same_text">Find notes with the same text</string>
+    <string name="list_item_find_with_similar_content">Filter similar notes</string>
     <string name="list_item_copy_to_clipboard">Copy to clipboard</string>
     <string name="list_item_copied_to_clipboard">Copied</string>
     <string name="list_selected_back">Deselect note</string>

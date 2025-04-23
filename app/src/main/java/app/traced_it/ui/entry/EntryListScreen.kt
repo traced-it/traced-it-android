@@ -254,7 +254,7 @@ fun EntryListScreen(
                             modifier = Modifier.padding(
                                 end = Spacing.windowPadding - 8.dp
                             ),
-                            onAddWithSameText = {
+                            onAddWithSameContent = {
                                 selectedEntry?.let {
                                     entryDetailAction =
                                         EntryDetailAction.Prefill(it)
@@ -276,7 +276,7 @@ fun EntryListScreen(
                                     }
                                 }
                             },
-                            onFindWithSameText = {
+                            onFilterWithSimilarContent = {
                                 selectedEntry?.let {
                                     viewModel.setFilterExpanded(true)
                                     viewModel.filter(it.content)

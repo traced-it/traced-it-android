@@ -12,9 +12,9 @@ import app.traced_it.R
 @Composable
 fun SelectedEntryMenu(
     modifier: Modifier = Modifier,
-    onAddWithSameText: () -> Unit = {},
+    onAddWithSameContent: () -> Unit = {},
     onCopy: () -> Unit = {},
-    onFindWithSameText: () -> Unit = {},
+    onFilterWithSimilarContent: () -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -35,14 +35,14 @@ fun SelectedEntryMenu(
                 { Text(stringResource(R.string.list_item_add)) },
                 {
                     expanded = false
-                    onAddWithSameText()
+                    onAddWithSameContent()
                 },
             )
             DropdownMenuItem(
-                { Text(stringResource(R.string.list_item_find_with_same_text)) },
+                { Text(stringResource(R.string.list_item_find_with_similar_content)) },
                 {
                     expanded = false
-                    onFindWithSameText()
+                    onFilterWithSimilarContent()
                 },
             )
             DropdownMenuItem(
