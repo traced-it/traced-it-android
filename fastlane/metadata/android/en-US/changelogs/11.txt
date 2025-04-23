@@ -1,0 +1,2 @@
+- Added filter feature, which also allows saving the filtered notes as CSV.
+- Added select note feature, which allows editing the note, deleting the note, adding a note with the same text, filtering similar notes, and copying the note to clipboard.
