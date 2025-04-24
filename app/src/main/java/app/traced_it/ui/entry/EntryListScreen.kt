@@ -79,7 +79,6 @@ fun EntryListScreen(
     initialSelectedEntry: Entry? = null,
     viewModel: EntryViewModel = hiltViewModel(),
 ) {
-    val appName = stringResource(R.string.app_name)
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
@@ -113,10 +112,10 @@ fun EntryListScreen(
     ) {
         viewModel.exportAllEntries(context, it)
     }
-    val exportFoundLauncher = rememberLauncherForActivityResult(
+    val exportFilteredLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        viewModel.exportFoundEntries(context, it)
+        viewModel.exportFilteredEntries(context, it)
     }
 
     LaunchedEffect(Unit) {
@@ -328,13 +327,9 @@ fun EntryListScreen(
                                 deleteAllEntriesDialogOpen = true
                             },
                             onExportAllEntries = {
-                                viewModel.launchExportEntries(
+                                viewModel.launchExportAllEntries(
+                                    context,
                                     exportAllLauncher,
-                                    context.resources.getString(
-                                        R.string.list_export_all_filename,
-                                        appName,
-                                        Build.MODEL,
-                                    )
                                 )
                             },
                             onImportEntries = {
@@ -439,13 +434,9 @@ fun EntryListScreen(
                     )
                     TextButton(
                         onClick = {
-                            viewModel.launchExportEntries(
-                                exportFoundLauncher,
-                                context.resources.getString(
-                                    R.string.list_export_found_filename,
-                                    appName,
-                                    Build.MODEL,
-                                )
+                            viewModel.launchExportFilteredEntries(
+                                context,
+                                exportFilteredLauncher,
                             )
                         },
                         modifier = Modifier.padding(end = 8.dp),

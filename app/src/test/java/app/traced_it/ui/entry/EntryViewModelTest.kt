@@ -449,4 +449,18 @@ class EntryViewModelTest {
                 outputStream.toString(),
             )
         }
+
+    @Test
+    fun `filterQueueSanitizedForFilename contains filter query with non-word characters replaced by underscores`() = runTest {
+        val entryRepository = FakeEntryRepository(emptyList())
+        val entryViewModel = EntryViewModel(
+            entryRepository,
+            SavedStateHandle(),
+        )
+        entryViewModel.filter("unicode 0žš中 emoji \uD83D\uDE42 slash / backslash \\ dash - underscore _ dot . colon :")
+        assertEquals(
+            "unicode 0___ emoji _ slash _ backslash _ dash - underscore _ dot _ colon _",
+            entryViewModel.filterQuerySanitizedForFilename,
+        )
+    }
 }

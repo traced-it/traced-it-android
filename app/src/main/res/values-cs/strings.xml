@@ -80,7 +80,7 @@
     <string name="list_message_all_restored">Všechny poznámky obnoveny</string>
     <string name="list_export_all_filename">%1$s poznámky %2$s.csv</string>
     <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
-    <string name="list_export_found_filename">%1$s vyfiltrované poznámky %2$s.csv</string>
+    <string name="list_export_filtered_filename">%1$s poznámky %2$s filtr %3$s.csv</string>
     <string name="list_filter_input_placeholder">Filtrovat poznámky</string>
     <string name="list_filter_input_clear_content_description">Vymazat</string>
     <string name="list_filter_submit">Filtrovat</string>

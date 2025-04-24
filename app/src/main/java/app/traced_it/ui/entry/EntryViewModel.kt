@@ -3,6 +3,7 @@ package app.traced_it.ui.entry
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material3.SnackbarDuration
@@ -76,6 +77,9 @@ class EntryViewModel @Inject constructor(
 
     val filterQuery: StateFlow<String> =
         savedStateHandle.getStateFlow(FILTER_QUERY, "")
+
+    val filterQuerySanitizedForFilename: String
+        get() = filterQuery.value.replace("""[^\w -]""".toRegex(), "_")
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val allEntries: StateFlow<PagingData<Entry>> =
@@ -363,7 +367,7 @@ class EntryViewModel @Inject constructor(
             Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "text/*"
-            }
+            },
         )
     }
 
@@ -449,7 +453,36 @@ class EntryViewModel @Inject constructor(
         )
     }
 
-    fun launchExportEntries(
+    fun launchExportAllEntries(
+        context: Context,
+        exportLauncher: ActivityResultLauncher<Intent>,
+    ) {
+        launchExportEntries(
+            exportLauncher,
+            context.resources.getString(
+                R.string.list_export_all_filename,
+                context.resources.getString(R.string.app_name),
+                Build.MODEL,
+            ),
+        )
+    }
+
+    fun launchExportFilteredEntries(
+        context: Context,
+        exportLauncher: ActivityResultLauncher<Intent>,
+    ) {
+        launchExportEntries(
+            exportLauncher,
+            context.resources.getString(
+                R.string.list_export_filtered_filename,
+                context.resources.getString(R.string.app_name),
+                Build.MODEL,
+                filterQuerySanitizedForFilename,
+            ),
+        )
+    }
+
+    private fun launchExportEntries(
         exportLauncher: ActivityResultLauncher<Intent>,
         filename: String,
     ) {
@@ -458,17 +491,18 @@ class EntryViewModel @Inject constructor(
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "text/csv"
                 putExtra(Intent.EXTRA_TITLE, filename)
-            })
+            },
+        )
     }
 
     fun exportAllEntries(context: Context, result: ActivityResult) =
-        exportEntries(context, result, entryRepository.getAll())
-
-    fun exportFoundEntries(context: Context, result: ActivityResult) =
         exportEntries(
-            context,
-            result,
-            entryRepository.getAll(filterQuery.value)
+            context, result, entryRepository.getAll()
+        )
+
+    fun exportFilteredEntries(context: Context, result: ActivityResult) =
+        exportEntries(
+            context, result, entryRepository.getAll(filterQuery.value)
         )
 
     private fun exportEntries(
