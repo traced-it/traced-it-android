@@ -89,5 +89,10 @@
     <string name="list_filter_input_clear_content_description">Effacer la saisie</string>
     <string name="list_filter_submit">Filtrer</string>
     <string name="list_filter_export">Sauvegarder</string>
-    <string name="list_item_long_click_label">Sélectionnez une note</string>
+    <string name="list_item_long_click_label">Sélectionner la note</string>
+    <string name="list_item_find_with_similar_content">Filtrer les notes similaires</string>
+    <string name="list_item_copy_to_clipboard">Copier dans le presse-papiers</string>
+    <string name="list_item_copied_to_clipboard">Copié</string>
+    <string name="list_selected_back">Désélectionner la note</string>
+    <string name="list_selected_title">Note sélectionnée</string>
 </resources>
