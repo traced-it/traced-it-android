@@ -62,6 +62,7 @@ fun EntryListScreen(
 ) {
     EntryListScreen(
         allEntriesFlow = viewModel.allEntries,
+        filteredEntriesFlow = viewModel.filteredEntries,
         filterExpandedFlow = viewModel.filterExpanded,
         filterQueryFlow = viewModel.filterQuery,
         onNavigateToAboutScreen = onNavigateToAboutScreen,
@@ -73,6 +74,7 @@ fun EntryListScreen(
 @Composable
 fun EntryListScreen(
     allEntriesFlow: StateFlow<PagingData<Entry>>,
+    filteredEntriesFlow: StateFlow<PagingData<Entry>>,
     onNavigateToAboutScreen: () -> Unit = {},
     filterExpandedFlow: StateFlow<Boolean>,
     filterQueryFlow: StateFlow<String>,
@@ -84,6 +86,7 @@ fun EntryListScreen(
     val scope = rememberCoroutineScope()
 
     val allEntries = allEntriesFlow.collectAsLazyPagingItems()
+    val filteredEntries = filteredEntriesFlow.collectAsLazyPagingItems()
     var deleteAllEntriesDialogOpen by remember { mutableStateOf(false) }
     var entryDetailAction by remember {
         mutableStateOf<EntryDetailAction>(EntryDetailAction.Prefill(Entry()))
@@ -154,7 +157,7 @@ fun EntryListScreen(
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .map {
-                allEntries.itemSnapshotList.indexOfFirst {
+                filteredEntries.itemSnapshotList.indexOfFirst {
                     it?.uid == highlightedEntryUid
                 }
             }
@@ -221,7 +224,7 @@ fun EntryListScreen(
                         Text(
                             stringResource(
                                 R.string.list_title,
-                                allEntries.itemCount,
+                                filteredEntries.itemCount,
                             )
                         )
                     }
@@ -309,7 +312,7 @@ fun EntryListScreen(
                             { viewModel.setFilterExpanded(true) },
                             modifier = Modifier
                                 .testTag("entryListFilterExpandButton"),
-                            enabled = allEntries.itemCount > 0,
+                            enabled = filteredEntries.itemCount > 0,
                         ) {
                             Icon(
                                 Icons.Outlined.Search,
@@ -319,7 +322,7 @@ fun EntryListScreen(
                             )
                         }
                         EntryListMenu(
-                            enabled = allEntries.itemCount > 0,
+                            enabled = filteredEntries.itemCount > 0,
                             modifier = Modifier.padding(
                                 end = Spacing.windowPadding - 8.dp
                             ),
@@ -425,8 +428,9 @@ fun EntryListScreen(
                 ) {
                     Text(
                         pluralStringResource(
-                            R.plurals.list_filter_found,
+                            R.plurals.list_filter_status,
                             allEntries.itemCount,
+                            filteredEntries.itemCount,
                             allEntries.itemCount,
                         ),
                         Modifier.padding(horizontal = Spacing.windowPadding),
@@ -440,7 +444,7 @@ fun EntryListScreen(
                             )
                         },
                         modifier = Modifier.padding(end = 8.dp),
-                        enabled = allEntries.itemCount > 0,
+                        enabled = filteredEntries.itemCount > 0,
                         colors = ButtonDefaults.textButtonColors(
                             contentColor = MaterialTheme.colorScheme.onSurface
                         )
@@ -458,15 +462,15 @@ fun EntryListScreen(
                 modifier = Modifier.weight(1f),
             ) {
                 items(
-                    allEntries.itemCount,
-                    key = allEntries.itemKey { it.uid },
+                    filteredEntries.itemCount,
+                    key = filteredEntries.itemKey { it.uid },
                 ) { index ->
-                    allEntries[index]?.let { entry ->
+                    filteredEntries[index]?.let { entry ->
                         EntryListItem(
                             entry = entry,
                             modifier = Modifier.animateItem(),
                             prevEntry = index.takeIf { index != 0 }?.let {
-                                allEntries[index - 1]
+                                filteredEntries[index - 1]
                             },
                             now = now,
                             highlighted = highlightedEntryUid == entry.uid,
@@ -583,6 +587,9 @@ private fun DefaultPreview() {
             allEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
+            filteredEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
             filterExpandedFlow = MutableStateFlow(false),
             filterQueryFlow = MutableStateFlow(""),
             viewModel = EntryViewModel(
@@ -600,6 +607,9 @@ private fun LightPreview() {
     AppTheme {
         EntryListScreen(
             allEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
+            filteredEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
             filterExpandedFlow = MutableStateFlow(false),
@@ -621,6 +631,9 @@ private fun FilterPreview() {
             allEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
+            filteredEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
             filterExpandedFlow = MutableStateFlow(true),
             filterQueryFlow = MutableStateFlow("ee"),
             viewModel = EntryViewModel(
@@ -638,6 +651,9 @@ private fun SelectedEntryPreview() {
     AppTheme {
         EntryListScreen(
             allEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
+            filteredEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
             initialSelectedEntry = defaultFakeEntries[2],
@@ -658,6 +674,7 @@ private fun EmptyPreview() {
     AppTheme {
         EntryListScreen(
             allEntriesFlow = MutableStateFlow(PagingData.empty()),
+            filteredEntriesFlow = MutableStateFlow(PagingData.empty()),
             filterExpandedFlow = MutableStateFlow(false),
             filterQueryFlow = MutableStateFlow(""),
             viewModel = EntryViewModel(
@@ -679,6 +696,9 @@ private fun PortraitPreview() {
     AppTheme {
         EntryListScreen(
             allEntriesFlow = MutableStateFlow(
+                PagingData.from(defaultFakeEntries)
+            ),
+            filteredEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
             filterExpandedFlow = MutableStateFlow(false),

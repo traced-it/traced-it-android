@@ -81,8 +81,18 @@ class EntryViewModel @Inject constructor(
     val filterQuerySanitizedForFilename: String
         get() = filterQuery.value.replace("""[^\w -]""".toRegex(), "_")
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    // TODO Replace with allEntriesCount
     val allEntries: StateFlow<PagingData<Entry>> =
+        Pager(
+            PagingConfig(pageSize = 20, enablePlaceholders = true)
+        ) {
+            entryRepository.getAll()
+        }.flow.stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty()
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val filteredEntries: StateFlow<PagingData<Entry>> =
         filterQuery.flatMapLatest { filterQuery ->
             Pager(
                 PagingConfig(pageSize = 20, enablePlaceholders = true)

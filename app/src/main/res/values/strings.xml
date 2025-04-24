@@ -89,9 +89,9 @@
     <string name="list_filter_input_clear_content_description">Clear input</string>
     <string name="list_filter_submit">Filter</string>
     <string name="list_filter_close_content_description">Close filter</string>
-    <plurals name="list_filter_found">
-        <item quantity="one">Found %1$d note</item>
-        <item quantity="other">Found %1$d notes</item>
+    <plurals name="list_filter_status">
+        <item quantity="one">%1$d of %2$d note</item>
+        <item quantity="other">%1$d of %2$d notes</item>
     </plurals>
     <string name="list_filter_export">Save</string>
     <string name="list_item_long_click_label">Select note</string>

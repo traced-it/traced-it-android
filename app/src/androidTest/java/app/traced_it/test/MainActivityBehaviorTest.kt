@@ -260,7 +260,7 @@ open class MainActivityBehaviorTest {
             device.wait(Until.hasObject(firstListItemSelector), timeout)
         )
         assertTrue(
-            device.wait(Until.hasObject(By.text("Found 1 note")), timeout)
+            device.wait(Until.hasObject(By.text("1 of 2 notes")), timeout)
         )
 
         // Filter by a term that only the second entry contains
@@ -275,7 +275,7 @@ open class MainActivityBehaviorTest {
             device.wait(Until.hasObject(secondListItemSelector), timeout)
         )
         assertTrue(
-            device.wait(Until.hasObject(By.text("Found 1 note")), timeout)
+            device.wait(Until.hasObject(By.text("1 of 2 notes")), timeout)
         )
 
         // Filter by a term that both entries contain
@@ -290,7 +290,7 @@ open class MainActivityBehaviorTest {
             device.wait(Until.hasObject(secondListItemSelector), timeout)
         )
         assertTrue(
-            device.wait(Until.hasObject(By.text("Found 2 notes")), timeout)
+            device.wait(Until.hasObject(By.text("2 of 2 notes")), timeout)
         )
 
         // Filter by a term that no entry contains
@@ -305,7 +305,7 @@ open class MainActivityBehaviorTest {
             device.wait(Until.gone(secondListItemSelector), timeout)
         )
         assertTrue(
-            device.wait(Until.hasObject(By.text("Found 0 notes")), timeout)
+            device.wait(Until.hasObject(By.text("0 of 2 notes")), timeout)
         )
     }
 }

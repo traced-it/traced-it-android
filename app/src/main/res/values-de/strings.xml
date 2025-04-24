@@ -81,9 +81,9 @@
     <string name="list_filter_input_clear_content_description">Eingabe löschen</string>
     <string name="list_filter_submit">Filtern</string>
     <string name="list_filter_close_content_description">Filter schließen</string>
-    <plurals name="list_filter_found">
-        <item quantity="one">%1$d Notiz gefunden</item>
-        <item quantity="other">%1$d Notizen gefunden</item>
+    <plurals name="list_filter_status">
+        <item quantity="one">%1$d von %2$d Notiz</item>
+        <item quantity="other">%1$d von %2$d Notizen</item>
     </plurals>
     <string name="list_filter_export">Speichern</string>
     <string name="list_item_copy_to_clipboard">In Zwischenablage kopieren</string>

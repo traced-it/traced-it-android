@@ -85,10 +85,11 @@
     <string name="list_filter_input_clear_content_description">Vymazat</string>
     <string name="list_filter_submit">Filtrovat</string>
     <string name="list_filter_close_content_description">Zavřít filtr</string>
-    <plurals name="list_filter_found">
-        <item quantity="one">Nalezena %1$d poznámka</item>
-        <item quantity="few">Nalezeny %1$d poznámky</item>
-        <item quantity="other">Nalezeno %1$d poznámek</item>
+    <plurals name="list_filter_status">
+        <item quantity="one">%1$d z %2$d poznámky</item>
+        <item quantity="few">%1$d z %2$d poznámek</item>
+        <item quantity="many">%1$d z %2$d poznámek</item>
+        <item quantity="other">%1$d z %2$d poznámek</item>
     </plurals>
     <string name="list_filter_export">Uložit</string>
     <string name="list_item_long_click_label">Vybrat poznámku</string>
