@@ -36,6 +36,11 @@ open class MainActivityBehaviorTest {
 
     @Test
     fun createsEntry() {
+        // Check entries count
+        assertTrue(
+            device.wait(Until.hasObject(By.text("Your notes (0)")), timeout)
+        )
+
         // New entry
         device.findObject(By.res("entryListNewEntryButton"))?.click()
 
@@ -63,6 +68,11 @@ open class MainActivityBehaviorTest {
         val listItemSelector =
             By.res("entryListItem").hasChild(By.text("Test entry 1 (½)"))
         assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
+
+        // Check entries count
+        assertTrue(
+            device.wait(Until.hasObject(By.text("Your notes (1)")), timeout)
+        )
     }
 
     @Test
@@ -85,7 +95,7 @@ open class MainActivityBehaviorTest {
             By.res("entryListItem").hasChild(By.text("Test entry 3 (⅓)"))
         assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
 
-        // Create new entry form an existing entry
+        // Create new entry from an existing entry
         device.findObject(listItemSelector)
             ?.findObject(By.res("entryListItemAddButton"))
             ?.click()
@@ -108,6 +118,11 @@ open class MainActivityBehaviorTest {
         val listItemAddedSelector =
             By.res("entryListItem").hasChild(By.text("Test entry 3 (¾)"))
         assertTrue(device.wait(Until.hasObject(listItemAddedSelector), timeout))
+
+        // Check entries count
+        assertTrue(
+            device.wait(Until.hasObject(By.text("Your notes (2)")), timeout)
+        )
     }
 
     @Test
@@ -175,6 +190,11 @@ open class MainActivityBehaviorTest {
 
         // Check entry list
         assertTrue(device.wait(Until.gone(listItemSelector), timeout))
+
+        // Check entries count
+        assertTrue(
+            device.wait(Until.hasObject(By.text("Your notes (0)")), timeout)
+        )
     }
 
     @Test
