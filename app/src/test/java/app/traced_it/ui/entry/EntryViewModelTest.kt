@@ -432,7 +432,7 @@ class EntryViewModelTest {
             entryViewModel.exportEntriesCsv(
                 mockContext,
                 writer,
-                entryRepository.getAll(),
+                entryRepository.filter(),
             )
             writer.close()
 

@@ -8,7 +8,7 @@ class SQLiteToolsTest {
     fun testSingleWord() {
         assertEquals(
             "*one-word*",
-            sanitizeSQLiteMatchQuery("one-word"),
+            createFullTextQueryExpression("one-word"),
         )
     }
 
@@ -16,7 +16,7 @@ class SQLiteToolsTest {
     fun testTwoWords() {
         assertEquals(
             "*two* *words*",
-            sanitizeSQLiteMatchQuery("two words"),
+            createFullTextQueryExpression("two words"),
         )
     }
 
@@ -24,7 +24,7 @@ class SQLiteToolsTest {
     fun testColon() {
         assertEquals(
             "*word\\:with-colon* *standalone* *\\:*",
-            sanitizeSQLiteMatchQuery("word:with-colon standalone :"),
+            createFullTextQueryExpression("word:with-colon standalone :"),
         )
     }
 
@@ -32,7 +32,7 @@ class SQLiteToolsTest {
     fun testOperators() {
         assertEquals(
             "*two* AND *words* OR *with* NOT *operators*",
-            sanitizeSQLiteMatchQuery("two AND words OR with NOT operators"),
+            createFullTextQueryExpression("two AND words OR with NOT operators"),
         )
     }
 
@@ -40,7 +40,7 @@ class SQLiteToolsTest {
     fun testFirstOperatorQuote() {
         assertEquals(
             "*first* ^operator*",
-            sanitizeSQLiteMatchQuery("first ^operator"),
+            createFullTextQueryExpression("first ^operator"),
         )
     }
 
@@ -48,7 +48,7 @@ class SQLiteToolsTest {
     fun testUnaryOperator() {
         assertEquals(
             "*unary* -operator*",
-            sanitizeSQLiteMatchQuery("unary -operator"),
+            createFullTextQueryExpression("unary -operator"),
         )
     }
 
@@ -56,7 +56,7 @@ class SQLiteToolsTest {
     fun testWordAndPhrase() {
         assertEquals(
             "*word* \"and phrase\"",
-            sanitizeSQLiteMatchQuery("word \"and phrase\""),
+            createFullTextQueryExpression("word \"and phrase\""),
         )
     }
 
@@ -64,7 +64,7 @@ class SQLiteToolsTest {
     fun testPhraseWithUnaryOperator() {
         assertEquals(
             "-\"phrase with unary operator\"",
-            sanitizeSQLiteMatchQuery("-\"phrase with unary operator\""),
+            createFullTextQueryExpression("-\"phrase with unary operator\""),
         )
     }
 
@@ -72,7 +72,7 @@ class SQLiteToolsTest {
     fun testQuoteInsideWord() {
         assertEquals(
             "*quote\"\"inside-word*",
-            sanitizeSQLiteMatchQuery("quote\"inside-word"),
+            createFullTextQueryExpression("quote\"inside-word"),
         )
     }
 
@@ -80,7 +80,7 @@ class SQLiteToolsTest {
     fun testQuoteInsidePhrase() {
         assertEquals(
             "\"quote\" *inside* *phrase\"\"*",
-            sanitizeSQLiteMatchQuery("\"quote\"inside phrase\""),
+            createFullTextQueryExpression("\"quote\"inside phrase\""),
         )
     }
 
@@ -88,7 +88,7 @@ class SQLiteToolsTest {
     fun testUnmatchedQuote() {
         assertEquals(
             "*\"\"unmatched* *quote*",
-            sanitizeSQLiteMatchQuery("\"unmatched quote"),
+            createFullTextQueryExpression("\"unmatched quote"),
         )
     }
 

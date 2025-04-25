@@ -81,15 +81,9 @@ class EntryViewModel @Inject constructor(
     val filterQuerySanitizedForFilename: String
         get() = filterQuery.value.replace("""[^\w -]""".toRegex(), "_")
 
-    // TODO Replace with allEntriesCount
-    val allEntries: StateFlow<PagingData<Entry>> =
-        Pager(
-            PagingConfig(pageSize = 20, enablePlaceholders = true)
-        ) {
-            entryRepository.getAll()
-        }.flow.stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty()
-        )
+    val allEntriesCount: StateFlow<Int> =
+        entryRepository.count()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val filteredEntries: StateFlow<PagingData<Entry>> =
@@ -97,14 +91,14 @@ class EntryViewModel @Inject constructor(
             Pager(
                 PagingConfig(pageSize = 20, enablePlaceholders = true)
             ) {
-                entryRepository.getAll(filterQuery)
+                entryRepository.filter(filterQuery)
             }.flow
         }.stateIn(
             viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty()
         )
 
     val latestEntry: StateFlow<Entry?> =
-        entryRepository.getLatestEntry()
+        entryRepository.getLatest()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     fun insertEntry(context: Context, entry: Entry) {
@@ -413,7 +407,7 @@ class EntryViewModel @Inject constructor(
             val parseResult = parseEntryCsvRecord(context, record)
             when (parseResult) {
                 is ParseResult.Succeeded -> {
-                    val existingEntry = entryRepository.findByCreatedAt(
+                    val existingEntry = entryRepository.getByCreatedAt(
                         parseResult.entry.createdAt
                     )
                     if (existingEntry == null) {
@@ -507,12 +501,12 @@ class EntryViewModel @Inject constructor(
 
     fun exportAllEntries(context: Context, result: ActivityResult) =
         exportEntries(
-            context, result, entryRepository.getAll()
+            context, result, entryRepository.filter()
         )
 
     fun exportFilteredEntries(context: Context, result: ActivityResult) =
         exportEntries(
-            context, result, entryRepository.getAll(filterQuery.value)
+            context, result, entryRepository.filter(filterQuery.value)
         )
 
     private fun exportEntries(

@@ -6,7 +6,7 @@ private fun quoteTerm(unsafeTerm: String): String = unsafeTerm
     .replace("\"", "\"\"")
     .replace(":", "\\:")
 
-fun sanitizeSQLiteMatchQuery(unsafeQuery: String): String =
+fun createFullTextQueryExpression(unsafeQuery: String): String =
     queryRegex.findAll(unsafeQuery).map {
         when {
             // Operator

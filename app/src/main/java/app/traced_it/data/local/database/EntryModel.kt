@@ -109,22 +109,27 @@ data class EntryFTS(
 
 @Dao
 interface EntryDao {
+    @Query("SELECT COUNT(uid) FROM entry WHERE NOT deleted")
+    fun count(): Flow<Int>
+
     @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
     fun getAll(): PagingSource<Int, Entry>
 
-    @Query("SELECT * FROM entry WHERE NOT deleted AND amountUnit != 'NONE' ORDER BY createdAt DESC LIMIT 1")
-    fun getLatestEntry(): Flow<Entry?>
+    @Query("SELECT * FROM entry WHERE createdAt = :createdAt AND NOT deleted")
+    suspend fun getByCreatedAt(createdAt: Long): Entry?
 
-    @Query("""
+    @Query("SELECT * FROM entry WHERE NOT deleted AND amountUnit != 'NONE' ORDER BY createdAt DESC LIMIT 1")
+    fun getLatest(): Flow<Entry?>
+
+    @Query(
+        """
         SELECT * FROM entry
         JOIN entry_fts ON entry_fts.rowid = entry.uid
-        WHERE entry_fts MATCH :filterQuery
+        WHERE entry_fts MATCH :fullTextQueryExpression
         ORDER BY createdAt DESC
-    """)
-    fun findByContent(filterQuery: String): PagingSource<Int, Entry>
-
-    @Query("SELECT * FROM entry WHERE createdAt = :createdAt AND NOT deleted")
-    suspend fun findByCreatedAt(createdAt: Long): Entry?
+    """
+    )
+    fun search(fullTextQueryExpression: String): PagingSource<Int, Entry>
 
     @Insert
     suspend fun insert(entry: Entry): Long

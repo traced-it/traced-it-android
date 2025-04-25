@@ -61,7 +61,6 @@ fun EntryListScreen(
     viewModel: EntryViewModel = hiltViewModel(),
 ) {
     EntryListScreen(
-        allEntriesFlow = viewModel.allEntries,
         filteredEntriesFlow = viewModel.filteredEntries,
         filterExpandedFlow = viewModel.filterExpanded,
         filterQueryFlow = viewModel.filterQuery,
@@ -73,7 +72,6 @@ fun EntryListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EntryListScreen(
-    allEntriesFlow: StateFlow<PagingData<Entry>>,
     filteredEntriesFlow: StateFlow<PagingData<Entry>>,
     onNavigateToAboutScreen: () -> Unit = {},
     filterExpandedFlow: StateFlow<Boolean>,
@@ -85,7 +83,7 @@ fun EntryListScreen(
     val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
 
-    val allEntries = allEntriesFlow.collectAsLazyPagingItems()
+    val allEntriesCount by viewModel.allEntriesCount.collectAsStateWithLifecycle()
     val filteredEntries = filteredEntriesFlow.collectAsLazyPagingItems()
     var deleteAllEntriesDialogOpen by remember { mutableStateOf(false) }
     var entryDetailAction by remember {
@@ -429,9 +427,9 @@ fun EntryListScreen(
                     Text(
                         pluralStringResource(
                             R.plurals.list_filter_status,
-                            allEntries.itemCount,
+                            allEntriesCount,
                             filteredEntries.itemCount,
-                            allEntries.itemCount,
+                            allEntriesCount,
                         ),
                         Modifier.padding(horizontal = Spacing.windowPadding),
                         style = MaterialTheme.typography.labelSmall
@@ -584,9 +582,6 @@ fun EntryListScreen(
 private fun DefaultPreview() {
     AppTheme {
         EntryListScreen(
-            allEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
             filteredEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
@@ -606,9 +601,6 @@ private fun DefaultPreview() {
 private fun LightPreview() {
     AppTheme {
         EntryListScreen(
-            allEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
             filteredEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
@@ -628,9 +620,6 @@ private fun LightPreview() {
 private fun FilterPreview() {
     AppTheme {
         EntryListScreen(
-            allEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
             filteredEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
@@ -650,9 +639,6 @@ private fun FilterPreview() {
 private fun SelectedEntryPreview() {
     AppTheme {
         EntryListScreen(
-            allEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
             filteredEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),
@@ -673,7 +659,6 @@ private fun SelectedEntryPreview() {
 private fun EmptyPreview() {
     AppTheme {
         EntryListScreen(
-            allEntriesFlow = MutableStateFlow(PagingData.empty()),
             filteredEntriesFlow = MutableStateFlow(PagingData.empty()),
             filterExpandedFlow = MutableStateFlow(false),
             filterQueryFlow = MutableStateFlow(""),
@@ -695,9 +680,6 @@ private fun EmptyPreview() {
 private fun PortraitPreview() {
     AppTheme {
         EntryListScreen(
-            allEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
             filteredEntriesFlow = MutableStateFlow(
                 PagingData.from(defaultFakeEntries)
             ),

@@ -3,16 +3,18 @@ package app.traced_it.data
 import androidx.paging.PagingSource
 import app.traced_it.data.local.database.Entry
 import app.traced_it.data.local.database.EntryDao
-import app.traced_it.data.local.database.sanitizeSQLiteMatchQuery
+import app.traced_it.data.local.database.createFullTextQueryExpression
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface EntryRepository {
-    fun getAll(unsafeFilterQuery: String = ""): PagingSource<Int, Entry>
+    fun count(): Flow<Int>
 
-    fun getLatestEntry(): Flow<Entry?>
+    suspend fun getByCreatedAt(createdAt: Long): Entry?
 
-    suspend fun findByCreatedAt(createdAt: Long): Entry?
+    fun getLatest(): Flow<Entry?>
+
+    fun filter(unsafeQuery: String = ""): PagingSource<Int, Entry>
 
     suspend fun insert(entry: Entry): Long
 
@@ -32,17 +34,19 @@ interface EntryRepository {
 class DefaultEntryRepository @Inject constructor(
     private val entryDao: EntryDao,
 ) : EntryRepository {
-    override fun getAll(unsafeFilterQuery: String): PagingSource<Int, Entry> =
-        if (unsafeFilterQuery.isNotEmpty()) {
-            entryDao.findByContent(sanitizeSQLiteMatchQuery(unsafeFilterQuery))
+    override fun count(): Flow<Int> = entryDao.count()
+
+    override fun filter(filterQuery: String): PagingSource<Int, Entry> =
+        if (filterQuery.isNotEmpty()) {
+            entryDao.search(createFullTextQueryExpression(filterQuery))
         } else {
             entryDao.getAll()
         }
 
-    override fun getLatestEntry(): Flow<Entry?> = entryDao.getLatestEntry()
+    override suspend fun getByCreatedAt(createdAt: Long): Entry? =
+        entryDao.getByCreatedAt(createdAt)
 
-    override suspend fun findByCreatedAt(createdAt: Long): Entry? =
-        entryDao.findByCreatedAt(createdAt)
+    override fun getLatest(): Flow<Entry?> = entryDao.getLatest()
 
     override suspend fun insert(entry: Entry): Long = entryDao.insert(entry)
 

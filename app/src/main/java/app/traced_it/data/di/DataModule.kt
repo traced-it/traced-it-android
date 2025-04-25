@@ -94,28 +94,30 @@ class FakeEntryRepository(
         lastPagingSource?.invalidate()
     }
 
-    override fun getAll(unsafeFilterQuery: String): PagingSource<Int, Entry> =
+    override fun count(): Flow<Int> = _fakeEntries.mapLatest { it.size }
+
+    override fun filter(unsafeQuery: String): PagingSource<Int, Entry> =
         ListFlowPagingSource(
-            if (unsafeFilterQuery.isEmpty()) {
+            if (unsafeQuery.isEmpty()) {
                 fakeEntries
             } else {
                 fakeEntries.mapLatest {
-                    it.filter { unsafeFilterQuery in it.content }
+                    it.filter { unsafeQuery in it.content }
                 }
             }
         ).also {
             lastPagingSource = it
         }
 
-    override fun getLatestEntry(): Flow<Entry?> =
+    override suspend fun getByCreatedAt(createdAt: Long): Entry? =
+        _fakeEntries.value.find { it.createdAt == createdAt }
+
+    override fun getLatest(): Flow<Entry?> =
         _fakeEntries.mapLatest { entries ->
             entries
                 .filter { !it.deleted && it.amountUnit != noneUnit }
                 .maxByOrNull { it.createdAt }
         }
-
-    override suspend fun findByCreatedAt(createdAt: Long): Entry? =
-        _fakeEntries.value.find { it.createdAt == createdAt }
 
     override suspend fun insert(entry: Entry): Long =
         (_fakeEntries.value + listOf(entry)).also {
