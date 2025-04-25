@@ -23,8 +23,9 @@ open class MainActivityBehaviorTest {
 
     @Before
     fun goToLauncher() {
-        device =
-            UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        device = UiDevice.getInstance(
+            InstrumentationRegistry.getInstrumentation()
+        )
         device.pressHome()
         device.executeShellCommand("monkey -p $packageName 1")
         device.wait(
@@ -44,31 +45,24 @@ open class MainActivityBehaviorTest {
 
         // Change unit
         device.findObject(By.res("unitSelectButton"))?.click()
-        val unitMenuItemSelector = By.res("unitSelectDropdownMenuItem").hasChild(
-            By.text("fraction")
-        )
-        assertTrue(
-            device.wait(Until.hasObject(unitMenuItemSelector), timeout)
-        )
-        device.findObject(unitMenuItemSelector)?.click()
+        By.res("unitSelectDropdownMenuItem").hasChild(By.text("fraction")).let {
+            assertTrue(device.wait(Until.hasObject(it), timeout))
+            device.findObject(it)?.click()
+        }
 
         // Select unit choice
-        val unitChoiceTextSelector = By.res("unitSelectChoiceText").text("½")
-        assertTrue(
-            device.wait(Until.hasObject(unitChoiceTextSelector), timeout)
-        )
-        device.findObject(unitChoiceTextSelector)?.click()
+        By.res("unitSelectChoiceText").text("½").let {
+            assertTrue(device.wait(Until.hasObject(it), timeout))
+            device.findObject(it)?.click()
+        }
 
         // Save
         device.findObject(By.res("entryDetailSaveButton"))?.click()
 
         // Check entry list
-        val listItemSelector = By.res("entryListItem").hasChild(
-            By.text("Test entry 1 (½)")
-        )
-        assertTrue(
-            device.wait(Until.hasObject(listItemSelector), timeout)
-        )
+        val listItemSelector =
+            By.res("entryListItem").hasChild(By.text("Test entry 1 (½)"))
+        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
     }
 
     @Test
@@ -78,25 +72,18 @@ open class MainActivityBehaviorTest {
         device.findObject(By.res("entryDetailContentTextField"))
             ?.text = "Test entry 3"
         device.findObject(By.res("unitSelectButton"))?.click()
-        val unitMenuItemSelector = By.res("unitSelectDropdownMenuItem").hasChild(
-            By.text("fraction")
-        )
-        assertTrue(
-            device.wait(Until.hasObject(unitMenuItemSelector), timeout)
-        )
-        device.findObject(unitMenuItemSelector)?.click()
-        val unitChoiceTextSelector = By.res("unitSelectChoiceText").text("⅓")
-        assertTrue(
-            device.wait(Until.hasObject(unitChoiceTextSelector), timeout)
-        )
-        device.findObject(unitChoiceTextSelector)?.click()
+        By.res("unitSelectDropdownMenuItem").hasChild(By.text("fraction")).let {
+            assertTrue(device.wait(Until.hasObject(it), timeout))
+            device.findObject(it)?.click()
+        }
+        By.res("unitSelectChoiceText").text("⅓").let {
+            assertTrue(device.wait(Until.hasObject(it), timeout))
+            device.findObject(it)?.click()
+        }
         device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val listItemSelector = By.res("entryListItem").hasChild(
-            By.text("Test entry 3 (⅓)")
-        )
-        assertTrue(
-            device.wait(Until.hasObject(listItemSelector), timeout)
-        )
+        val listItemSelector =
+            By.res("entryListItem").hasChild(By.text("Test entry 3 (⅓)"))
+        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
 
         // Create new entry form an existing entry
         device.findObject(listItemSelector)
@@ -104,11 +91,10 @@ open class MainActivityBehaviorTest {
             ?.click()
 
         // Check content
-        val contentSelector = By.res("entryDetailContentTextField")
-        assertTrue(
-            device.wait(Until.hasObject(contentSelector), timeout)
-        )
-        assertEquals("Test entry 3", device.findObject(contentSelector)?.text)
+        By.res("entryDetailContentTextField").let {
+            assertTrue(device.wait(Until.hasObject(it), timeout))
+            assertEquals("Test entry 3", device.findObject(it)?.text)
+        }
 
         // Check and set unit
         assertTrue(device.hasObject(By.res("unitSelectChoiceText").text("⅓")))
@@ -118,15 +104,10 @@ open class MainActivityBehaviorTest {
         device.findObject(By.res("entryDetailSaveButton"))?.click()
 
         // Check entry list
-        assertTrue(
-            device.wait(Until.hasObject(listItemSelector), timeout)
-        )
-        val listItemAddedSelector = By.res("entryListItem").hasChild(
-            By.text("Test entry 3 (¾)")
-        )
-        assertTrue(
-            device.wait(Until.hasObject(listItemAddedSelector), timeout)
-        )
+        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
+        val listItemAddedSelector =
+            By.res("entryListItem").hasChild(By.text("Test entry 3 (¾)"))
+        assertTrue(device.wait(Until.hasObject(listItemAddedSelector), timeout))
     }
 
     @Test
@@ -135,26 +116,21 @@ open class MainActivityBehaviorTest {
         device.findObject(By.res("entryListNewEntryButton"))?.click()
         device.findObject(By.res("entryDetailContentTextField"))
             ?.text = "Test entry 2"
-        val unitChoiceTextSelector = By.res("unitSelectChoiceText").text("L")
-        assertTrue(
-            device.wait(Until.hasObject(unitChoiceTextSelector), timeout)
-        )
-        device.findObject(unitChoiceTextSelector)?.click()
+        By.res("unitSelectChoiceText").text("L").let {
+            assertTrue(device.wait(Until.hasObject(it), timeout))
+            device.findObject(it)?.click()
+        }
         device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val listItemSelector = By.res("entryListItem").hasChild(
-            By.text("Test entry 2 (L)")
-        )
-        assertTrue(
-            device.wait(Until.hasObject(listItemSelector), timeout)
-        )
+        val listItemSelector =
+            By.res("entryListItem").hasChild(By.text("Test entry 2 (L)"))
+        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
 
         // Edit entry
         device.findObject(listItemSelector)?.swipe(Direction.RIGHT, 0.5f)
-        val editButtonSelector = By.res("entryListItemEditButton")
-        assertTrue(
-            device.wait(Until.hasObject(editButtonSelector), timeout)
-        )
-        device.findObject(editButtonSelector)?.click()
+        By.res("entryListItemEditButton").let {
+            assertTrue(device.wait(Until.hasObject(it), timeout))
+            device.findObject(it)?.click()
+        }
 
         // Set content
         device.findObject(By.res("entryDetailContentTextField"))
@@ -167,12 +143,10 @@ open class MainActivityBehaviorTest {
         device.findObject(By.res("entryDetailSaveButton"))?.click()
 
         // Check entry list
-        val listItemEditedSelector = By.res("entryListItem").hasChild(
-            By.text("Test entry 2 edited (M)")
-        )
-        assertTrue(
-            device.wait(Until.hasObject(listItemEditedSelector), timeout)
-        )
+        By.res("entryListItem").hasChild(By.text("Test entry 2 edited (M)"))
+            .let {
+                assertTrue(device.wait(Until.hasObject(it), timeout))
+            }
     }
 
     @Test
@@ -182,70 +156,57 @@ open class MainActivityBehaviorTest {
         device.findObject(By.res("entryDetailContentTextField"))
             ?.text = "Test entry 4"
         device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val listItemSelector = By.res("entryListItem").hasChild(
-            By.text("Test entry 4")
-        )
-        assertTrue(
-            device.wait(Until.hasObject(listItemSelector), timeout)
-        )
+        val listItemSelector =
+            By.res("entryListItem").hasChild(By.text("Test entry 4"))
+        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
 
         // Delete entry
         device.findObject(listItemSelector)?.swipe(Direction.LEFT, 0.5f)
-        val deleteButtonSelector = By.res("entryListItemDeleteButton")
-        assertTrue(
-            device.wait(Until.hasObject(deleteButtonSelector), timeout)
-        )
-        device.findObject(deleteButtonSelector)?.click()
+        By.res("entryListItemDeleteButton").let {
+            assertTrue(device.wait(Until.hasObject(it), timeout))
+            device.findObject(it)?.click()
+        }
 
         // Confirm deletion
-        val dialogConfirmButton = By.res("confirmationDialogConfirmButton")
-        assertTrue(
-            device.wait(Until.hasObject(dialogConfirmButton), timeout)
-        )
-        device.findObject(dialogConfirmButton)?.click()
+        By.res("confirmationDialogConfirmButton").let {
+            assertTrue(device.wait(Until.hasObject(it), timeout))
+            device.findObject(it)?.click()
+        }
 
         // Check entry list
-        assertTrue(
-            device.wait(Until.gone(listItemSelector), timeout)
-        )
+        assertTrue(device.wait(Until.gone(listItemSelector), timeout))
     }
 
     @Test
     fun filtersEntries() {
         // Create first entry
         device.findObject(By.res("entryListNewEntryButton"))?.click()
-        By.res("entryDetailContentTextField").let { contentTextFieldSelector ->
-            device.wait(Until.hasObject(contentTextFieldSelector), timeout)
-            device.findObject(contentTextFieldSelector)
-                ?.text = "Apples Oranges"
+        By.res("entryDetailContentTextField").let {
+            device.wait(Until.hasObject(it), timeout)
+            device.findObject(it)?.text = "Apples Oranges"
         }
         device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val firstListItemSelector = By.res("entryListItem").hasChild(
-            By.text("Apples Oranges")
-        )
-        assertTrue(
-            device.wait(Until.hasObject(firstListItemSelector), timeout)
-        )
+        val listItem1Selector =
+            By.res("entryListItem").hasChild(By.text("Apples Oranges"))
+        assertTrue(device.wait(Until.hasObject(listItem1Selector), timeout))
 
         // Create second entry
         device.findObject(By.res("entryListNewEntryButton"))?.click()
-        By.res("entryDetailContentTextField").let { contentTextFieldSelector ->
-            device.wait(Until.hasObject(contentTextFieldSelector), timeout)
-            device.findObject(contentTextFieldSelector)
-                ?.text = "Oranges Bananas"
+        By.res("entryDetailContentTextField").let {
+            device.wait(Until.hasObject(it), timeout)
+            device.findObject(it)?.text = "Oranges Bananas"
         }
         device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val secondListItemSelector = By.res("entryListItem").hasChild(
-            By.text("Oranges Bananas")
-        )
+        val listItem2Selector =
+            By.res("entryListItem").hasChild(By.text("Oranges Bananas"))
         assertTrue(
-            device.wait(Until.hasObject(secondListItemSelector), timeout)
+            device.wait(Until.hasObject(listItem2Selector), timeout)
         )
 
         // Expand filter
-        By.res("entryListFilterExpandButton").let { filterExpandButtonSelector ->
-            device.wait(Until.hasObject(filterExpandButtonSelector), timeout)
-            device.findObject(filterExpandButtonSelector)?.click()
+        By.res("entryListFilterExpandButton").let {
+            device.wait(Until.hasObject(it), timeout)
+            device.findObject(it)?.click()
         }
 
         // Filter by a term that only the first entry contains
@@ -253,12 +214,8 @@ open class MainActivityBehaviorTest {
             ?.text = "apple"
 
         // Check that only the first entry is displayed
-        assertTrue(
-            device.wait(Until.gone(secondListItemSelector), timeout)
-        )
-        assertTrue(
-            device.wait(Until.hasObject(firstListItemSelector), timeout)
-        )
+        assertTrue(device.wait(Until.gone(listItem2Selector), timeout))
+        assertTrue(device.wait(Until.hasObject(listItem1Selector), timeout))
         assertTrue(
             device.wait(Until.hasObject(By.text("1 of 2 notes")), timeout)
         )
@@ -268,12 +225,8 @@ open class MainActivityBehaviorTest {
             ?.text = "banana"
 
         // Check that only the second entry is displayed
-        assertTrue(
-            device.wait(Until.gone(firstListItemSelector), timeout)
-        )
-        assertTrue(
-            device.wait(Until.hasObject(secondListItemSelector), timeout)
-        )
+        assertTrue(device.wait(Until.gone(listItem1Selector), timeout))
+        assertTrue(device.wait(Until.hasObject(listItem2Selector), timeout))
         assertTrue(
             device.wait(Until.hasObject(By.text("1 of 2 notes")), timeout)
         )
@@ -283,12 +236,8 @@ open class MainActivityBehaviorTest {
             ?.text = "orange"
 
         // Check that both entries are displayed
-        assertTrue(
-            device.wait(Until.hasObject(firstListItemSelector), timeout)
-        )
-        assertTrue(
-            device.wait(Until.hasObject(secondListItemSelector), timeout)
-        )
+        assertTrue(device.wait(Until.hasObject(listItem1Selector), timeout))
+        assertTrue(device.wait(Until.hasObject(listItem2Selector), timeout))
         assertTrue(
             device.wait(Until.hasObject(By.text("2 of 2 notes")), timeout)
         )
@@ -298,12 +247,8 @@ open class MainActivityBehaviorTest {
             ?.text = "spam"
 
         // Check that no entries are displayed
-        assertTrue(
-            device.wait(Until.gone(firstListItemSelector), timeout)
-        )
-        assertTrue(
-            device.wait(Until.gone(secondListItemSelector), timeout)
-        )
+        assertTrue(device.wait(Until.gone(listItem1Selector), timeout))
+        assertTrue(device.wait(Until.gone(listItem2Selector), timeout))
         assertTrue(
             device.wait(Until.hasObject(By.text("0 of 2 notes")), timeout)
         )
