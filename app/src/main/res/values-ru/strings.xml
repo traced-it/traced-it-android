@@ -78,7 +78,6 @@
     <string name="list_item_copied_to_clipboard">Скопировано</string>
     <string name="list_selected_back">Убрать выбор заметки</string>
     <string name="list_selected_title">Выбранная заметка</string>
-    <string name="list_item_long_click_label">Выберите заметку</string>
     <string name="list_item_find_with_similar_content">Фильтровать подобные заметки</string>
     <string name="list_item_copy_to_clipboard">Копировать в буфер обмена</string>
     <string name="list_import_failed_column_parsing_error">Не удалось разобрать значение \"%2$s\" из столбца \"%1$s\"</string>

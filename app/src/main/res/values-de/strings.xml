@@ -88,7 +88,6 @@
     <string name="list_filter_export">Speichern</string>
     <string name="list_item_copy_to_clipboard">In Zwischenablage kopieren</string>
     <string name="list_item_find_with_similar_content">Ähnliche Notizen filtern</string>
-    <string name="list_item_long_click_label">Notiz auswählen</string>
     <string name="list_item_copied_to_clipboard">Kopiert</string>
     <string name="list_selected_back">Notiz abwählen</string>
     <string name="list_selected_title">Ausgewählte Notiz</string>

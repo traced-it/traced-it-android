@@ -94,7 +94,6 @@
         <item quantity="other">%1$d of %2$d notes</item>
     </plurals>
     <string name="list_filter_export">Save</string>
-    <string name="list_item_long_click_label">Select note</string>
     <string name="list_item_find_with_similar_content">Filter similar notes</string>
     <string name="list_item_copy_to_clipboard">Copy to clipboard</string>
     <string name="list_item_copied_to_clipboard">Copied</string>

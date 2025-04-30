@@ -92,7 +92,6 @@
         <item quantity="other">%1$d z %2$d poznámek</item>
     </plurals>
     <string name="list_filter_export">Uložit</string>
-    <string name="list_item_long_click_label">Vybrat poznámku</string>
     <string name="list_item_find_with_similar_content">Filtrovat podobné poznámky</string>
     <string name="list_item_copy_to_clipboard">Zkopírovat do schránky</string>
     <string name="list_item_copied_to_clipboard">Zkopírováno</string>
