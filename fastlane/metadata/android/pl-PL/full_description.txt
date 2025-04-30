@@ -17,7 +17,7 @@ FUNKCJE
 - Wszystkie swoje notki zobacz wraz z czasem, jaki upłynął odkąd napisałeś/aś każdą z nich.
 - Tapnij przycisk + by dodać nową notkę z takim samym tekstem, jak istniejąca.
 - Edytuj notkę, usuń ją, usuń wszystkie notki.
-- Eksportuj wszystkie notki jako plik arkuszu kalkulacyjnego (format CSV) oraz importuj je.
+- Zapisz wszystkie notki jako plik arkuszu kalkulacyjnego (format CSV) oraz importuj je.
 
 PRYWATNOŚĆ I BEZPIECZEŃSTWO
 

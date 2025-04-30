@@ -17,7 +17,7 @@ FUNCIONALIDADES
 - Veja todas as suas anotações com o tempo decorrido desde que você escreveu cada uma.
 - Toque o botão + para adicionar uma nova anotação com o mesmo texto que uma anotação existente.
 - Edite uma anotação, remova-a, remova todas as anotações.
-- Exporte todas as anotações como uma planilha (formato CSV) e importe-as.
+- Salve todas as anotações como uma planilha (formato CSV) e importe-as.
 
 PRIVACIDADE & SEGURANÇA
 
