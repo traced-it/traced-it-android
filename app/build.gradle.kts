@@ -15,8 +15,8 @@ android {
         applicationId = "app.traced_it"
         minSdk = 25
         targetSdk = 35
-        versionCode = 10
-        versionName = "1.3.0"
+        versionCode = 11
+        versionName = "1.4.0"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -40,7 +40,15 @@ android {
         // `androidResources.generateLocalConfig = true`, so that languages
         // whose translations are in progress don't appear among the app's
         // supported languages.
-        resourceConfigurations += listOf("cs", "de", "en", "fr", "pl", "pt-rBR", "ru")
+        resourceConfigurations += listOf(
+            "cs",
+            "de",
+            "en",
+            "fr",
+            "pl",
+            "pt-rBR",
+            "ru"
+        )
     }
 
     buildTypes {
