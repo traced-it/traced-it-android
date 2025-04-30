@@ -69,4 +69,19 @@
     <string name="entry_unit_clothing_choice_l">L</string>
     <string name="entry_unit_clothing_choice_xl">XL</string>
     <string name="list_export_all_filename">%1$s заметки %2$s.csv</string>
+    <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
+    <string name="list_filter_input_placeholder">Фильтруйте свои заметки</string>
+    <string name="list_filter_input_clear_content_description">Очистить ввод</string>
+    <string name="list_filter_submit">Отфильтровать</string>
+    <string name="list_filter_close_content_description">Закрыть фильтр</string>
+    <string name="list_filter_export">Сохранить</string>
+    <string name="list_item_copied_to_clipboard">Скопировано</string>
+    <string name="list_selected_back">Убрать выбор заметки</string>
+    <string name="list_selected_title">Выбранная заметка</string>
+    <string name="list_item_long_click_label">Выберите заметку</string>
+    <string name="list_item_find_with_similar_content">Фильтровать подобные заметки</string>
+    <string name="list_item_copy_to_clipboard">Копировать в буфер обмена</string>
+    <string name="list_import_failed_column_parsing_error">Не удалось разобрать значение \"%2$s\" из столбца \"%1$s\"</string>
+    <string name="entry_unit_none_name">без единицы</string>
+    <string name="entry_unit_fraction_name">часть</string>
 </resources>
