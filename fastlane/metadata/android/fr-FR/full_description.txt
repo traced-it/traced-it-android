@@ -18,6 +18,7 @@ CARACTÉRISTIQUES
 - Touchez le bouton + pour ajouter une nouvelle note avec le même texte qu’une note existante.
 - Modifiez une note, supprimez-la, supprimez toutes les notes.
 - Exporter toutes les notes dans un fichier de feuille de calcul (format CSV) et les importer.
+- Filtrer les notes et exporter les notes filtrées.
 
 CONFIDENTIALITÉ ET SÉCURITÉ
 

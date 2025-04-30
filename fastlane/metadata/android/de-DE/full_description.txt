@@ -18,6 +18,7 @@ FEATURES
 - Tippe auf die Schaltfläche +, um eine neue Notiz mit demselben Text wie eine bestehende Notiz hinzuzufügen.
 - Bearbeite eine Notiz, lösche sie, lösche alle Notizen.
 - Exportiere alle Notizen als Tabellenkalkulationsdatei (CSV-Format) und importiere sie.
+- Filtere Notizen und exportiere die gefilterten Notizen.
 
 DATENSCHUTZ & SICHERHEIT
 

@@ -18,6 +18,7 @@ FUNKCE
 - Klepnutím na tlačítko + přidáte novou poznámku se stejným textem jako má stávající poznámka.
 - Upravení poznámky, odstranění poznámky, odstranění všech poznámek.
 - Exportování a importování všech poznámek jako tabulkového souboru (formát CSV).
+- Filtrování poznámek a exportování vyfiltrovaných poznámek.
 
 SOUKROMÍ A ZABEZPEČENÍ
 
