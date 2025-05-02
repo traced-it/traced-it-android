@@ -341,7 +341,23 @@ fun EntryListScreen(
                     }
                 },
                 navigationIcon = {
-                    if (filterExpanded) {
+                    if (selectedEntry != null) {
+                        IconButton(
+                            onClick = {
+                                selectedEntry = null
+                            },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = stringResource(
+                                    R.string.list_selected_back
+                                )
+                            )
+                        }
+                    } else if (filterExpanded) {
                         IconButton(
                             onClick = {
                                 viewModel.setFilterExpanded(false)
@@ -358,22 +374,6 @@ fun EntryListScreen(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                 contentDescription = stringResource(
                                     R.string.list_filter_close_content_description
-                                )
-                            )
-                        }
-                    } else if (selectedEntry != null) {
-                        IconButton(
-                            onClick = {
-                                selectedEntry = null
-                            },
-                            colors = IconButtonDefaults.iconButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            ),
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(
-                                    R.string.list_selected_back
                                 )
                             )
                         }
