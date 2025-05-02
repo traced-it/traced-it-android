@@ -81,9 +81,9 @@
     <string name="list_filter_input_placeholder">Filtrez vos notes</string>
     <string name="list_filter_close_content_description">Fermer le filtre</string>
     <plurals name="list_filter_status">
-        <item quantity="one">%1$d de %2$d note</item>
-        <item quantity="many">%1$d des %2$d notes</item>
-        <item quantity="other">%1$d des %2$d notes</item>
+        <item quantity="one">%1$d note sur %2$d</item>
+        <item quantity="many">%1$d notes sur %2$d</item>
+        <item quantity="other">%1$d notes sur %2$d</item>
     </plurals>
     <string name="list_export_filtered_filename">%1$s notes %2$s filtre %3$s.csv</string>
     <string name="list_filter_input_clear_content_description">Effacer la saisie</string>

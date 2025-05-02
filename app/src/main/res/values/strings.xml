@@ -90,8 +90,8 @@
     <string name="list_filter_submit">Filter</string>
     <string name="list_filter_close_content_description">Close filter</string>
     <plurals name="list_filter_status">
-        <item quantity="one">%1$d of %2$d note</item>
-        <item quantity="other">%1$d of %2$d notes</item>
+        <item quantity="one">%1$d note out of %2$d</item>
+        <item quantity="other">%1$d notes out of %2$d</item>
     </plurals>
     <string name="list_filter_export">Save</string>
     <string name="list_item_find_with_similar_content">Filter similar notes</string>

@@ -427,7 +427,7 @@ fun EntryListScreen(
                     Text(
                         pluralStringResource(
                             R.plurals.list_filter_status,
-                            allEntriesCount,
+                            filteredEntries.itemCount,
                             filteredEntries.itemCount,
                             allEntriesCount,
                         ),

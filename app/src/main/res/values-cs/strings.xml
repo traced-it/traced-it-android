@@ -86,10 +86,10 @@
     <string name="list_filter_submit">Filtrovat</string>
     <string name="list_filter_close_content_description">Zavřít filtr</string>
     <plurals name="list_filter_status">
-        <item quantity="one">%1$d z %2$d poznámky</item>
-        <item quantity="few">%1$d z %2$d poznámek</item>
-        <item quantity="many">%1$d z %2$d poznámek</item>
-        <item quantity="other">%1$d z %2$d poznámek</item>
+        <item quantity="one">%1$d poznámka z %2$d</item>
+        <item quantity="few">%1$d poznámky z %2$d</item>
+        <item quantity="many">%1$d poznámek z %2$d</item>
+        <item quantity="other">%1$d poznámek z %2$d</item>
     </plurals>
     <string name="list_filter_export">Uložit</string>
     <string name="list_item_find_with_similar_content">Filtrovat podobné poznámky</string>

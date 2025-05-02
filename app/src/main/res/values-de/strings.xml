@@ -82,8 +82,8 @@
     <string name="list_filter_submit">Filtern</string>
     <string name="list_filter_close_content_description">Filter schließen</string>
     <plurals name="list_filter_status">
-        <item quantity="one">%1$d von %2$d Notiz</item>
-        <item quantity="other">%1$d von %2$d Notizen</item>
+        <item quantity="one">%1$d Notiz von %2$d</item>
+        <item quantity="other">%1$d Notizen von %2$d</item>
     </plurals>
     <string name="list_filter_export">Speichern</string>
     <string name="list_item_copy_to_clipboard">In Zwischenablage kopieren</string>
