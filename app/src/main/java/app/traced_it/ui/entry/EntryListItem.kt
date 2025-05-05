@@ -144,14 +144,13 @@ fun EntryListItem(
                 )
                 .offset {
                     IntOffset(
-                        x = (-state.requireOffset() / resistance).roundToInt(),
+                        x = (state.requireOffset() / resistance).roundToInt(),
                         y = 0,
                     )
                 }
                 .anchoredDraggable(
                     state,
                     orientation = Orientation.Horizontal,
-                    reverseDirection = true
                 ),
             horizontalArrangement = Arrangement.spacedBy(Spacing.medium),
             verticalAlignment = Alignment.CenterVertically,
@@ -216,7 +215,7 @@ fun EntryListItem(
                     .fillMaxHeight()
                     .offset {
                         IntOffset(
-                            x = (-state.requireOffset() / resistance - Spacing.swipeActionWidth.toPx()).roundToInt(),
+                            x = (state.requireOffset() / resistance - Spacing.swipeActionWidth.toPx()).roundToInt(),
                             y = 0
                         )
                     }
@@ -246,7 +245,7 @@ fun EntryListItem(
                     .fillMaxHeight()
                     .offset {
                         IntOffset(
-                            x = (-state.requireOffset() / resistance + Spacing.swipeActionWidth.toPx()).roundToInt(),
+                            x = (state.requireOffset() / resistance + Spacing.swipeActionWidth.toPx()).roundToInt(),
                             y = 0,
                         )
                     }
