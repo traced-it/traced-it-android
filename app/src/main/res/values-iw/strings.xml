@@ -83,7 +83,7 @@
     <string name="list_item_copied_to_clipboard">הועתק</string>
     <string name="list_selected_back">בטל בחירת הערה</string>
     <string name="list_selected_title">הערה נבחרה</string>
-    <string name="list_title">ההערה שלך (%1$d)</string>
+    <string name="list_title">ההערות שלך (%1$d)</string>
     <string name="entry_unit_double_name">מספר</string>
     <string name="list_import_finished_empty">קובץ CSV ריק</string>
     <string name="list_message_restored">הערה שוחזרה</string>
