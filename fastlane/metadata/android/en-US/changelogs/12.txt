@@ -1,1 +1,2 @@
+- Added Arabic translation.
 - Added Hebrew translation.

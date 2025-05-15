@@ -41,6 +41,7 @@ android {
         // whose translations are in progress don't appear among the app's
         // supported languages.
         resourceConfigurations += listOf(
+            "ar",
             "cs",
             "de",
             "en",
