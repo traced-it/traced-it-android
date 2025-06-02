@@ -42,9 +42,9 @@ fun EntryDetailDialog(
 ) {
     val context = LocalContext.current
 
-    var content by remember { mutableStateOf<String>(action.entry.content) }
+    var content by remember { mutableStateOf(action.entry.content) }
     var unit by remember {
-        mutableStateOf<EntryUnit>(
+        mutableStateOf(
             if (action.entry.amountUnit in visibleUnits) {
                 action.entry.amountUnit
             } else if (action.entry.amount != 0.0) {
@@ -58,7 +58,7 @@ fun EntryDetailDialog(
         )
     }
     var amountRaw by remember {
-        mutableStateOf<String>(unit.format(context, action.entry.amount))
+        mutableStateOf(unit.format(context, action.entry.amount))
     }
     var visibleUnit by remember {
         mutableStateOf(

@@ -20,7 +20,6 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Suppress("unused")
 class DataModule {
 
     @Singleton
@@ -34,7 +33,7 @@ class DataModule {
         }
 }
 
-class ListFlowPagingSource<T: Any>(
+class ListFlowPagingSource<T : Any>(
     private val listFlow: Flow<List<T>>,
 ) : PagingSource<Int, T>() {
 
@@ -83,8 +82,8 @@ class FakeEntryRepository(
         MutableStateFlow(initialFakeEntries)
     val fakeEntries: Flow<List<Entry>> = _fakeEntries.mapLatest {
         it
-            .filter { !it.deleted }
-            .sortedBy { it.createdAt }
+            .filter { entry -> !entry.deleted }
+            .sortedBy { entry -> entry.createdAt }
             .reversed()
     }
     private var lastPagingSource: PagingSource<Int, Entry>? = null
@@ -102,7 +101,7 @@ class FakeEntryRepository(
                 fakeEntries
             } else {
                 fakeEntries.mapLatest {
-                    it.filter { unsafeQuery in it.content }
+                    it.filter { entry -> unsafeQuery in entry.content }
                 }
             }
         ).also {

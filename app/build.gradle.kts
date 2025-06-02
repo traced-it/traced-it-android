@@ -97,6 +97,9 @@ android {
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
+    lint {
+        disable += "MissingTranslation"
+    }
 }
 
 dependencies {
