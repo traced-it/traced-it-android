@@ -1,2 +1,3 @@
+- Fix filtering notes that contain special characters.
 - Added Arabic translation.
 - Added Hebrew translation.

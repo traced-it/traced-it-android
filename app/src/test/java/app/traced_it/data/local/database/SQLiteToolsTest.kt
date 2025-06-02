@@ -7,8 +7,8 @@ class SQLiteToolsTest {
     @Test
     fun testSingleWord() {
         assertEquals(
-            "*one-word*",
-            createFullTextQueryExpression("one-word"),
+            "*one_word*",
+            createFullTextQueryExpression("one_word"),
         )
     }
 
@@ -21,10 +21,18 @@ class SQLiteToolsTest {
     }
 
     @Test
+    fun testWordWithDash() {
+        assertEquals(
+            "\"*word-with-dash*\"",
+            createFullTextQueryExpression("word-with-dash"),
+        )
+    }
+
+    @Test
     fun testColon() {
         assertEquals(
-            "*word\\:with-colon* *standalone* *\\:*",
-            createFullTextQueryExpression("word:with-colon standalone :"),
+            "*word\\:with_colon* *standalone* *\\:*",
+            createFullTextQueryExpression("word:with_colon standalone :"),
         )
     }
 
@@ -61,9 +69,25 @@ class SQLiteToolsTest {
     }
 
     @Test
+    fun testPhraseWithDash() {
+        assertEquals(
+            "\"phrase with-dash\"",
+            createFullTextQueryExpression("\"phrase with-dash\""),
+        )
+    }
+
+    @Test
+    fun testPhraseWithoutSpaceOrDash() {
+        assertEquals(
+            "phrase_without_space_or_dash",
+            createFullTextQueryExpression("\"phrase_without_space_or_dash\""),
+        )
+    }
+
+    @Test
     fun testPhraseWithUnaryOperator() {
         assertEquals(
-            "-\"phrase with unary operator\"",
+            "-\"\"phrase* *with* *unary* *operator\"\"*",
             createFullTextQueryExpression("-\"phrase with unary operator\""),
         )
     }
@@ -71,15 +95,15 @@ class SQLiteToolsTest {
     @Test
     fun testQuoteInsideWord() {
         assertEquals(
-            "*quote\"\"inside-word*",
-            createFullTextQueryExpression("quote\"inside-word"),
+            "*quote\"\"inside_word*",
+            createFullTextQueryExpression("quote\"inside_word"),
         )
     }
 
     @Test
     fun testQuoteInsidePhrase() {
         assertEquals(
-            "\"quote\" *inside* *phrase\"\"*",
+            "quote *inside* *phrase\"\"*",
             createFullTextQueryExpression("\"quote\"inside phrase\""),
         )
     }
