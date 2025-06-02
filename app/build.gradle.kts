@@ -12,6 +12,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
+        testInstrumentationRunnerArguments += mapOf("clearPackageData" to "true")
         applicationId = "app.traced_it"
         minSdk = 25
         targetSdk = 35
@@ -32,25 +33,21 @@ android {
         // The following argument makes the Android Test Orchestrator run its
         // "pm clear" command after each test invocation. This command ensures
         // that the app's state is completely cleared between tests.
-        testInstrumentationRunnerArguments += mapOf(
-            "clearPackageData" to "true",
-        )
 
-        // Specify supported locales manually instead of setting
-        // `androidResources.generateLocalConfig = true`, so that languages
-        // whose translations are in progress don't appear among the app's
-        // supported languages.
-        resourceConfigurations += listOf(
-            "ar",
-            "cs",
-            "de",
-            "en",
-            "fr",
-            "iw",
-            "pl",
-            "pt-rBR",
-            "ru"
-        )
+        androidResources {
+            @Suppress("UnstableApiUsage")
+            localeFilters += listOf(
+                "ar",
+                "cs",
+                "de",
+                "en",
+                "fr",
+                "iw",
+                "pl",
+                "pt-rBR",
+                "ru",
+            )
+        }
     }
 
     buildTypes {
@@ -83,6 +80,7 @@ android {
         renderScript = false
         shaders = false
     }
+    @Suppress("UnstableApiUsage")
     composeOptions {
         kotlinCompilerExtensionVersion =
             libs.versions.androidxComposeCompiler.get()
@@ -96,7 +94,6 @@ android {
         // Adds exported schema location as test app assets.
         getByName("androidTest").assets.srcDir("$projectDir/schemas")
     }
-    @Suppress("UnstableApiUsage")
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
