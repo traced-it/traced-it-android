@@ -1,12 +1,15 @@
 package app.traced_it.ui.entry
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.Clipboard
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,11 +23,7 @@ import app.traced_it.data.local.database.Entry
 import app.traced_it.data.local.database.units
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVRecord
@@ -194,6 +193,31 @@ class EntryViewModel @Inject constructor(
     private fun cleanupDeleted() {
         viewModelScope.launch {
             entryRepository.cleanupDeleted()
+        }
+    }
+
+    fun copyEntryToClipboard(
+        context: Context,
+        clipboard: Clipboard,
+        entry: Entry,
+    ) {
+        viewModelScope.launch {
+            clipboard.setClipEntry(
+                ClipEntry(
+                    ClipData.newPlainText(
+                        "note", entry.format(context)
+                    )
+                )
+            )
+            val systemHasClipboardEditor =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            if (!systemHasClipboardEditor) {
+                setMessage(
+                    Message(
+                        context.resources.getString(R.string.list_item_copied_to_clipboard)
+                    )
+                )
+            }
         }
     }
 

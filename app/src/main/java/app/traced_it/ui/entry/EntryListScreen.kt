@@ -2,7 +2,6 @@ package app.traced_it.ui.entry
 
 import android.content.res.Configuration
 import android.os.Build
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,12 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -80,7 +78,7 @@ fun EntryListScreen(
     viewModel: EntryViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
 
     val allEntriesCount by viewModel.allEntriesCount.collectAsStateWithLifecycle()
@@ -263,17 +261,11 @@ fun EntryListScreen(
                             },
                             onCopy = {
                                 selectedEntry?.let {
-                                    clipboardManager.setText(
-                                        AnnotatedString(it.format(context))
+                                    viewModel.copyEntryToClipboard(
+                                        context,
+                                        clipboard,
+                                        it,
                                     )
-                                    // Only show a toast for Android 12 and lower.
-                                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                                        Toast.makeText(
-                                            context,
-                                            R.string.list_item_copied_to_clipboard,
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                    }
                                 }
                             },
                             onFilterWithSimilarContent = {
