@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import java.util.*
 
 class EntryViewModelTest {
 
@@ -25,6 +26,11 @@ class EntryViewModelTest {
 
     @Before
     fun before() {
+        // Set time zone, so that CSV export produces the same result when
+        // tested and doesn't depend on the time zone of the machine that is
+        // running the tests.
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"))
+
         mockResources = mock<Resources> {
             on { getString(R.string.entry_unit_clothing_name) } doReturn "clothing"
             on { getString(R.string.entry_unit_fraction_name) } doReturn "fraction"
@@ -439,11 +445,11 @@ class EntryViewModelTest {
             assertEquals(
                 listOf(
                     "createdAt,content,amountFormatted,amount,amountUnit",
-                    "2025-02-01T18:00:22.755+0100,Red apples,,0.0,NONE",
-                    "2025-02-01T15:18:43.189+0100,Yellow bananas,2x,2.0,SMALL_NUMBERS_CHOICE",
-                    "2025-02-01T15:16:56.985+0100,Green kiwis,L,3.0,CLOTHING_SIZE",
-                    "2025-02-01T15:00:00.000+0100,Purple grapes,3.14,3.14,DOUBLE",
-                    "2025-02-01T07:00:00.000+0100,Pineapple,1/3,0.333,FRACTION",
+                    "2025-02-01T14:00:22.755-0300,Red apples,,0.0,NONE",
+                    "2025-02-01T11:18:43.189-0300,Yellow bananas,2x,2.0,SMALL_NUMBERS_CHOICE",
+                    "2025-02-01T11:16:56.985-0300,Green kiwis,L,3.0,CLOTHING_SIZE",
+                    "2025-02-01T11:00:00.000-0300,Purple grapes,3.14,3.14,DOUBLE",
+                    "2025-02-01T03:00:00.000-0300,Pineapple,1/3,0.333,FRACTION",
                     ""
                 ).joinToString("\r\n"),
                 outputStream.toString(),
@@ -451,16 +457,17 @@ class EntryViewModelTest {
         }
 
     @Test
-    fun `filterQueueSanitizedForFilename contains filter query with non-word characters replaced by underscores`() = runTest {
-        val entryRepository = FakeEntryRepository(emptyList())
-        val entryViewModel = EntryViewModel(
-            entryRepository,
-            SavedStateHandle(),
-        )
-        entryViewModel.filter("unicode 0žš中 emoji \uD83D\uDE42 slash / backslash \\ dash - underscore _ dot . colon :")
-        assertEquals(
-            "unicode 0___ emoji _ slash _ backslash _ dash - underscore _ dot _ colon _",
-            entryViewModel.filterQuerySanitizedForFilename,
-        )
-    }
+    fun `filterQueueSanitizedForFilename contains filter query with non-word characters replaced by underscores`() =
+        runTest {
+            val entryRepository = FakeEntryRepository(emptyList())
+            val entryViewModel = EntryViewModel(
+                entryRepository,
+                SavedStateHandle(),
+            )
+            entryViewModel.filter("unicode 0žš中 emoji \uD83D\uDE42 slash / backslash \\ dash - underscore _ dot . colon :")
+            assertEquals(
+                "unicode 0___ emoji _ slash _ backslash _ dash - underscore _ dot _ colon _",
+                entryViewModel.filterQuerySanitizedForFilename,
+            )
+        }
 }
