@@ -6,7 +6,6 @@ import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.EaseOutQuint
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -85,7 +84,6 @@ fun EntryListItem(
     // initial position due to rounding.
     val leftActionWidthAdjustment = -(1).dp
     val resistance = 2
-    val decay = rememberSplineBasedDecay<Float>()
     val state = remember {
         AnchoredDraggableState(
             initialValue = DragValue.Center,
@@ -94,10 +92,6 @@ fun EntryListItem(
                 DragValue.Center at 0f
                 DragValue.End at with(density) { Spacing.swipeActionWidth.toPx() * resistance }
             },
-            positionalThreshold = { distance -> distance * 0.5f },
-            velocityThreshold = { with(density) { Spacing.swipeActionWidth.toPx() * resistance } },
-            snapAnimationSpec = tween(),
-            decayAnimationSpec = decay,
         )
     }
 
@@ -151,6 +145,10 @@ fun EntryListItem(
                 .anchoredDraggable(
                     state,
                     orientation = Orientation.Horizontal,
+                    flingBehavior = AnchoredDraggableDefaults.flingBehavior(
+                        state,
+                        positionalThreshold = { distance -> distance * 0.5f },
+                    )
                 ),
             horizontalArrangement = Arrangement.spacedBy(Spacing.medium),
             verticalAlignment = Alignment.CenterVertically,
