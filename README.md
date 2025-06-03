@@ -7,9 +7,9 @@ custom numbers.
 The uncomplicated interface makes the app easy to use even when you’re busy or
 distracted.
 
-📢 **We’re looking for testers! If you use the Google Play store and would like
-to help us, please submit this [Google
-Form](https://docs.google.com/forms/d/e/1FAIpQLSe4O_-f0mjtfLFWXkf5zThnPeEb8hQU-sHt_HXwKbOc6X02eg/viewform?usp=header).**
+**[Email us](mailto:android@traced-it.app?subject=Google%20Play&body=Hi%2C%20I%20would%20like%20to%20install%20the%20Google%20Play%20version%20of%20traced%20it.)
+if you'd like to install the Google Play version of the app to help us get
+approved by Google.**
 
 [<img src="https://f-droid.org/badge/get-it-on.png"
 alt="Get it on F-Droid"
