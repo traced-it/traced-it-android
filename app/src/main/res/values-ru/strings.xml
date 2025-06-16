@@ -83,4 +83,18 @@
     <string name="list_import_failed_column_parsing_error">Не удалось разобрать значение \"%2$s\" из столбца \"%1$s\"</string>
     <string name="entry_unit_none_name">без единицы</string>
     <string name="entry_unit_fraction_name">часть</string>
+    <plurals name="list_filter_status">
+        <item quantity="one">%1$d заметка из %2$d</item>
+        <item quantity="few">%1$d заметки из %2$d</item>
+        <item quantity="many">%1$d заметок из %2$d</item>
+        <item quantity="other">%1$d заметок из %2$d</item>
+    </plurals>
+    <string name="list_export_filtered_filename">%1$s заметки %2$s фильтр %3$s.csv</string>
+    <string name="list_import_failed_column_choice_unknown">Значение «%3$s» из столбца «%1$s» должно быть одним из %2$s</string>
+    <plurals name="list_import_finished_skipped">
+        <item quantity="one">Пропущено %1$d заметка, потому что заметки с такими же отметками времени уже существуют.</item>
+        <item quantity="few">Пропущено %1$d заметки, потому что заметки с такими же отметками времени уже существуют.</item>
+        <item quantity="many">Пропущено %1$d заметок, потому что заметки с такими же отметками времени уже существуют.</item>
+        <item quantity="other">Пропущено %1$d заметок, потому что заметки с такими же отметками времени уже существуют.</item>
+    </plurals>
 </resources>
