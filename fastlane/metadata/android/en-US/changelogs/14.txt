@@ -1,0 +1,1 @@
+- Fixed deleting notes when filter is active.

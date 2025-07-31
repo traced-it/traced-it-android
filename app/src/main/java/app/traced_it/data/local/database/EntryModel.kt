@@ -126,6 +126,7 @@ interface EntryDao {
         SELECT * FROM entry
         JOIN entry_fts ON entry_fts.rowid = entry.uid
         WHERE entry_fts MATCH :fullTextQueryExpression
+        AND NOT deleted
         ORDER BY createdAt DESC
     """
     )
