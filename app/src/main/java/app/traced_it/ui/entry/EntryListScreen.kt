@@ -1,5 +1,6 @@
 package app.traced_it.ui.entry
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Build
 import androidx.activity.compose.BackHandler
@@ -568,6 +569,7 @@ fun EntryListScreen(
 
 // Previews
 
+@SuppressLint("ViewModelConstructorInComposable")
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -587,6 +589,7 @@ private fun DefaultPreview() {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
@@ -606,6 +609,7 @@ private fun LightPreview() {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -625,6 +629,7 @@ private fun FilterPreview() {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -645,6 +650,7 @@ private fun SelectedEntryPreview() {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -662,6 +668,7 @@ private fun EmptyPreview() {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(
     showBackground = true,

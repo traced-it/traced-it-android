@@ -36,9 +36,9 @@ class DefaultEntryRepository @Inject constructor(
 ) : EntryRepository {
     override fun count(): Flow<Int> = entryDao.count()
 
-    override fun filter(filterQuery: String): PagingSource<Int, Entry> =
-        if (filterQuery.isNotEmpty()) {
-            entryDao.search(createFullTextQueryExpression(filterQuery))
+    override fun filter(unsafeQuery: String): PagingSource<Int, Entry> =
+        if (unsafeQuery.isNotEmpty()) {
+            entryDao.search(createFullTextQueryExpression(unsafeQuery))
         } else {
             entryDao.getAll()
         }
