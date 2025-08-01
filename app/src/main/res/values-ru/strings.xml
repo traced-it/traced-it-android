@@ -18,8 +18,6 @@
     <string name="list_delete_all_dialog_title">Удалить все заметки?</string>
     <string name="list_delete_all_dialog_text">Вы собираетесь удалить все заметки</string>
     <string name="list_delete_all_dialog_confirm">Удалить все</string>
-    <string name="list_delete_dialog_title">Удалить заметку?</string>
-    <string name="list_delete_dialog_confirm">Удалить заметку</string>
     <string name="list_message_added">Заметка добавлена</string>
     <string name="list_message_updated">Заметка обновлена</string>
     <string name="list_message_deleted">Заметка удалена</string>
@@ -31,7 +29,6 @@
     <string name="list_import_failed_column_missing">Отсутствие столбца «%1$s»</string>
     <string name="list_menu_import">Импорт из CSV</string>
     <string name="list_item_time_ago_hours_and_minutes">%1$d ч %2$02d мин назад</string>
-    <string name="list_delete_dialog_text">Вы собираетесь удалить заметку «%1$s»</string>
     <string name="list_message_all_deleted">Все заметки были удалены</string>
     <string name="list_import_failed_column_empty">Пустое значение колонки «%1$s»</string>
     <string name="entry_unit_fraction_choice_one_quarter">¼</string>
@@ -62,7 +59,6 @@
         <item quantity="many">Импортированные %1$d записи.</item>
         <item quantity="other">Импортированные %1$d записи.</item>
     </plurals>
-    <string name="list_delete_dialog_dismiss">Увольнять</string>
     <string name="entry_unit_clothing_choice_xs">XS</string>
     <string name="entry_unit_clothing_choice_s">S</string>
     <string name="entry_unit_clothing_choice_m">M</string>

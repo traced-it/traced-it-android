@@ -89,7 +89,6 @@ fun EntryListScreen(
         mutableStateOf<EntryDetailAction>(EntryDetailAction.Prefill(Entry()))
     }
     var entryDetailOpen by remember { mutableStateOf(false) }
-    var entryToDelete by remember { mutableStateOf<Entry?>(null) }
     val filterExpanded by filterExpandedFlow.collectAsStateWithLifecycle()
     val filterFocusRequester = remember { FocusRequester() }
     val filterQuery by filterQueryFlow.collectAsStateWithLifecycle()
@@ -241,7 +240,7 @@ fun EntryListScreen(
                         }
                         IconButton({
                             selectedEntry?.let {
-                                entryToDelete = it
+                                viewModel.deleteEntry(context, it)
                             }
                         }) {
                             Icon(
@@ -473,7 +472,7 @@ fun EntryListScreen(
                                 entryDetailOpen = true
                             },
                             onDelete = {
-                                entryToDelete = entry
+                                viewModel.deleteEntry(context, entry)
                             },
                             onHighlightingFinished = {
                                 viewModel.setHighlightedEntryUid(null)
@@ -541,27 +540,6 @@ fun EntryListScreen(
             onConfirmation = {
                 deleteAllEntriesDialogOpen = false
                 viewModel.deleteAllEntries(context)
-            },
-        )
-    }
-
-    if (entryToDelete != null) {
-        // Copy `entryToDelete`, so that the dialog remains working, even if
-        // `entryToDelete` state changes while the dialog is open.
-        val entryToDeleteCopy = entryToDelete!!
-        ConfirmationDialog(
-            title = stringResource(R.string.list_delete_dialog_title),
-            text = stringResource(
-                R.string.list_delete_dialog_text,
-                entryToDeleteCopy.content
-            ),
-            confirmText = stringResource(R.string.list_delete_dialog_confirm),
-            dismissText = stringResource(R.string.list_delete_dialog_dismiss),
-            onDismissRequest = { entryToDelete = null },
-            onConfirmation = {
-                entryToDelete = null
-                selectedEntry = null
-                viewModel.deleteEntry(context, entryToDeleteCopy)
             },
         )
     }

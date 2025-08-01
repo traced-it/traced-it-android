@@ -182,12 +182,6 @@ open class MainActivityBehaviorTest {
             device.findObject(it)?.click()
         }
 
-        // Confirm deletion
-        By.res("confirmationDialogConfirmButton").let {
-            assertTrue(device.wait(Until.hasObject(it), timeout))
-            device.findObject(it)?.click()
-        }
-
         // Check entry list
         assertTrue(device.wait(Until.gone(listItemSelector), timeout))
 

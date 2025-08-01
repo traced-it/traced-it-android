@@ -20,9 +20,6 @@
     <string name="list_delete_all_dialog_title">Supprimer toutes les notes ?</string>
     <string name="list_delete_all_dialog_text">Vous êtes en train de supprimer toutes les notes</string>
     <string name="list_delete_all_dialog_confirm">Supprimer tout</string>
-    <string name="list_delete_dialog_title">Supprimer la note ?</string>
-    <string name="list_delete_dialog_text">Vous êtes en train de supprimer la note « %1$s »</string>
-    <string name="list_delete_dialog_confirm">Supprimer la note</string>
     <string name="list_message_added">Note ajoutée</string>
     <string name="list_message_updated">Note modifiée</string>
     <string name="list_message_deleted">Note supprimée</string>
@@ -70,7 +67,6 @@
     <string name="entry_unit_double_name">nombre</string>
     <string name="input_clear_content_description">Effacer le texte</string>
     <string name="list_delete_all_dialog_dismiss">Annuler</string>
-    <string name="list_delete_dialog_dismiss">Annuler</string>
     <string name="entry_unit_none_name">aucune unité</string>
     <string name="detail_update_title">Modifier la note</string>
     <string name="list_message_restored">Note restaurée</string>

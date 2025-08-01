@@ -1,1 +1,2 @@
+- Removed the confirmation when deleting a single note; you can use the undo button.
 - Fixed deleting notes when filter is active.

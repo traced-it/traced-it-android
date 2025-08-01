@@ -11,9 +11,6 @@
     <string name="list_title">আপনার নোটস গুলো (%1$d)</string>
     <string name="list_delete_all_dialog_title">সব গুলো নোটস ডিলিট করে দিন?</string>
     <string name="list_delete_all_dialog_text">আপনি সব গুলো নোটস ডিলিট করে দিচ্ছেন</string>
-    <string name="list_delete_dialog_title">নোট ডিলিট?</string>
-    <string name="list_delete_dialog_text">আপনি “%1$s” নোট ডিলিট করে দিচ্ছেন</string>
-    <string name="list_delete_dialog_confirm">নোট ডিলিট</string>
     <string name="list_message_added">নোট যুক্ত হয়ে গেলো</string>
     <string name="list_message_deleted">নোট ডিলিট হয়েছে</string>
     <string name="list_message_all_deleted_action">ফিরে যান</string>

@@ -20,9 +20,6 @@
     <string name="list_delete_all_dialog_title">Odstranit všechny poznámky?</string>
     <string name="list_delete_all_dialog_confirm">Odstranit vše</string>
     <string name="list_delete_all_dialog_text">Chystáte se odstranit všechny poznámky</string>
-    <string name="list_delete_dialog_title">Odstranit poznámku?</string>
-    <string name="list_delete_dialog_text">Chystáte se odstranit poznámku „%1$s“</string>
-    <string name="list_delete_dialog_confirm">Odstranit poznámku</string>
     <string name="list_message_added">Poznámka přidána</string>
     <string name="list_message_updated">Poznámka upravena</string>
     <string name="list_message_deleted">Poznámka odstraněna</string>
@@ -72,7 +69,6 @@
     <string name="entry_unit_fraction_choice_one_half_html"><![CDATA[<big>½</big>]]></string>
     <string name="input_clear_content_description">Smazat text</string>
     <string name="list_delete_all_dialog_dismiss">Zrušit</string>
-    <string name="list_delete_dialog_dismiss">Zrušit</string>
     <string name="entry_unit_fraction_name">zlomek</string>
     <string name="detail_update_title">Upravit poznámku</string>
     <string name="detail_add_title">Přidat poznámku</string>
