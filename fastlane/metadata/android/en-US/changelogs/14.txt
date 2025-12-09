@@ -1,1 +1,3 @@
+- Removed the confirmation when deleting a single note; you can use the undo button.
+- Improved the add/edit note screen to focus the text field automatically.
 - Fixed deleting notes when filter is active.

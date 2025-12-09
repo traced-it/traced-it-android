@@ -50,7 +50,7 @@ fun TracedBottomButton(
 @Composable
 private fun DefaultPreview() {
     AppTheme {
-            TracedBottomButton("Enabled button", {})
+        TracedBottomButton("Enabled button", {})
     }
 }
 
@@ -59,7 +59,7 @@ private fun DefaultPreview() {
 @Composable
 private fun DisabledPreview() {
     AppTheme {
-            TracedBottomButton("Disabled button", {}, enabled = false)
+        TracedBottomButton("Disabled button", {}, enabled = false)
     }
 }
 
@@ -72,6 +72,6 @@ private fun DisabledPreview() {
 @Composable
 private fun PortraitPreview() {
     AppTheme {
-            TracedBottomButton("Portrait button", {})
+        TracedBottomButton("Portrait button", {})
     }
 }

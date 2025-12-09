@@ -80,8 +80,7 @@ fun EntryListItem(
     val animatedBackground = remember { Animatable(Color.Transparent) }
 
     val density = LocalDensity.current
-    // Reduce left action width to make sure no part of it is visible in the
-    // initial position due to rounding.
+    // Reduce left action width to make sure no part of it is visible in the initial position due to rounding.
     val leftActionWidthAdjustment = -(1).dp
     val resistance = 2
     val state = remember {
@@ -99,11 +98,11 @@ fun EntryListItem(
         if (highlighted) {
             animatedBackground.animateTo(
                 highlightedContainerColor,
-                tween(500, easing = EaseOutQuint)
+                tween(500, easing = EaseOutQuint),
             )
             animatedBackground.animateTo(
                 Color.Transparent,
-                tween(1000, easing = LinearEasing)
+                tween(1000, easing = LinearEasing),
             )
             onHighlightingFinished()
         }
@@ -148,7 +147,7 @@ fun EntryListItem(
                     flingBehavior = AnchoredDraggableDefaults.flingBehavior(
                         state,
                         positionalThreshold = { distance -> distance * 0.5f },
-                    )
+                    ),
                 ),
             horizontalArrangement = Arrangement.spacedBy(Spacing.medium),
             verticalAlignment = Alignment.CenterVertically,
@@ -159,14 +158,8 @@ fun EntryListItem(
                     if (entry.amountUnit != noneUnit) {
                         append(" (")
                         append(
-                            entry.amountUnit.formatHtml(
-                                context,
-                                entry.amount,
-                            )
-                                ?: entry.amountUnit.format(
-                                    context,
-                                    entry.amount,
-                                )
+                            entry.amountUnit.formatHtml(context, entry.amount)
+                                ?: entry.amountUnit.format(context, entry.amount)
                         )
                         append(")")
                     }
@@ -175,10 +168,11 @@ fun EntryListItem(
                 color = contentColor,
             )
             Text(
-                if (selected)
+                if (selected) {
                     entry.formatExactTime(context)
-                else
-                    entry.formatTime(context, now),
+                } else {
+                    entry.formatTime(context, now)
+                },
                 color = contentColor,
             )
             Button(
@@ -214,19 +208,17 @@ fun EntryListItem(
                     .offset {
                         IntOffset(
                             x = (state.requireOffset() / resistance - Spacing.swipeActionWidth.toPx()).roundToInt(),
-                            y = 0
+                            y = 0,
                         )
                     }
                     .background(MaterialTheme.colorScheme.tertiary),
                 colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onTertiary
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
                 ),
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Edit,
-                    contentDescription = stringResource(
-                        R.string.list_item_update
-                    ),
+                    contentDescription = stringResource(R.string.list_item_update),
                 )
             }
             IconButton(
@@ -254,9 +246,7 @@ fun EntryListItem(
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
-                    contentDescription = stringResource(
-                        R.string.list_item_delete
-                    ),
+                    contentDescription = stringResource(R.string.list_item_delete),
                 )
             }
         }

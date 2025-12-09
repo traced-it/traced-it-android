@@ -56,6 +56,8 @@ fun ConfirmationDialog(
     )
 }
 
+// Previews
+
 @Preview(showBackground = true)
 @Composable
 private fun DefaultPreview() {

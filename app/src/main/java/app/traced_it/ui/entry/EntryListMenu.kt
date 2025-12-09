@@ -24,9 +24,7 @@ fun EntryListMenu(
         IconButton({ expanded = true }, modifier) {
             Icon(
                 Icons.Outlined.MoreVert,
-                contentDescription = stringResource(
-                    R.string.list_menu
-                ),
+                contentDescription = stringResource(R.string.list_menu),
             )
         }
         DropdownMenu(

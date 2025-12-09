@@ -24,8 +24,6 @@
     <string name="list_item_add">Notiz mit demselben Text hinzufügen</string>
     <string name="list_delete_all_dialog_title">Alle Notizen löschen?</string>
     <string name="list_delete_all_dialog_confirm">Alle löschen</string>
-    <string name="list_delete_dialog_title">Notiz löschen?</string>
-    <string name="list_delete_dialog_confirm">Notiz löschen</string>
     <string name="list_message_added">Notiz hinzugefügt</string>
     <string name="list_message_updated">Notiz bearbeitet</string>
     <string name="list_message_deleted">Notiz gelöscht</string>
@@ -68,13 +66,11 @@
     <string name="list_export_all_filename">%1$s Notizen %2$s.csv</string>
     <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> ist eine nicht-kommerzielle App, die von drei FreundInnen zum Spaß gemacht wurde.</p><br><p>Möchtest du uns mitteilen, wie du die App benutzt? Schreib uns eine <a href="mailto:android@traced-it.app">E-Mail</a>.</p><br><p>Funktioniert etwas für dich nicht oder hast du Ideen für Verbesserungen? Melde ein <a href="https://github.com/traced-it/traced-it-android/issues">Problem</a>.</p><br><p>Verteilt unter <a href="https://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License 3.0</a> oder höher. Du findest den Code und kannst dich auf <a href="https://github.com/traced-it/traced-it-android">GitHub</a> beteiligen.</p>]]></string>
     <string name="list_delete_all_dialog_dismiss">Abbrechen</string>
-    <string name="list_delete_dialog_dismiss">Abbrechen</string>
     <string name="detail_content_label">Schreibe deine Notiz</string>
     <string name="list_title">Deine Notizen (%1$d)</string>
     <string name="detail_unit_label">Wähle eine Menge, wenn du willst</string>
     <string name="detail_unit_dropdown_content_description">Liste der Einheiten aufklappen</string>
     <string name="list_delete_all_dialog_text">Du bist dabei, alle Notizen zu löschen</string>
-    <string name="list_delete_dialog_text">Du bist dabei, die Notiz „%1$s“ zu löschen</string>
     <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
     <string name="list_export_filtered_filename">%1$s Notizen %2$s Filter %3$s.csv</string>
     <string name="list_filter_input_placeholder">Filtere deine Notizen</string>

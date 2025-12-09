@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import app.traced_it.R
@@ -38,6 +39,126 @@ import app.traced_it.ui.theme.Spacing
  * TextField uses internal methods of TextFieldColors, which we cannot use in
  * this module.
  */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TextFieldWithCustomPadding(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    textStyle: TextStyle = LocalTextStyle.current,
+    label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
+    supportingText: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    singleLine: Boolean = false,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    minLines: Int = 1,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    shape: Shape = TextFieldDefaults.shape,
+    contentPadding: PaddingValues = if (label == null) {
+        TextFieldDefaults.contentPaddingWithoutLabel()
+    } else {
+        TextFieldDefaults.contentPaddingWithLabel()
+    },
+    textColor: Color = LocalTextStyle.current.color,
+    containerColor: Color = Color.Unspecified,
+    selectionColors: TextSelectionColors = LocalTextSelectionColors.current,
+    errorIndicatorColor: Color = Color.Unspecified,
+    indicatorColor: Color = Color.Unspecified,
+    trailingIconColor: Color = Color.Unspecified,
+    placeholderColor: Color = LocalTextStyle.current.color,
+) {
+    val colors = TextFieldDefaults.colors(
+        focusedTextColor = textColor,
+        unfocusedTextColor = textColor,
+        focusedContainerColor = containerColor,
+        unfocusedContainerColor = containerColor,
+        errorContainerColor = containerColor,
+        cursorColor = textColor,
+        errorCursorColor = textColor,
+        selectionColors = selectionColors,
+        errorIndicatorColor = errorIndicatorColor,
+        focusedIndicatorColor = indicatorColor,
+        unfocusedIndicatorColor = indicatorColor,
+        errorTrailingIconColor = trailingIconColor,
+        focusedTrailingIconColor = trailingIconColor,
+        unfocusedTrailingIconColor = trailingIconColor,
+        errorPlaceholderColor = placeholderColor,
+        focusedPlaceholderColor = placeholderColor,
+        unfocusedPlaceholderColor = placeholderColor,
+        errorSuffixColor = placeholderColor,
+        focusedSuffixColor = placeholderColor,
+        unfocusedSuffixColor = placeholderColor,
+    )
+    val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
+
+    CompositionLocalProvider(LocalTextSelectionColors provides selectionColors) {
+        BasicTextField(
+            value = value,
+            modifier = modifier.defaultMinSize(
+                minWidth = TextFieldDefaults.MinWidth,
+                minHeight = TextFieldDefaults.MinHeight
+            ),
+            onValueChange = onValueChange,
+            enabled = enabled,
+            readOnly = readOnly,
+            textStyle = mergedTextStyle,
+            cursorBrush = SolidColor(textColor),
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            interactionSource = interactionSource,
+            singleLine = singleLine,
+            maxLines = maxLines,
+            minLines = minLines,
+            decorationBox = @Composable { innerTextField ->
+                TextFieldDefaults.DecorationBox(
+                    value = value.text,
+                    visualTransformation = visualTransformation,
+                    innerTextField = innerTextField,
+                    placeholder = placeholder,
+                    label = label,
+                    leadingIcon = leadingIcon,
+                    trailingIcon = trailingIcon,
+                    prefix = prefix,
+                    suffix = suffix,
+                    supportingText = supportingText,
+                    shape = shape,
+                    singleLine = singleLine,
+                    enabled = enabled,
+                    isError = isError,
+                    interactionSource = interactionSource,
+                    colors = colors,
+                    contentPadding = contentPadding,
+                    container = {
+                        Box(
+                            Modifier
+                                .background(containerColor, shape)
+                                .indicatorLine(
+                                    enabled,
+                                    isError,
+                                    interactionSource,
+                                    colors,
+                                    focusedIndicatorLineThickness = Spacing.inputBorderWidth,
+                                    unfocusedIndicatorLineThickness = Spacing.inputBorderWidth,
+                                )
+                        )
+                    },
+                )
+            },
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextFieldWithCustomPadding(
@@ -156,6 +277,68 @@ fun TextFieldWithCustomPadding(
             },
         )
     }
+}
+
+@Composable
+fun TracedTextField(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+    textStyle: TextStyle = LocalTextStyle.current,
+    placeholder: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    singleLine: Boolean = false,
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = Spacing.medium,
+        vertical = Spacing.medium
+    ),
+    showTrailingIcon: Boolean = true,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
+    selectionColors: TextSelectionColors = TextSelectionColors(
+        handleColor = MaterialTheme.colorScheme.primary,
+        backgroundColor = MaterialTheme.colorScheme.primary
+    ),
+    errorIndicatorColor: Color = MaterialTheme.colorScheme.primary,
+    indicatorColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    placeholderColor: Color = Gray,
+) {
+    TextFieldWithCustomPadding(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        textStyle = textStyle,
+        placeholder = placeholder,
+        trailingIcon = {
+            if (showTrailingIcon && value.text.isNotEmpty()) {
+                IconButton(
+                    { onValueChange(TextFieldValue("")) },
+                    Modifier.padding(end = Spacing.trailingIconPadding)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.backspace_24px),
+                        contentDescription = stringResource(
+                            R.string.input_clear_content_description
+                        ),
+                    )
+                }
+            }
+        },
+        suffix = suffix,
+        isError = isError,
+        keyboardOptions = keyboardOptions,
+        singleLine = singleLine,
+        contentPadding = contentPadding,
+        textColor = textColor,
+        containerColor = containerColor,
+        selectionColors = selectionColors,
+        errorIndicatorColor = errorIndicatorColor,
+        indicatorColor = indicatorColor,
+        trailingIconColor = indicatorColor,
+        placeholderColor = placeholderColor,
+    )
 }
 
 @Composable

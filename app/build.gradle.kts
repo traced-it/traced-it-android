@@ -7,14 +7,19 @@ plugins {
     alias(libs.plugins.room)
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 android {
     namespace = "app.traced_it"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "app.traced_it"
         minSdk = 25
-        targetSdk = 35
+        // noinspection EditedTargetSdkVersion
+        targetSdk = 36
         versionCode = 13
         versionName = "1.5.1"
 
@@ -67,9 +72,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     buildFeatures {
         aidl = false
         buildConfig = true
@@ -105,6 +107,7 @@ dependencies {
     androidTestImplementation(composeBom)
 
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.material.icons)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)

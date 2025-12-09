@@ -19,9 +19,6 @@
     <string name="list_delete_all_dialog_title">Remover todas as anotações?</string>
     <string name="list_delete_all_dialog_text">Você está prestes a remover todas as anotações</string>
     <string name="list_delete_all_dialog_confirm">Remover tudo</string>
-    <string name="list_delete_dialog_title">Remover anotação?</string>
-    <string name="list_delete_dialog_text">Você está prestes a remover a nota “%1$s”</string>
-    <string name="list_delete_dialog_confirm">Remover anotação</string>
     <string name="list_message_added">Anotação adicionada</string>
     <string name="list_message_updated">Anotação atualizada</string>
     <string name="list_message_deleted">Anotação removida</string>
@@ -45,7 +42,6 @@
     <string name="detail_unit_dropdown_content_description">Expandir lista de unidades</string>
     <string name="input_clear_content_description">Limpar texto</string>
     <string name="list_delete_all_dialog_dismiss">Dispensar</string>
-    <string name="list_delete_dialog_dismiss">Dispensar</string>
     <string name="entry_unit_none_name">sem unidade</string>
     <string name="entry_unit_clothing_name">tamanho</string>
     <string name="entry_unit_clothing_choice_xs">PP</string>

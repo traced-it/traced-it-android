@@ -12,10 +12,14 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import app.traced_it.R
 import app.traced_it.data.di.defaultFakeEntries
@@ -42,30 +46,39 @@ fun EntryDetailDialog(
 ) {
     val context = LocalContext.current
 
-    var content by remember { mutableStateOf(action.entry.content) }
+    var contentFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = action.entry.content,
+                selection = TextRange(action.entry.content.length),
+            )
+        )
+    }
+    val contentFocusRequester = remember { FocusRequester() }
     var unit by remember {
         mutableStateOf(
             if (action.entry.amountUnit in visibleUnits) {
                 action.entry.amountUnit
             } else if (action.entry.amount != 0.0) {
-                // If we're editing or prefilling an entry that has a deprecated
-                // unit (such as smallNumbersChoiceUnit), convert the unit into
-                // doubleUnit.
+                // If we're editing or prefilling an entry that has a deprecated unit (such as smallNumbersChoiceUnit),
+                // convert the unit into doubleUnit.
                 doubleUnit
             } else {
                 noneUnit
             }
         )
     }
-    var amountRaw by remember {
-        mutableStateOf(unit.format(context, action.entry.amount))
-    }
+    var amountRaw by remember { mutableStateOf(unit.format(context, action.entry.amount)) }
     var visibleUnit by remember {
         mutableStateOf(
             unit.takeIf { it in visibleUnits }
                 ?: latestEntryUnit.takeIf { it in visibleUnits }
                 ?: defaultVisibleUnit
         )
+    }
+
+    LaunchedEffect(Unit) {
+        contentFocusRequester.requestFocus()
     }
 
     TracedScaffold(
@@ -86,7 +99,7 @@ fun EntryDetailDialog(
                     IconButton({ onDismiss() }) {
                         Icon(
                             imageVector = Icons.Outlined.Close,
-                            contentDescription = stringResource(R.string.detail_cancel)
+                            contentDescription = stringResource(R.string.detail_cancel),
                         )
                     }
                 },
@@ -114,13 +127,14 @@ fun EntryDetailDialog(
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 TracedTextField(
-                    value = content,
-                    onValueChange = { content = it },
+                    value = contentFieldValue,
+                    onValueChange = { contentFieldValue = it },
                     modifier = Modifier
                         .testTag("entryDetailContentTextField")
+                        .focusRequester(contentFocusRequester)
                         .padding(horizontal = Spacing.windowPadding)
                         .fillMaxWidth(),
-                    isError = content.isEmpty(),
+                    isError = contentFieldValue.text.isEmpty(),
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences
                     ),
@@ -142,10 +156,11 @@ fun EntryDetailDialog(
             HorizontalDivider()
             TracedBottomButton(
                 text = stringResource(
-                    if (action is EntryDetailAction.Edit)
+                    if (action is EntryDetailAction.Edit) {
                         R.string.detail_update_save
-                    else
-                        R.string.detail_add_save,
+                    } else {
+                        R.string.detail_add_save
+                    }
                 ),
                 onClick = {
                     val amount = unit.parse(context, amountRaw)
@@ -154,7 +169,7 @@ fun EntryDetailDialog(
                             action.entry.copy(
                                 amount = amount,
                                 amountUnit = unit,
-                                content = content,
+                                content = contentFieldValue.text,
                             )
                         )
                     } else {
@@ -162,13 +177,13 @@ fun EntryDetailDialog(
                             Entry(
                                 amount = amount,
                                 amountUnit = unit,
-                                content = content,
+                                content = contentFieldValue.text,
                             )
                         )
                     }
                 },
                 modifier = Modifier.testTag("entryDetailSaveButton"),
-                enabled = content.isNotEmpty(),
+                enabled = contentFieldValue.text.isNotEmpty(),
             )
         }
     }
@@ -234,7 +249,7 @@ private fun InvisibleUnitPreview() {
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     widthDp = 1024,
-    heightDp = 768
+    heightDp = 768,
 )
 @Composable
 private fun PortraitPreview() {
