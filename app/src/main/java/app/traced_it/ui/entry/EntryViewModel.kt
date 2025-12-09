@@ -383,7 +383,7 @@ class EntryViewModel @Inject constructor(
         val records = CSVFormat.DEFAULT.builder()
             .setHeader()
             .setSkipHeaderRecord(true)
-            .build()
+            .get()
             .parse(inputStream.reader())
         for (record in records) {
             when (val parseResult = parseEntryCsvRecord(context, record)) {
@@ -518,7 +518,7 @@ class EntryViewModel @Inject constructor(
                 COLUMN_AMOUNT,
                 COLUMN_AMOUNT_UNIT,
             )
-            .build()
+            .get()
             .print(writer)
         forEachEntry(pagingSource) { entry ->
             printer.printRecord(
