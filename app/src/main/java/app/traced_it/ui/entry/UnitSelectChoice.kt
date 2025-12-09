@@ -5,7 +5,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +24,7 @@ fun UnitSelectChoice(
     onAmountRawChange: (newAmountRaw: String) -> Unit = {},
     onDeselect: () -> Unit = {},
 ) {
-    val context = LocalContext.current
+    val resources = LocalResources.current
 
     SingleChoiceSegmentedButtonRow(modifier) {
         unit.choices.forEachIndexed { index, choice ->
@@ -42,9 +42,9 @@ fun UnitSelectChoice(
                 },
             ) {
                 val modifier = Modifier.testTag("unitSelectChoiceText")
-                choice.formatHtml(context)
+                choice.formatHtml(resources)
                     ?.let { Text(it, modifier) }
-                    ?: Text(choice.format(context), modifier)
+                    ?: Text(choice.format(resources), modifier)
             }
         }
     }

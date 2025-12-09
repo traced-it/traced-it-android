@@ -14,7 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -44,7 +44,7 @@ fun EntryDetailDialog(
     onUpdate: (Entry) -> Unit = {},
     onDismiss: () -> Unit = {},
 ) {
-    val context = LocalContext.current
+    val resources = LocalResources.current
 
     var contentFieldValue by remember {
         mutableStateOf(
@@ -68,7 +68,7 @@ fun EntryDetailDialog(
             }
         )
     }
-    var amountRaw by remember { mutableStateOf(unit.format(context, action.entry.amount)) }
+    var amountRaw by remember { mutableStateOf(unit.format(resources, action.entry.amount)) }
     var visibleUnit by remember {
         mutableStateOf(
             unit.takeIf { it in visibleUnits }
@@ -163,7 +163,7 @@ fun EntryDetailDialog(
                     }
                 ),
                 onClick = {
-                    val amount = unit.parse(context, amountRaw)
+                    val amount = unit.parse(resources, amountRaw)
                     if (action is EntryDetailAction.Edit) {
                         onUpdate(
                             action.entry.copy(

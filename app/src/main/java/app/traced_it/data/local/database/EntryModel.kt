@@ -17,38 +17,31 @@ data class Entry(
     @ColumnInfo(defaultValue = "0") var deleted: Boolean = false,
     @PrimaryKey(autoGenerate = true) val uid: Int = 0,
 ) {
-    fun formatContentWithAmount(context: Context): String =
-        buildString {
+    fun format(context: Context): String {
+        val contentWithAmount = buildString {
             append(content)
             if (amountUnit != noneUnit) {
                 append(" (")
-                append(amountUnit.format(context, amount))
+                append(amountUnit.format(context.resources, amount))
                 append(")")
             }
         }
-
-    fun format(context: Context): String =
-        context.resources.getString(
+        return context.resources.getString(
             R.string.entry_formatted_content_with_amount_and_created_at,
-            formatContentWithAmount(context),
+            contentWithAmount,
             DateUtils.formatDateTime(
                 context,
                 createdAt,
-                DateUtils.FORMAT_SHOW_TIME or
-                    DateUtils.FORMAT_SHOW_YEAR or
-                    DateUtils.FORMAT_SHOW_DATE,
+                DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
             ),
         )
+    }
 
     fun isSameDay(context: Context, otherEntry: Entry?): Boolean =
         otherEntry !== null && DateUtils.formatDateTime(
-            context,
-            createdAt,
-            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
+            context, createdAt, DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
         ) == DateUtils.formatDateTime(
-            context,
-            otherEntry.createdAt,
-            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
+            context, otherEntry.createdAt, DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
         )
 
     fun formatTime(context: Context, now: Long): String =
@@ -79,11 +72,7 @@ data class Entry(
     fun formatExactTime(context: Context): String =
         context.resources.getString(
             R.string.list_item_time_at,
-            DateUtils.formatDateTime(
-                context,
-                createdAt,
-                DateUtils.FORMAT_SHOW_TIME,
-            ),
+            DateUtils.formatDateTime(context,createdAt,DateUtils.FORMAT_SHOW_TIME),
         )
 
     fun getHeader(context: Context, prevEntry: Entry?): String? =
@@ -91,7 +80,7 @@ data class Entry(
             prevEntry == null && !DateUtils.isToday(createdAt) ||
             prevEntry != null && !isSameDay(context, prevEntry)
         ) {
-            DateUtils.formatDateTime(context,createdAt,DateUtils.FORMAT_SHOW_DATE)
+            DateUtils.formatDateTime(context, createdAt, DateUtils.FORMAT_SHOW_DATE)
         } else {
             null
         }

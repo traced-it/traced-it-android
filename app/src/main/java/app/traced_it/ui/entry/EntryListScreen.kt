@@ -1,8 +1,12 @@
 package app.traced_it.ui.entry
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.ClipData
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,9 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +54,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+
+private class MessageSnackbarVisuals(tracedMessage: Message) : SnackbarVisuals {
+    override val message = tracedMessage.text
+    override val actionLabel = tracedMessage.actionLabel
+    override val withDismissAction = tracedMessage.withDismissAction
+    override val duration = when (tracedMessage.duration) {
+        Message.Duration.SHORT -> SnackbarDuration.Short
+        Message.Duration.LONG -> SnackbarDuration.Long
+    }
+    val isError = tracedMessage.type == Message.Type.ERROR
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +93,8 @@ fun EntryListScreen(
 ) {
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
+    val resources = LocalResources.current
 
     val allEntriesCount by viewModel.allEntriesCount.collectAsStateWithLifecycle()
     val filteredEntries = filteredEntriesFlow.collectAsLazyPagingItems()
@@ -97,25 +111,45 @@ fun EntryListScreen(
     val listState = rememberLazyListState()
     val message by viewModel.message.collectAsStateWithLifecycle()
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    var selectedEntry by remember { mutableStateOf(initialSelectedEntry) }
-    val snackbarErrorHostState = remember { SnackbarHostState() }
-    val snackbarSuccessHostState = remember { SnackbarHostState() }
+    val (selectedEntry, setSelectedEntry) = remember { mutableStateOf(initialSelectedEntry) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    val importLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        viewModel.importEntries(context, it)
-    }
-    val exportAllLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        viewModel.exportAllEntries(context, it)
-    }
-    val exportFilteredLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        viewModel.exportFilteredEntries(context, it)
-    }
+    val importLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.data?.data?.takeIf { result.resultCode == Activity.RESULT_OK }?.let { uri ->
+                coroutineScope.launch {
+                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                        inputStream.reader().use { reader ->
+                            viewModel.importEntriesCsv(resources, reader)
+                        }
+                    }
+                }
+            }
+        }
+    val exportAllLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.data?.data?.takeIf { result.resultCode == Activity.RESULT_OK }?.let { uri ->
+                coroutineScope.launch {
+                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        outputStream.writer().use { writer ->
+                            viewModel.exportAllEntriesCsv(resources, writer)
+                        }
+                    }
+                }
+            }
+        }
+    val exportFilteredLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.data?.data?.takeIf { result.resultCode == Activity.RESULT_OK }?.let { uri ->
+                coroutineScope.launch {
+                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        outputStream.writer().use { writer ->
+                            viewModel.exportFilteredEntriesCsv(resources, writer)
+                        }
+                    }
+                }
+            }
+        }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -125,25 +159,11 @@ fun EntryListScreen(
     }
 
     LaunchedEffect(message) {
-        if (message != null) {
-            (message as Message).let {
-                val snackbarHostState = if (it.type == Message.Type.SUCCESS) {
-                    snackbarSuccessHostState
-                } else {
-                    snackbarErrorHostState
-                }
-                val result = snackbarHostState.showSnackbar(
-                    message = it.text,
-                    actionLabel = it.actionLabel,
-                    withDismissAction = it.withDismissAction,
-                    duration = it.duration,
-                )
-                if (result == SnackbarResult.ActionPerformed) {
-                    viewModel.performMessageAction()
-                }
-                if (result == SnackbarResult.Dismissed) {
-                    viewModel.dismissMessage()
-                }
+        message?.let { message ->
+            val result = snackbarHostState.showSnackbar(MessageSnackbarVisuals(message))
+            when (result) {
+                SnackbarResult.ActionPerformed -> viewModel.performMessageAction()
+                SnackbarResult.Dismissed -> viewModel.dismissMessage()
             }
         }
     }
@@ -169,11 +189,11 @@ fun EntryListScreen(
         if (entryDetailOpen) {
             entryDetailOpen = false
         } else if (selectedEntry != null) {
-            selectedEntry = null
+            setSelectedEntry(null)
         } else {
             viewModel.setFilterExpanded(false)
             viewModel.filter("")
-            scope.launch {
+            coroutineScope.launch {
                 listState.scrollToItem(0)
             }
         }
@@ -190,7 +210,7 @@ fun EntryListScreen(
                             value = filterQuery,
                             onValueChange = {
                                 viewModel.filter(it)
-                                scope.launch {
+                                coroutineScope.launch {
                                     listState.scrollToItem(0)
                                 }
                             },
@@ -219,7 +239,7 @@ fun EntryListScreen(
                 actions = {
                     if (selectedEntry != null) {
                         IconButton({
-                            selectedEntry?.let {
+                            selectedEntry.let {
                                 entryDetailAction = EntryDetailAction.Edit(it)
                                 entryDetailOpen = true
                             }
@@ -230,8 +250,8 @@ fun EntryListScreen(
                             )
                         }
                         IconButton({
-                            selectedEntry?.let {
-                                viewModel.deleteEntry(context, it)
+                            selectedEntry.let {
+                                viewModel.deleteEntry(resources, it)
                             }
                         }) {
                             Icon(
@@ -242,24 +262,39 @@ fun EntryListScreen(
                         SelectedEntryMenu(
                             modifier = Modifier.padding(end = Spacing.windowPadding - 8.dp),
                             onAddWithSameContent = {
-                                selectedEntry?.let {
+                                selectedEntry.let {
                                     entryDetailAction = EntryDetailAction.Prefill(it)
                                     entryDetailOpen = true
                                 }
                             },
                             onCopy = {
-                                selectedEntry?.let {
-                                    viewModel.copyEntryToClipboard(context,clipboard,it)
+                                selectedEntry.let { selectedEntry ->
+                                    coroutineScope.launch {
+                                        clipboard.setClipEntry(
+                                            ClipEntry(
+                                                ClipData.newPlainText("note", selectedEntry.format(context))
+                                            )
+                                        )
+                                        val systemHasClipboardEditor =
+                                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                                        if (!systemHasClipboardEditor) {
+                                            Toast.makeText(
+                                                context,
+                                                R.string.list_item_copied_to_clipboard,
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                        }
+                                    }
                                 }
                             },
                             onFilterWithSimilarContent = {
-                                selectedEntry?.let {
+                                selectedEntry.let {
                                     viewModel.setFilterExpanded(true)
                                     viewModel.filter(it.content)
-                                    scope.launch {
+                                    coroutineScope.launch {
                                         listState.scrollToItem(0)
                                     }
-                                    selectedEntry = null
+                                    setSelectedEntry(null)
                                 }
                             },
                         )
@@ -269,7 +304,7 @@ fun EntryListScreen(
                                 viewModel.setFilterExpanded(false)
                             } else {
                                 viewModel.filter("")
-                                scope.launch {
+                                coroutineScope.launch {
                                     listState.scrollToItem(0)
                                 }
                             }
@@ -299,10 +334,26 @@ fun EntryListScreen(
                                 setDeleteAllEntriesDialogOpen(true)
                             },
                             onExportAllEntries = {
-                                viewModel.launchExportAllEntries(context,exportAllLauncher)
+                                val filename = resources.getString(
+                                    R.string.list_export_all_filename,
+                                    resources.getString(R.string.app_name),
+                                    Build.MODEL,
+                                )
+                                exportAllLauncher.launch(
+                                    Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                                        addCategory(Intent.CATEGORY_OPENABLE)
+                                        type = "text/csv"
+                                        putExtra(Intent.EXTRA_TITLE, filename)
+                                    }
+                                )
                             },
                             onImportEntries = {
-                                viewModel.launchImportEntries(importLauncher)
+                                importLauncher.launch(
+                                    Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                        addCategory(Intent.CATEGORY_OPENABLE)
+                                        type = "text/*"
+                                    }
+                                )
                             },
                             onNavigateToAboutScreen = onNavigateToAboutScreen,
                         )
@@ -312,7 +363,7 @@ fun EntryListScreen(
                     if (selectedEntry != null) {
                         IconButton(
                             onClick = {
-                                selectedEntry = null
+                                setSelectedEntry(null)
                             },
                             colors = IconButtonDefaults.iconButtonColors(
                                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -328,7 +379,7 @@ fun EntryListScreen(
                             onClick = {
                                 viewModel.setFilterExpanded(false)
                                 viewModel.filter("")
-                                scope.launch {
+                                coroutineScope.launch {
                                     listState.scrollToItem(0)
                                 }
                             },
@@ -349,33 +400,34 @@ fun EntryListScreen(
         },
         snackbarHost = {
             SnackbarHost(
-                hostState = snackbarSuccessHostState,
-                modifier = Modifier
-                    .padding(bottom = Spacing.bottomButtonHeight + Spacing.small + Spacing.small),
-                snackbar = { snackbarData ->
-                    Snackbar(
-                        snackbarData = snackbarData,
-                        containerColor = MaterialTheme.colorScheme.inverseSurface,
-                        contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-                        dismissActionContentColor = MaterialTheme.colorScheme.inverseOnSurface,
-                        actionColor = MaterialTheme.colorScheme.inverseOnSurface,
-                    )
-                },
-            )
-            SnackbarHost(
-                hostState = snackbarErrorHostState,
-                modifier = Modifier
-                    .padding(bottom = Spacing.bottomButtonHeight + Spacing.small + Spacing.small),
-                snackbar = { snackbarData ->
-                    Snackbar(
-                        snackbarData = snackbarData,
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError,
-                        dismissActionContentColor = MaterialTheme.colorScheme.onError,
-                        actionColor = MaterialTheme.colorScheme.onError,
-                    )
-                },
-            )
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(bottom = Spacing.bottomButtonHeight + Spacing.small + Spacing.small),
+            ) { snackbarData ->
+                val isError = (snackbarData.visuals as? MessageSnackbarVisuals)?.isError ?: false
+                Snackbar(
+                    snackbarData = snackbarData,
+                    containerColor = if (isError) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.inverseSurface
+                    },
+                    contentColor = if (isError) {
+                        MaterialTheme.colorScheme.onError
+                    } else {
+                        MaterialTheme.colorScheme.inverseOnSurface
+                    },
+                    dismissActionContentColor = if (isError) {
+                        MaterialTheme.colorScheme.onError
+                    } else {
+                        MaterialTheme.colorScheme.inverseOnSurface
+                    },
+                    actionColor = if (isError) {
+                        MaterialTheme.colorScheme.onError
+                    } else {
+                        MaterialTheme.colorScheme.inverseOnSurface
+                    },
+                )
+            }
         },
     ) { innerPadding ->
         Column(
@@ -402,7 +454,19 @@ fun EntryListScreen(
                     )
                     TextButton(
                         onClick = {
-                            viewModel.launchExportFilteredEntries(context,exportFilteredLauncher)
+                            val filename = resources.getString(
+                                R.string.list_export_filtered_filename,
+                                resources.getString(R.string.app_name),
+                                Build.MODEL,
+                                viewModel.filterQuerySanitizedForFilename,
+                            )
+                            exportFilteredLauncher.launch(
+                                Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                                    addCategory(Intent.CATEGORY_OPENABLE)
+                                    type = "text/csv"
+                                    putExtra(Intent.EXTRA_TITLE, filename)
+                                }
+                            )
                         },
                         modifier = Modifier.padding(end = 8.dp),
                         enabled = filteredEntries.itemCount > 0,
@@ -442,13 +506,13 @@ fun EntryListScreen(
                                 entryDetailOpen = true
                             },
                             onDelete = {
-                                viewModel.deleteEntry(context, entry)
+                                viewModel.deleteEntry(resources, entry)
                             },
                             onHighlightingFinished = {
                                 viewModel.setHighlightedEntryUid(null)
                             },
                             onToggle = {
-                                selectedEntry = entry.takeIf { selectedEntry != entry }
+                                setSelectedEntry(if (entry == selectedEntry) null else entry)
                             },
                             onUpdate = {
                                 entryDetailAction = EntryDetailAction.Edit(entry)
@@ -479,17 +543,17 @@ fun EntryListScreen(
             entryDetailAction,
             latestEntryUnit = latestEntry?.amountUnit,
             onInsert = {
-                scope.launch {
+                coroutineScope.launch {
                     listState.scrollToItem(0)
-                    selectedEntry = null
+                    setSelectedEntry(null)
                     entryDetailOpen = false
-                    viewModel.insertEntry(context, it)
+                    viewModel.insertEntry(resources, it)
                 }
             },
             onUpdate = {
-                selectedEntry = null
+                setSelectedEntry(null)
                 entryDetailOpen = false
-                viewModel.updateEntry(context, it)
+                viewModel.updateEntry(resources, it)
             },
             onDismiss = {
                 entryDetailOpen = false
@@ -506,7 +570,7 @@ fun EntryListScreen(
             onDismissRequest = { setDeleteAllEntriesDialogOpen(false) },
             onConfirmation = {
                 setDeleteAllEntriesDialogOpen(false)
-                viewModel.deleteAllEntries(context)
+                viewModel.deleteAllEntries(resources)
             },
         )
     }

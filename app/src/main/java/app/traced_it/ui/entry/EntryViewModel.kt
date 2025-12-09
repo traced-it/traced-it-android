@@ -1,15 +1,6 @@
 package app.traced_it.ui.entry
 
-import android.app.Activity
-import android.content.ClipData
-import android.content.Context
-import android.content.Intent
-import android.os.Build
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.ui.platform.ClipEntry
-import androidx.compose.ui.platform.Clipboard
+import android.content.res.Resources
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,15 +10,16 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import app.traced_it.R
 import app.traced_it.data.EntryRepository
-import app.traced_it.data.local.database.Entry
-import app.traced_it.data.local.database.units
+import app.traced_it.data.local.database.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVRecord
-import java.io.InputStream
+import java.io.InputStreamReader
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,11 +30,12 @@ data class Message(
     val type: Type = Type.SUCCESS,
     val actionLabel: String? = null,
     val withDismissAction: Boolean = true,
-    val duration: SnackbarDuration = SnackbarDuration.Short,
+    val duration: Duration = Duration.SHORT,
     val onActionPerform: () -> Unit = {},
     val onDismiss: () -> Unit = {},
 ) {
     enum class Type { SUCCESS, ERROR }
+    enum class Duration { SHORT, LONG }
 }
 
 @HiltViewModel
@@ -77,8 +70,8 @@ class EntryViewModel @Inject constructor(
     val filterQuerySanitizedForFilename: String
         get() = filterQuery.value.replace("""[^\w -]""".toRegex(), "_")
 
-    val allEntriesCount: StateFlow<Int> =
-        entryRepository.count().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
+    val allEntriesCount: StateFlow<Int> = entryRepository.count()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val filteredEntries: StateFlow<PagingData<Entry>> =
@@ -88,80 +81,72 @@ class EntryViewModel @Inject constructor(
             }.flow
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty())
 
-    val latestEntry: StateFlow<Entry?> =
-        entryRepository.getLatest().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+    val latestEntry: StateFlow<Entry?> = entryRepository.getLatest()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
-    fun insertEntry(context: Context, entry: Entry) {
+    fun insertEntry(resources: Resources, entry: Entry) {
         viewModelScope.launch {
             val newRowId = entryRepository.insert(entry)
             val newUid = newRowId.toInt()
             setHighlightedEntryUid(newUid)
-            setMessage(Message(context.resources.getString(R.string.list_message_added)))
+            setMessage(Message(resources.getString(R.string.list_message_added)))
         }
     }
 
-    fun updateEntry(context: Context, entry: Entry) {
+    fun updateEntry(resources: Resources, entry: Entry) {
         viewModelScope.launch {
             entryRepository.update(entry)
             setHighlightedEntryUid(entry.uid)
-            setMessage(Message(context.resources.getString(R.string.list_message_updated)))
+            setMessage(Message(resources.getString(R.string.list_message_updated)))
         }
     }
 
-    fun deleteEntry(context: Context, entry: Entry) {
+    fun deleteEntry(resources: Resources, entry: Entry) {
         viewModelScope.launch {
             entryRepository.delete(entry.uid)
             setMessage(
                 Message(
-                    text = context.resources.getString(
-                        R.string.list_message_deleted
-                    ),
+                    text = resources.getString(R.string.list_message_deleted),
                     type = Message.Type.ERROR,
-                    actionLabel = context.resources.getString(
-                        R.string.list_message_deleted_action
-                    ),
-                    duration = SnackbarDuration.Long,
+                    actionLabel = resources.getString(R.string.list_message_deleted_action),
+                    duration = Message.Duration.LONG,
                     withDismissAction = false,
-                    onActionPerform = { restoreEntry(context, entry) },
+                    onActionPerform = { restoreEntry(resources, entry) },
                     onDismiss = { cleanupDeleted() },
                 )
             )
         }
     }
 
-    private fun restoreEntry(context: Context, entry: Entry) {
+    private fun restoreEntry(resources: Resources, entry: Entry) {
         viewModelScope.launch {
             entryRepository.restore(entry.uid)
             setHighlightedEntryUid(entry.uid)
-            setMessage(Message(context.resources.getString(R.string.list_message_restored)))
+            setMessage(Message(resources.getString(R.string.list_message_restored)))
         }
     }
 
-    fun deleteAllEntries(context: Context) {
+    fun deleteAllEntries(resources: Resources) {
         viewModelScope.launch {
             entryRepository.deleteAll()
             setMessage(
                 Message(
-                    text = context.resources.getString(
-                        R.string.list_message_all_deleted
-                    ),
+                    text = resources.getString(R.string.list_message_all_deleted),
                     type = Message.Type.ERROR,
-                    actionLabel = context.resources.getString(
-                        R.string.list_message_all_deleted_action
-                    ),
-                    duration = SnackbarDuration.Long,
+                    actionLabel = resources.getString(R.string.list_message_all_deleted_action),
+                    duration = Message.Duration.LONG,
                     withDismissAction = false,
-                    onActionPerform = { restoreAllEntries(context) },
+                    onActionPerform = { restoreAllEntries(resources) },
                     onDismiss = { cleanupDeleted() },
                 )
             )
         }
     }
 
-    private fun restoreAllEntries(context: Context) {
+    private fun restoreAllEntries(resources: Resources) {
         viewModelScope.launch {
             entryRepository.restoreAll()
-            setMessage(Message(context.resources.getString(R.string.list_message_all_restored)))
+            setMessage(Message(resources.getString(R.string.list_message_all_restored)))
         }
     }
 
@@ -171,34 +156,22 @@ class EntryViewModel @Inject constructor(
         }
     }
 
-    fun copyEntryToClipboard(
-        context: Context,
-        clipboard: Clipboard,
-        entry: Entry,
-    ) {
-        viewModelScope.launch {
-            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("note", entry.format(context))))
-            val systemHasClipboardEditor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-            if (!systemHasClipboardEditor) {
-                setMessage(Message(context.resources.getString(R.string.list_item_copied_to_clipboard)))
-            }
-        }
-    }
-
     private fun setMessage(message: Message) {
         _message.value = message
     }
 
     fun performMessageAction() {
-        val action = _message.value?.onActionPerform
-        _message.value = null
-        action?.invoke()
+        _message.value?.let { message ->
+            _message.value = null
+            message.onActionPerform()
+        }
     }
 
     fun dismissMessage() {
-        val action = _message.value?.onDismiss
-        _message.value = null
-        action?.invoke()
+        _message.value?.let { message ->
+            _message.value = null
+            message.onDismiss()
+        }
     }
 
     fun setHighlightedEntryUid(uid: Int?) {
@@ -236,38 +209,33 @@ class EntryViewModel @Inject constructor(
         }
     }
 
-    private sealed class ParseResult {
-        data class Succeeded(val entry: Entry) : ParseResult()
-        data class Failed(val message: String) : ParseResult()
+    private sealed interface ParseResult {
+        data class Succeeded(val entry: Entry) : ParseResult
+        data class Failed(val message: String) : ParseResult
     }
 
     private fun parseEntryCsvRecord(
-        context: Context,
+        resources: Resources,
         record: CSVRecord,
+        unitsById: Map<String, EntryUnit>,
+        unitsByName: Map<String, EntryUnit>,
     ): ParseResult {
         val amountUnitRaw = try {
             record.get(COLUMN_AMOUNT_UNIT)
         } catch (_: IllegalArgumentException) {
             return ParseResult.Failed(
-                context.resources.getString(
-                    R.string.list_import_failed_column_missing,
-                    COLUMN_AMOUNT_UNIT,
-                ),
+                resources.getString(R.string.list_import_failed_column_missing, COLUMN_AMOUNT_UNIT),
             )
         }
         if (amountUnitRaw.isNullOrEmpty()) {
             return ParseResult.Failed(
-                context.resources.getString(
-                    R.string.list_import_failed_column_empty,
-                    COLUMN_AMOUNT_UNIT,
-                ),
+                resources.getString(R.string.list_import_failed_column_empty, COLUMN_AMOUNT_UNIT),
             )
         }
-        val amountUnit = units.find { it.id == amountUnitRaw }
-            ?: units.find { context.resources.getString(it.nameResId) == amountUnitRaw }
+        val amountUnit = unitsById[amountUnitRaw] ?: unitsByName[amountUnitRaw]
         if (amountUnit == null) {
             return ParseResult.Failed(
-                context.resources.getString(
+                resources.getString(
                     R.string.list_import_failed_column_choice_unknown,
                     COLUMN_AMOUNT_UNIT,
                     units.joinToString(", ") { "\"${it.id}\"" },
@@ -280,10 +248,7 @@ class EntryViewModel @Inject constructor(
             record.get(COLUMN_AMOUNT)
         } catch (_: IllegalArgumentException) {
             return ParseResult.Failed(
-                context.resources.getString(
-                    R.string.list_import_failed_column_missing,
-                    COLUMN_AMOUNT,
-                ),
+                resources.getString(R.string.list_import_failed_column_missing, COLUMN_AMOUNT),
             )
         }
         val amount = amountUnit.deserialize(amountRaw)
@@ -292,18 +257,12 @@ class EntryViewModel @Inject constructor(
             record.get(COLUMN_CONTENT)
         } catch (_: IllegalArgumentException) {
             return ParseResult.Failed(
-                context.resources.getString(
-                    R.string.list_import_failed_column_missing,
-                    COLUMN_CONTENT,
-                ),
+                resources.getString(R.string.list_import_failed_column_missing, COLUMN_CONTENT),
             )
         }
         if (content.isNullOrEmpty()) {
             return ParseResult.Failed(
-                context.resources.getString(
-                    R.string.list_import_failed_column_empty,
-                    COLUMN_CONTENT,
-                ),
+                resources.getString(R.string.list_import_failed_column_empty, COLUMN_CONTENT),
             )
         }
 
@@ -311,18 +270,12 @@ class EntryViewModel @Inject constructor(
             record.get(COLUMN_CREATED_AT)
         } catch (_: IllegalArgumentException) {
             return ParseResult.Failed(
-                context.resources.getString(
-                    R.string.list_import_failed_column_missing,
-                    COLUMN_CREATED_AT,
-                ),
+                resources.getString(R.string.list_import_failed_column_missing, COLUMN_CREATED_AT),
             )
         }
         if (createdAtRaw.isNullOrEmpty()) {
             return ParseResult.Failed(
-                context.resources.getString(
-                    R.string.list_import_failed_column_empty,
-                    COLUMN_CREATED_AT,
-                ),
+                resources.getString(R.string.list_import_failed_column_empty, COLUMN_CREATED_AT),
             )
         }
         val createdAtDate = try {
@@ -332,50 +285,29 @@ class EntryViewModel @Inject constructor(
         }
         if (createdAtDate == null) {
             return ParseResult.Failed(
-                context.resources.getString(
-                    R.string.list_import_failed_column_parsing_error,
-                    COLUMN_CREATED_AT,
-                    createdAtRaw,
+                resources.getString(
+                    R.string.list_import_failed_column_parsing_error, COLUMN_CREATED_AT, createdAtRaw
                 ),
             )
         }
         val createdAt = createdAtDate.time
 
-        return ParseResult.Succeeded(
-            Entry(
-                amount = amount,
-                amountUnit = amountUnit,
-                content = content,
-                createdAt = createdAt,
-            )
+        val entry = Entry(
+            amount = amount,
+            amountUnit = amountUnit,
+            content = content,
+            createdAt = createdAt,
         )
+        return ParseResult.Succeeded(entry)
     }
 
-    fun launchImportEntries(importLauncher: ActivityResultLauncher<Intent>) {
-        importLauncher.launch(
-            Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "text/*"
-            },
-        )
-    }
+    suspend fun importEntriesCsv(
+        resources: Resources,
+        reader: InputStreamReader,
+    ) = withContext(Dispatchers.IO) {
+        val unitsById = units.associateById()
+        val unitsByName = units.associateByName(resources)
 
-    fun importEntries(context: Context, result: ActivityResult) {
-        if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.data.also { uri ->
-                if (uri != null) {
-                    viewModelScope.launch {
-                        context.contentResolver.openInputStream(uri)
-                            ?.use { inputStream ->
-                                importEntriesCsv(context, inputStream)
-                            }
-                    }
-                }
-            }
-        }
-    }
-
-    suspend fun importEntriesCsv(context: Context,inputStream: InputStream) {
         var importedCount = 0
         var skippedCount = 0
         var failedMessage: String? = null
@@ -384,13 +316,11 @@ class EntryViewModel @Inject constructor(
             .setHeader()
             .setSkipHeaderRecord(true)
             .get()
-            .parse(inputStream.reader())
+            .parse(reader)
         for (record in records) {
-            when (val parseResult = parseEntryCsvRecord(context, record)) {
+            when (val parseResult = parseEntryCsvRecord(resources, record, unitsById, unitsByName)) {
                 is ParseResult.Succeeded -> {
-                    val existingEntry = entryRepository.getByCreatedAt(
-                        parseResult.entry.createdAt
-                    )
+                    val existingEntry = entryRepository.getByCreatedAt(parseResult.entry.createdAt)
                     if (existingEntry == null) {
                         entryRepository.insert(parseResult.entry)
                         importedCount++
@@ -406,20 +336,18 @@ class EntryViewModel @Inject constructor(
             }
         }
         if (importedCount == 0 && skippedCount == 0 && failedMessage == null) {
-            failedMessage = context.resources.getString(
-                R.string.list_import_finished_empty
-            )
+            failedMessage = resources.getString(R.string.list_import_finished_empty)
         }
 
         val messageText = listOfNotNull(
             importedCount.takeIf { it != 0 }?.let {
-                context.resources.getQuantityString(R.plurals.list_import_finished_imported, it, it)
+                resources.getQuantityString(R.plurals.list_import_finished_imported, it, it)
             },
             skippedCount.takeIf { it != 0 }?.let {
-                context.resources.getQuantityString(R.plurals.list_import_finished_skipped, it, it)
+                resources.getQuantityString(R.plurals.list_import_finished_skipped, it, it)
             },
             failedMessage,
-        ).joinToString(context.resources.getString(R.string.list_import_finished_delimiter))
+        ).joinToString(resources.getString(R.string.list_import_finished_delimiter))
         setMessage(
             Message(
                 messageText,
@@ -428,106 +356,38 @@ class EntryViewModel @Inject constructor(
                 } else {
                     Message.Type.ERROR
                 },
-                duration = SnackbarDuration.Long,
+                duration = Message.Duration.LONG,
             )
         )
     }
 
-    fun launchExportAllEntries(context: Context,exportLauncher: ActivityResultLauncher<Intent>) {
-        launchExportEntries(
-            exportLauncher,
-            context.resources.getString(
-                R.string.list_export_all_filename,
-                context.resources.getString(R.string.app_name),
-                Build.MODEL,
-            ),
-        )
-    }
+    suspend fun exportAllEntriesCsv(resources: Resources, writer: Appendable) =
+        exportEntriesCsv(resources, writer, entryRepository.filter())
 
-    fun launchExportFilteredEntries(context: Context,exportLauncher: ActivityResultLauncher<Intent>) {
-        launchExportEntries(
-            exportLauncher,
-            context.resources.getString(
-                R.string.list_export_filtered_filename,
-                context.resources.getString(R.string.app_name),
-                Build.MODEL,
-                filterQuerySanitizedForFilename,
-            ),
-        )
-    }
+    suspend fun exportFilteredEntriesCsv(resources: Resources, writer: Appendable) =
+        exportEntriesCsv(resources, writer, entryRepository.filter(filterQuery.value))
 
-    private fun launchExportEntries(
-        exportLauncher: ActivityResultLauncher<Intent>,
-        filename: String,
-    ) {
-        exportLauncher.launch(
-            Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "text/csv"
-                putExtra(Intent.EXTRA_TITLE, filename)
-            },
-        )
-    }
-
-    fun exportAllEntries(context: Context, result: ActivityResult) =
-        exportEntries(
-            context, result, entryRepository.filter()
-        )
-
-    fun exportFilteredEntries(context: Context, result: ActivityResult) =
-        exportEntries(
-            context, result, entryRepository.filter(filterQuery.value)
-        )
-
-    private fun exportEntries(
-        context: Context,
-        result: ActivityResult,
-        pagingSource: PagingSource<Int, Entry>,
-    ) {
-        if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.data.also { uri ->
-                if (uri != null) {
-                    viewModelScope.launch {
-                        // For the writing to work with the suspended
-                        // function `exportEntriesCsv`, it's important to
-                        // open the stream and close the writer inside the
-                        // coroutine.
-                        context.contentResolver.openOutputStream(uri)
-                            ?.use { outputStream ->
-                                val writer = outputStream.writer()
-                                exportEntriesCsv(context, writer, pagingSource)
-                                writer.close()
-                            }
-                    }
-                }
+    suspend fun exportEntriesCsv(resources: Resources, writer: Appendable, pagingSource: PagingSource<Int, Entry>) =
+        withContext(Dispatchers.IO) {
+            val printer = CSVFormat.DEFAULT
+                .builder()
+                .setHeader(
+                    COLUMN_CREATED_AT,
+                    COLUMN_CONTENT,
+                    COLUMN_AMOUNT_FORMATTED,
+                    COLUMN_AMOUNT,
+                    COLUMN_AMOUNT_UNIT,
+                )
+                .get()
+                .print(writer)
+            forEachEntry(pagingSource) { entry ->
+                printer.printRecord(
+                    csvDateFormat.format(entry.createdAt),
+                    entry.content,
+                    entry.amountUnit.format(resources, entry.amount),
+                    entry.amountUnit.serialize(entry.amount),
+                    entry.amountUnit.id,
+                )
             }
         }
-    }
-
-    suspend fun exportEntriesCsv(
-        context: Context,
-        writer: Appendable,
-        pagingSource: PagingSource<Int, Entry>,
-    ) {
-        val printer = CSVFormat.DEFAULT
-            .builder()
-            .setHeader(
-                COLUMN_CREATED_AT,
-                COLUMN_CONTENT,
-                COLUMN_AMOUNT_FORMATTED,
-                COLUMN_AMOUNT,
-                COLUMN_AMOUNT_UNIT,
-            )
-            .get()
-            .print(writer)
-        forEachEntry(pagingSource) { entry ->
-            printer.printRecord(
-                csvDateFormat.format(entry.createdAt),
-                entry.content,
-                entry.amountUnit.format(context, entry.amount),
-                entry.amountUnit.serialize(entry.amount),
-                entry.amountUnit.id,
-            )
-        }
-    }
 }
