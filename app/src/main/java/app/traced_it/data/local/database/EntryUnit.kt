@@ -1,6 +1,7 @@
 package app.traced_it.data.local.database
 
-import android.content.Context
+import android.content.res.Resources
+import androidx.annotation.StringRes
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import app.traced_it.R
@@ -9,21 +10,18 @@ import java.text.ParseException
 
 data class EntryUnitChoice(
     val value: Double,
-    val nameResId: Int,
-    val htmlResId: Int? = null,
+    @param:StringRes val nameResId: Int,
+    @param:StringRes val htmlResId: Int? = null,
 ) {
-    fun format(context: Context): String =
-        context.resources.getString(nameResId)
+    fun format(resources: Resources): String = resources.getString(nameResId)
 
-    fun formatHtml(context: Context): AnnotatedString? =
-        htmlResId?.let {
-            AnnotatedString.fromHtml(context.resources.getString(it))
-        }
+    fun formatHtml(resources: Resources): AnnotatedString? =
+        htmlResId?.let { AnnotatedString.fromHtml(resources.getString(it)) }
 }
 
 data class EntryUnit(
     val id: String,
-    val nameResId: Int,
+    @param:StringRes val nameResId: Int,
     val defaultValue: Double = 0.0,
     val choices: List<EntryUnitChoice> = listOf(),
 ) {
@@ -33,17 +31,15 @@ data class EntryUnit(
 
     val placeholder: String get() = placeholderNumberFormat.format(defaultValue)
 
-    fun format(context: Context, value: Double): String =
-        choices.find { it.value == value }
-            ?.format(context)
+    fun format(resources: Resources, value: Double): String =
+        choices.find { it.value == value }?.format(resources)
             ?: numberFormat.format(value)
 
-    fun formatHtml(context: Context, value: Double): AnnotatedString? =
-        choices.find { it.value == value }
-            ?.formatHtml(context)
+    fun formatHtml(resources: Resources, value: Double): AnnotatedString? =
+        choices.find { it.value == value }?.formatHtml(resources)
 
-    fun parse(context: Context, value: String): Double =
-        choices.find { context.resources.getString(it.nameResId) == value }
+    fun parse(resources: Resources, value: String): Double =
+        choices.find { resources.getString(it.nameResId) == value }
             ?.value
             ?: try {
                 numberFormat.parse(value)?.toDouble()
@@ -55,6 +51,12 @@ data class EntryUnit(
 
     fun deserialize(value: String): Double = value.toDoubleOrNull() ?: defaultValue
 }
+
+fun List<EntryUnit>.associateById(): Map<String, EntryUnit> =
+    this.associateBy { it.id }
+
+fun List<EntryUnit>.associateByName(resources: Resources): Map<String, EntryUnit> =
+    this.associateBy { resources.getString(it.nameResId) }
 
 val noneUnit = EntryUnit(
     id = "NONE",

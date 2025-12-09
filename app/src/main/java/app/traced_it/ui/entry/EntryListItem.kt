@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -43,7 +44,7 @@ import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-enum class DragValue { Start, Center, End }
+private enum class DragValue { Start, Center, End }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -62,7 +63,8 @@ fun EntryListItem(
     onHighlightingFinished: () -> Unit = {},
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
+    val resources = LocalResources.current
 
     val containerColor = if (selected) {
         MaterialTheme.colorScheme.tertiaryContainer
@@ -158,8 +160,8 @@ fun EntryListItem(
                     if (entry.amountUnit != noneUnit) {
                         append(" (")
                         append(
-                            entry.amountUnit.formatHtml(context, entry.amount)
-                                ?: entry.amountUnit.format(context, entry.amount)
+                            entry.amountUnit.formatHtml(resources, entry.amount)
+                                ?: entry.amountUnit.format(resources, entry.amount)
                         )
                         append(")")
                     }
@@ -195,7 +197,7 @@ fun EntryListItem(
         Box(Modifier.matchParentSize()) {
             IconButton(
                 {
-                    scope.launch {
+                    coroutineScope.launch {
                         state.animateTo(DragValue.Center)
                     }
                     onUpdate()
@@ -223,7 +225,7 @@ fun EntryListItem(
             }
             IconButton(
                 onClick = {
-                    scope.launch {
+                    coroutineScope.launch {
                         state.animateTo(DragValue.Center)
                     }
                     onDelete()

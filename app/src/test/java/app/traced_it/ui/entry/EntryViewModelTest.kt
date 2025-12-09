@@ -1,8 +1,6 @@
 package app.traced_it.ui.entry
 
-import android.content.Context
 import android.content.res.Resources
-import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.SavedStateHandle
 import app.traced_it.R
 import app.traced_it.data.di.FakeEntryRepository
@@ -75,6 +73,8 @@ class EntryViewModelTest {
                     1,
                 )
             } doReturn "Skipped 1 note."
+            on { getString(R.string.list_import_finished_empty) } doReturn "Empty CSV file"
+            on { getString(R.string.list_import_finished_delimiter) } doReturn " "
         }
     }
 
@@ -86,9 +86,6 @@ class EntryViewModelTest {
                 entryRepository,
                 SavedStateHandle(),
             )
-            val mockContext = mock<Context> {
-                on { resources } doReturn mockResources
-            }
             val csv = """
                 createdAt,content,amountFormatted,amount,amountUnit
                 2025-02-01T18:00:22.755+0100,"Red apples",,0.0,NONE
@@ -102,7 +99,7 @@ class EntryViewModelTest {
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
-            entryViewModel.importEntriesCsv(mockContext, inputStream)
+            entryViewModel.importEntriesCsv(mockResources, inputStream.reader())
 
             val expectedEntries = listOf(
                 Entry(
@@ -190,7 +187,7 @@ class EntryViewModelTest {
                 Message(
                     "Imported ${expectedEntries.size} notes. Skipped 1 note. Failed to parse \"createdAt\" value \"INVALID_DATE\"",
                     type = Message.Type.ERROR,
-                    duration = SnackbarDuration.Long,
+                    duration = Message.Duration.LONG,
                 ),
                 entryViewModel.message.first(),
             )
@@ -204,9 +201,6 @@ class EntryViewModelTest {
                 entryRepository,
                 SavedStateHandle(),
             )
-            val mockContext = mock<Context> {
-                on { resources } doReturn mockResources
-            }
             val csv = """
                 createdAt,content,amount,amountUnit
                 2025-02-01T18:00:22.755+0100,"Red apples",0.0,no unit
@@ -217,7 +211,7 @@ class EntryViewModelTest {
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
-            entryViewModel.importEntriesCsv(mockContext, inputStream)
+            entryViewModel.importEntriesCsv(mockResources, inputStream.reader())
 
             val expectedEntries = listOf(
                 Entry(
@@ -305,7 +299,7 @@ class EntryViewModelTest {
                 Message(
                     "Imported ${expectedEntries.size} notes.",
                     type = Message.Type.SUCCESS,
-                    duration = SnackbarDuration.Long,
+                    duration = Message.Duration.LONG,
                 ),
                 entryViewModel.message.first(),
             )
@@ -319,17 +313,10 @@ class EntryViewModelTest {
                 entryRepository,
                 SavedStateHandle(),
             )
-            val mockResources = mock<Resources> {
-                on { getString(R.string.list_import_finished_empty) } doReturn "Empty CSV file"
-                on { getString(R.string.list_import_finished_delimiter) } doReturn " "
-            }
-            val mockContext = mock<Context> {
-                on { resources } doReturn mockResources
-            }
             val csv = ""
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
-            entryViewModel.importEntriesCsv(mockContext, inputStream)
+            entryViewModel.importEntriesCsv(mockResources, inputStream.reader())
 
             val resultEntries = entryRepository.fakeEntries.first()
             assertEquals(0, resultEntries.size)
@@ -337,7 +324,7 @@ class EntryViewModelTest {
                 Message(
                     "Empty CSV file",
                     type = Message.Type.ERROR,
-                    duration = SnackbarDuration.Long,
+                    duration = Message.Duration.LONG,
                 ),
                 entryViewModel.message.first(),
             )
@@ -429,17 +416,10 @@ class EntryViewModelTest {
                 entryRepository,
                 SavedStateHandle(),
             )
-            val mockContext = mock<Context> {
-                on { resources } doReturn mockResources
-            }
             val outputStream = ByteArrayOutputStream()
             val writer = outputStream.writer()
 
-            entryViewModel.exportEntriesCsv(
-                mockContext,
-                writer,
-                entryRepository.filter(),
-            )
+            entryViewModel.exportEntriesCsv(mockResources, writer, entryRepository.filter())
             writer.close()
 
             assertEquals(
