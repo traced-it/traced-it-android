@@ -37,23 +37,23 @@ data class Entry(
                 DateUtils.FORMAT_SHOW_TIME or
                     DateUtils.FORMAT_SHOW_YEAR or
                     DateUtils.FORMAT_SHOW_DATE,
-            )
+            ),
         )
 
     fun isSameDay(context: Context, otherEntry: Entry?): Boolean =
         otherEntry !== null && DateUtils.formatDateTime(
             context,
             createdAt,
-            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE
+            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
         ) == DateUtils.formatDateTime(
             context,
             otherEntry.createdAt,
-            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE
+            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
         )
 
     fun formatTime(context: Context, now: Long): String =
         (now - createdAt).milliseconds.toComponents { hours, minutes, seconds, _ ->
-            if (hours >= 24 || hours < 0 || minutes < 0 || seconds < 0) {
+            if (hours !in 0..<24 || minutes < 0 || seconds < 0) {
                 formatExactTime(context)
             } else if (hours == 0L) {
                 if (minutes == 0) {
@@ -87,14 +87,11 @@ data class Entry(
         )
 
     fun getHeader(context: Context, prevEntry: Entry?): String? =
-        if (prevEntry == null && !DateUtils.isToday(createdAt) ||
+        if (
+            prevEntry == null && !DateUtils.isToday(createdAt) ||
             prevEntry != null && !isSameDay(context, prevEntry)
         ) {
-            DateUtils.formatDateTime(
-                context,
-                createdAt,
-                DateUtils.FORMAT_SHOW_DATE
-            )
+            DateUtils.formatDateTime(context,createdAt,DateUtils.FORMAT_SHOW_DATE)
         } else {
             null
         }
@@ -104,7 +101,7 @@ data class Entry(
 @Fts4(contentEntity = Entry::class)
 data class EntryFTS(
     @ColumnInfo(name = "content")
-    val content: String
+    val content: String,
 )
 
 @Dao

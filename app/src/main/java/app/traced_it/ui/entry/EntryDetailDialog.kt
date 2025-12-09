@@ -50,7 +50,7 @@ fun EntryDetailDialog(
         mutableStateOf(
             TextFieldValue(
                 text = action.entry.content,
-                selection = TextRange(action.entry.content.length)
+                selection = TextRange(action.entry.content.length),
             )
         )
     }
@@ -60,18 +60,15 @@ fun EntryDetailDialog(
             if (action.entry.amountUnit in visibleUnits) {
                 action.entry.amountUnit
             } else if (action.entry.amount != 0.0) {
-                // If we're editing or prefilling an entry that has a deprecated
-                // unit (such as smallNumbersChoiceUnit), convert the unit into
-                // doubleUnit.
+                // If we're editing or prefilling an entry that has a deprecated unit (such as smallNumbersChoiceUnit),
+                // convert the unit into doubleUnit.
                 doubleUnit
             } else {
                 noneUnit
             }
         )
     }
-    var amountRaw by remember {
-        mutableStateOf(unit.format(context, action.entry.amount))
-    }
+    var amountRaw by remember { mutableStateOf(unit.format(context, action.entry.amount)) }
     var visibleUnit by remember {
         mutableStateOf(
             unit.takeIf { it in visibleUnits }
@@ -102,7 +99,7 @@ fun EntryDetailDialog(
                     IconButton({ onDismiss() }) {
                         Icon(
                             imageVector = Icons.Outlined.Close,
-                            contentDescription = stringResource(R.string.detail_cancel)
+                            contentDescription = stringResource(R.string.detail_cancel),
                         )
                     }
                 },
@@ -159,10 +156,11 @@ fun EntryDetailDialog(
             HorizontalDivider()
             TracedBottomButton(
                 text = stringResource(
-                    if (action is EntryDetailAction.Edit)
+                    if (action is EntryDetailAction.Edit) {
                         R.string.detail_update_save
-                    else
-                        R.string.detail_add_save,
+                    } else {
+                        R.string.detail_add_save
+                    }
                 ),
                 onClick = {
                     val amount = unit.parse(context, amountRaw)
@@ -251,7 +249,7 @@ private fun InvisibleUnitPreview() {
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     widthDp = 1024,
-    heightDp = 768
+    heightDp = 768,
 )
 @Composable
 private fun PortraitPreview() {

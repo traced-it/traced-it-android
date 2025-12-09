@@ -43,15 +43,13 @@ class DefaultEntryRepository @Inject constructor(
             entryDao.getAll()
         }
 
-    override suspend fun getByCreatedAt(createdAt: Long): Entry? =
-        entryDao.getByCreatedAt(createdAt)
+    override suspend fun getByCreatedAt(createdAt: Long): Entry? = entryDao.getByCreatedAt(createdAt)
 
     override fun getLatest(): Flow<Entry?> = entryDao.getLatest()
 
     override suspend fun insert(entry: Entry): Long = entryDao.insert(entry)
 
-    override suspend fun update(vararg entries: Entry) =
-        entryDao.update(*entries)
+    override suspend fun update(vararg entries: Entry) = entryDao.update(*entries)
 
     override suspend fun delete(uid: Int) = entryDao.delete(uid)
 

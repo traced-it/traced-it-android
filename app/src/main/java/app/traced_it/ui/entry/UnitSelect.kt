@@ -58,7 +58,7 @@ fun UnitSelect(
                     modifier = Modifier.testTag("unitSelectButton"),
                     shape = MaterialTheme.shapes.extraSmall,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surface
+                        containerColor = MaterialTheme.colorScheme.surface,
                     ),
                     contentPadding = PaddingValues(start = Spacing.medium),
                 ) {
@@ -68,17 +68,14 @@ fun UnitSelect(
                     )
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = stringResource(
-                            R.string.detail_unit_dropdown_content_description
-                        ),
+                        contentDescription = stringResource(R.string.detail_unit_dropdown_content_description),
                         modifier = Modifier.padding(Spacing.small),
                     )
                 }
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    modifier = Modifier
-                        .semantics { testTagsAsResourceId = true },
+                    modifier = Modifier.semantics { testTagsAsResourceId = true },
                 ) {
                     visibleUnits.filterNot { it == visibleUnit }
                         .forEach { unit ->
@@ -90,8 +87,7 @@ fun UnitSelect(
                                     expanded = false
                                     onVisibleUnitChange(unit)
                                 },
-                                modifier = Modifier
-                                    .testTag("unitSelectDropdownMenuItem"),
+                                modifier = Modifier.testTag("unitSelectDropdownMenuItem"),
                                 contentPadding = PaddingValues(
                                     horizontal = Spacing.medium,
                                     vertical = Spacing.small,
@@ -129,9 +125,7 @@ fun UnitSelect(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(visibleUnit.placeholder) },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Decimal
-                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true,
             )
         }

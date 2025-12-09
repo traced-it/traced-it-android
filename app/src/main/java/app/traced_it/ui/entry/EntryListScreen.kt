@@ -84,7 +84,7 @@ fun EntryListScreen(
 
     val allEntriesCount by viewModel.allEntriesCount.collectAsStateWithLifecycle()
     val filteredEntries = filteredEntriesFlow.collectAsLazyPagingItems()
-    var deleteAllEntriesDialogOpen by remember { mutableStateOf(false) }
+    val (deleteAllEntriesDialogOpen, setDeleteAllEntriesDialogOpen) = remember { mutableStateOf(false) }
     var entryDetailAction by remember {
         mutableStateOf<EntryDetailAction>(EntryDetailAction.Prefill(Entry()))
     }
@@ -199,11 +199,7 @@ fun EntryListScreen(
                                 .testTag("entryListFilterQueryTextField"),
                             textStyle = MaterialTheme.typography.bodyMedium,
                             placeholder = {
-                                Text(
-                                    stringResource(
-                                        R.string.list_filter_input_placeholder
-                                    )
-                                )
+                                Text(stringResource(R.string.list_filter_input_placeholder))
                             },
                             singleLine = true,
                             contentPadding = PaddingValues(0.dp),
@@ -217,12 +213,7 @@ fun EntryListScreen(
                             filterFocusRequester.requestFocus()
                         }
                     } else {
-                        Text(
-                            stringResource(
-                                R.string.list_title,
-                                filteredEntries.itemCount,
-                            )
-                        )
+                        Text(stringResource(R.string.list_title, filteredEntries.itemCount))
                     }
                 },
                 actions = {
@@ -249,23 +240,16 @@ fun EntryListScreen(
                             )
                         }
                         SelectedEntryMenu(
-                            modifier = Modifier.padding(
-                                end = Spacing.windowPadding - 8.dp
-                            ),
+                            modifier = Modifier.padding(end = Spacing.windowPadding - 8.dp),
                             onAddWithSameContent = {
                                 selectedEntry?.let {
-                                    entryDetailAction =
-                                        EntryDetailAction.Prefill(it)
+                                    entryDetailAction = EntryDetailAction.Prefill(it)
                                     entryDetailOpen = true
                                 }
                             },
                             onCopy = {
                                 selectedEntry?.let {
-                                    viewModel.copyEntryToClipboard(
-                                        context,
-                                        clipboard,
-                                        it,
-                                    )
+                                    viewModel.copyEntryToClipboard(context,clipboard,it)
                                 }
                             },
                             onFilterWithSimilarContent = {
@@ -294,36 +278,28 @@ fun EntryListScreen(
                                 Icons.Outlined.Clear,
                                 contentDescription = stringResource(
                                     R.string.list_filter_input_clear_content_description
-                                )
+                                ),
                             )
                         }
                     } else {
                         IconButton(
                             { viewModel.setFilterExpanded(true) },
-                            modifier = Modifier
-                                .testTag("entryListFilterExpandButton"),
+                            modifier = Modifier.testTag("entryListFilterExpandButton"),
                             enabled = filteredEntries.itemCount > 0,
                         ) {
                             Icon(
                                 Icons.Outlined.Search,
-                                contentDescription = stringResource(
-                                    R.string.list_filter_submit
-                                )
+                                contentDescription = stringResource(R.string.list_filter_submit),
                             )
                         }
                         EntryListMenu(
                             enabled = filteredEntries.itemCount > 0,
-                            modifier = Modifier.padding(
-                                end = Spacing.windowPadding - 8.dp
-                            ),
+                            modifier = Modifier.padding(end = Spacing.windowPadding - 8.dp),
                             onDeleteAllEntries = {
-                                deleteAllEntriesDialogOpen = true
+                                setDeleteAllEntriesDialogOpen(true)
                             },
                             onExportAllEntries = {
-                                viewModel.launchExportAllEntries(
-                                    context,
-                                    exportAllLauncher,
-                                )
+                                viewModel.launchExportAllEntries(context,exportAllLauncher)
                             },
                             onImportEntries = {
                                 viewModel.launchImportEntries(importLauncher)
@@ -339,14 +315,12 @@ fun EntryListScreen(
                                 selectedEntry = null
                             },
                             colors = IconButtonDefaults.iconButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             ),
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = stringResource(
-                                    R.string.list_selected_back
-                                )
+                                contentDescription = stringResource(R.string.list_selected_back),
                             )
                         }
                     } else if (filterExpanded) {
@@ -359,14 +333,14 @@ fun EntryListScreen(
                                 }
                             },
                             colors = IconButtonDefaults.iconButtonColors(
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             ),
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                 contentDescription = stringResource(
                                     R.string.list_filter_close_content_description
-                                )
+                                ),
                             )
                         }
                     }
@@ -414,7 +388,7 @@ fun EntryListScreen(
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         pluralStringResource(
@@ -424,24 +398,21 @@ fun EntryListScreen(
                             allEntriesCount,
                         ),
                         Modifier.padding(horizontal = Spacing.windowPadding),
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall,
                     )
                     TextButton(
                         onClick = {
-                            viewModel.launchExportFilteredEntries(
-                                context,
-                                exportFilteredLauncher,
-                            )
+                            viewModel.launchExportFilteredEntries(context,exportFilteredLauncher)
                         },
                         modifier = Modifier.padding(end = 8.dp),
                         enabled = filteredEntries.itemCount > 0,
                         colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        )
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                        ),
                     ) {
                         Text(
                             stringResource(R.string.list_filter_export),
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     }
                 }
@@ -467,8 +438,7 @@ fun EntryListScreen(
                             odd = index % 2 != 0,
                             selected = selectedEntry == entry,
                             onAddWithSameText = {
-                                entryDetailAction =
-                                    EntryDetailAction.Prefill(entry)
+                                entryDetailAction = EntryDetailAction.Prefill(entry)
                                 entryDetailOpen = true
                             },
                             onDelete = {
@@ -478,13 +448,10 @@ fun EntryListScreen(
                                 viewModel.setHighlightedEntryUid(null)
                             },
                             onToggle = {
-                                selectedEntry = entry.takeIf {
-                                    selectedEntry != entry
-                                }
+                                selectedEntry = entry.takeIf { selectedEntry != entry }
                             },
                             onUpdate = {
-                                entryDetailAction =
-                                    EntryDetailAction.Edit(entry)
+                                entryDetailAction = EntryDetailAction.Edit(entry)
                                 entryDetailOpen = true
                             },
                         )
@@ -536,9 +503,9 @@ fun EntryListScreen(
             text = stringResource(R.string.list_delete_all_dialog_text),
             confirmText = stringResource(R.string.list_delete_all_dialog_confirm),
             dismissText = stringResource(R.string.list_delete_all_dialog_dismiss),
-            onDismissRequest = { deleteAllEntriesDialogOpen = false },
+            onDismissRequest = { setDeleteAllEntriesDialogOpen(false) },
             onConfirmation = {
-                deleteAllEntriesDialogOpen = false
+                setDeleteAllEntriesDialogOpen(false)
                 viewModel.deleteAllEntries(context)
             },
         )

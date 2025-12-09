@@ -31,8 +31,7 @@ data class EntryUnit(
     private val placeholderNumberFormat = NumberFormat.getNumberInstance()
         .apply { minimumFractionDigits = 1 }
 
-    val placeholder: String
-        get() = placeholderNumberFormat.format(defaultValue)
+    val placeholder: String get() = placeholderNumberFormat.format(defaultValue)
 
     fun format(context: Context, value: Double): String =
         choices.find { it.value == value }
@@ -54,8 +53,7 @@ data class EntryUnit(
 
     fun serialize(value: Double): String = value.toString()
 
-    fun deserialize(value: String): Double =
-        value.toDoubleOrNull() ?: defaultValue
+    fun deserialize(value: String): Double = value.toDoubleOrNull() ?: defaultValue
 }
 
 val noneUnit = EntryUnit(
