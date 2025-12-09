@@ -2,6 +2,8 @@
   <dictionary name="project">
     <words>
       <w>snackbar</w>
+      <w>toolate</w>
+      <w>weblate</w>
     </words>
   </dictionary>
 </component>

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="English Source Files" pattern="(file[traced_it]:README.md||file[traced_it]:fastlane/metadata/android/en-US//*||file[traced_it*]:*.java||file[traced_it*]:*.kt||file[traced_it*]:*.xml)&amp;&amp;!file[traced_it.app.main]:res/values-*/strings.xml" />
+</component>
