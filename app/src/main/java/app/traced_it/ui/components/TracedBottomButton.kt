@@ -1,8 +1,6 @@
 package app.traced_it.ui.components
 
 import android.content.res.Configuration
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -45,7 +43,6 @@ fun TracedBottomButton(
 
 // Previews
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun DefaultPreview() {
@@ -54,7 +51,6 @@ private fun DefaultPreview() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun DisabledPreview() {
@@ -63,7 +59,6 @@ private fun DisabledPreview() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,

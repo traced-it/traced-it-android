@@ -1,7 +1,5 @@
 package app.traced_it.ui.entry
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.EaseOutQuint
 import androidx.compose.animation.core.LinearEasing
@@ -11,6 +9,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -48,14 +48,14 @@ private enum class DragValue { Start, Center, End }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EntryListItem(
+fun LazyItemScope.EntryListItem(
     entry: Entry,
-    modifier: Modifier = Modifier,
     prevEntry: Entry? = null,
     now: Long = System.currentTimeMillis(),
     highlighted: Boolean = false,
     odd: Boolean = false,
     selected: Boolean = false,
+    animationsEnabled: Boolean = true,
     onToggle: () -> Unit = {},
     onUpdate: () -> Unit = {},
     onDelete: () -> Unit = {},
@@ -123,9 +123,9 @@ fun EntryListItem(
     }
 
     Box(
-        modifier
-            .background(containerColor)
-            .clip(RectangleShape)
+        (if (animationsEnabled) Modifier.animateItem() else Modifier)
+             .background(containerColor)
+             .clip(RectangleShape),
     ) {
         Row(
             Modifier
@@ -202,7 +202,7 @@ fun EntryListItem(
                     }
                     onUpdate()
                 },
-                modifier = Modifier
+                Modifier
                     .testTag("entryListItemEditButton")
                     .align(Alignment.CenterStart)
                     .width(Spacing.swipeActionWidth + leftActionWidthAdjustment)
@@ -224,13 +224,13 @@ fun EntryListItem(
                 )
             }
             IconButton(
-                onClick = {
+                {
                     coroutineScope.launch {
                         state.animateTo(DragValue.Center)
                     }
                     onDelete()
                 },
-                modifier = Modifier
+                Modifier
                     .testTag("entryListItemDeleteButton")
                     .align(Alignment.CenterEnd)
                     .width(Spacing.swipeActionWidth)
@@ -255,30 +255,41 @@ fun EntryListItem(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 private fun DefaultPreview() {
     AppTheme {
-        Column(Modifier.background(MaterialTheme.colorScheme.surface)) {
-            EntryListItem(
-                entry = defaultFakeEntries[0],
-            )
-            EntryListItem(
-                entry = defaultFakeEntries[1],
-                prevEntry = defaultFakeEntries[0],
-                highlighted = true,
-            )
-            EntryListItem(
-                entry = defaultFakeEntries[2],
-                prevEntry = defaultFakeEntries[1],
-                odd = true,
-            )
-            EntryListItem(
-                entry = defaultFakeEntries[3],
-                prevEntry = defaultFakeEntries[2],
-                selected = true,
-            )
+        LazyColumn(Modifier.background(MaterialTheme.colorScheme.surface)) {
+            item {
+                EntryListItem(
+                    entry = defaultFakeEntries[0],
+                    animationsEnabled = false,
+                )
+            }
+            item {
+                EntryListItem(
+                    entry = defaultFakeEntries[1],
+                    prevEntry = defaultFakeEntries[0],
+                    highlighted = true,
+                    animationsEnabled = false,
+                )
+            }
+            item {
+                EntryListItem(
+                    entry = defaultFakeEntries[2],
+                    prevEntry = defaultFakeEntries[1],
+                    odd = true,
+                    animationsEnabled = false,
+                )
+            }
+            item {
+                EntryListItem(
+                    entry = defaultFakeEntries[3],
+                    prevEntry = defaultFakeEntries[2],
+                    selected = true,
+                    animationsEnabled = false,
+                )
+            }
         }
     }
 }
