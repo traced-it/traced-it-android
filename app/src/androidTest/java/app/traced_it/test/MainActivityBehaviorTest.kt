@@ -1,13 +1,13 @@
 package app.traced_it.test
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.Until
+import androidx.test.uiautomator.onElement
+import androidx.test.uiautomator.textAsString
+import androidx.test.uiautomator.uiAutomator
+import app.traced_it.data.local.database.fractionUnit
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,256 +15,165 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 open class MainActivityBehaviorTest {
 
-    protected lateinit var device: UiDevice
-
-    protected val packageName = "app.traced_it.debug"
-    protected val launchTimeout = 10_000L
-    protected val timeout = 5_000L
+    companion object {
+        const val PACKAGE_NAME = "app.traced_it.debug"
+        const val ELEMENT_DOES_NOT_EXIST_TIMEOUT = 500L
+    }
 
     @Before
-    fun goToLauncher() {
-        device = UiDevice.getInstance(
-            InstrumentationRegistry.getInstrumentation()
-        )
-        device.pressHome()
-        device.executeShellCommand("monkey -p $packageName 1")
-        device.wait(
-            Until.hasObject(By.pkg(packageName).depth(0)),
-            launchTimeout
-        )
+    fun before() = uiAutomator {
+        pressHome()
+        // Use shell command instead of startActivity() to support Xiaomi
+        device.executeShellCommand("monkey -p $PACKAGE_NAME 1")
+        waitForAppToBeVisible(PACKAGE_NAME)
     }
 
     @Test
-    fun createsEntry() {
+    fun createsEntry() = uiAutomator {
         // Check entries count
-        assertTrue(
-            device.wait(Until.hasObject(By.text("Your notes (0)")), timeout)
-        )
+        onElement { textAsString() == "Your notes (0)" }
 
         // New entry
-        device.findObject(By.res("entryListNewEntryButton"))?.click()
+        onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
 
         // Set content
-        device.findObject(By.res("entryDetailContentTextField"))
-            ?.text = "Test entry 1"
+        onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Test entry 1")
 
-        // Change unit
-        device.findObject(By.res("unitSelectButton"))?.click()
-        By.res("unitSelectDropdownMenuItem").hasChild(By.text("fraction")).let {
-            assertTrue(device.wait(Until.hasObject(it), timeout))
-            device.findObject(it)?.click()
-        }
-
-        // Select unit choice
-        By.res("unitSelectChoiceText").text("½").let {
-            assertTrue(device.wait(Until.hasObject(it), timeout))
-            device.findObject(it)?.click()
-        }
+        // Set unit
+        onElement { viewIdResourceName == "unitSelectButton" }.click()
+        onElement { viewIdResourceName == "unitSelectDropdownMenuItem_${fractionUnit.id}" }.click()
+        onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "½" }.click()
 
         // Save
-        device.findObject(By.res("entryDetailSaveButton"))?.click()
+        onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Check entry list
-        val listItemSelector =
-            By.res("entryListItem").hasChild(By.text("Test entry 1 (½)"))
-        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
-
-        // Check entries count
-        assertTrue(
-            device.wait(Until.hasObject(By.text("Your notes (1)")), timeout)
-        )
+        onElement { textAsString() == "Your notes (1)" }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Test entry 1 (½)" } != null }
     }
 
     @Test
-    fun createsEntryFromExistingEntry() {
+    fun createsEntryFromExistingEntry() = uiAutomator {
         // Create entry
-        device.findObject(By.res("entryListNewEntryButton"))?.click()
-        device.findObject(By.res("entryDetailContentTextField"))
-            ?.text = "Test entry 3"
-        device.findObject(By.res("unitSelectButton"))?.click()
-        By.res("unitSelectDropdownMenuItem").hasChild(By.text("fraction")).let {
-            assertTrue(device.wait(Until.hasObject(it), timeout))
-            device.findObject(it)?.click()
-        }
-        By.res("unitSelectChoiceText").text("⅓").let {
-            assertTrue(device.wait(Until.hasObject(it), timeout))
-            device.findObject(it)?.click()
-        }
-        device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val listItemSelector =
-            By.res("entryListItem").hasChild(By.text("Test entry 3 (⅓)"))
-        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
+        onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
+        onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Test entry 3")
+        onElement { viewIdResourceName == "unitSelectButton" }.click()
+        onElement { viewIdResourceName == "unitSelectDropdownMenuItem_${fractionUnit.id}" }.click()
+        onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "⅓" }.click()
+        onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Create new entry from an existing entry
-        device.findObject(listItemSelector)
-            ?.findObject(By.res("entryListItemAddButton"))
-            ?.click()
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Test entry 3 (⅓)" } != null }
+            .onElement { viewIdResourceName == "entryListItemAddButton" }
+            .click()
 
         // Check content
-        By.res("entryDetailContentTextField").let {
-            assertTrue(device.wait(Until.hasObject(it), timeout))
-            assertEquals("Test entry 3", device.findObject(it)?.text)
-        }
+        assertEquals(
+            "Test entry 3",
+            onElement { viewIdResourceName == "entryDetailContentTextField" }.text,
+        )
 
-        // Check and set unit
-        assertTrue(device.hasObject(By.res("unitSelectChoiceText").text("⅓")))
-        device.findObject(By.res("unitSelectChoiceText").text("¾"))?.click()
+        // Set unit
+        onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "¾" }.click()
 
-        // Save entry
-        device.findObject(By.res("entryDetailSaveButton"))?.click()
+        // Save
+        onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Check entry list
-        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
-        val listItemAddedSelector =
-            By.res("entryListItem").hasChild(By.text("Test entry 3 (¾)"))
-        assertTrue(device.wait(Until.hasObject(listItemAddedSelector), timeout))
-
-        // Check entries count
-        assertTrue(
-            device.wait(Until.hasObject(By.text("Your notes (2)")), timeout)
-        )
+        onElement { textAsString() == "Your notes (2)" }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Test entry 3 (⅓)" } != null }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Test entry 3 (¾)" } != null }
     }
 
     @Test
-    fun updatesEntry() {
+    fun updatesEntry() = uiAutomator {
         // Create entry
-        device.findObject(By.res("entryListNewEntryButton"))?.click()
-        device.findObject(By.res("entryDetailContentTextField"))
-            ?.text = "Test entry 2"
-        By.res("unitSelectChoiceText").text("L").let {
-            assertTrue(device.wait(Until.hasObject(it), timeout))
-            device.findObject(it)?.click()
-        }
-        device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val listItemSelector =
-            By.res("entryListItem").hasChild(By.text("Test entry 2 (L)"))
-        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
+        onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
+        onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Test entry 2")
+        onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "L" }.click()
+        onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Edit entry
-        device.findObject(listItemSelector)?.swipe(Direction.RIGHT, 0.5f)
-        By.res("entryListItemEditButton").let {
-            assertTrue(device.wait(Until.hasObject(it), timeout))
-            device.findObject(it)?.click()
-        }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Test entry 2 (L)" } != null }
+            .swipe(Direction.RIGHT, 0.5f)
+        onElement { viewIdResourceName == "entryListItemEditButton" }.click()
 
         // Set content
-        device.findObject(By.res("entryDetailContentTextField"))
-            ?.text += " edited"
+        onElement { viewIdResourceName == "entryDetailContentTextField" }.apply { setText("$text edited") }
 
-        // Set entry unit
-        device.findObject(By.res("unitSelectChoiceText").text("M"))?.click()
+        // Set unit
+        onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "M" }.click()
 
-        // Save entry
-        device.findObject(By.res("entryDetailSaveButton"))?.click()
+        // Save
+        onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Check entry list
-        By.res("entryListItem").hasChild(By.text("Test entry 2 edited (M)"))
-            .let {
-                assertTrue(device.wait(Until.hasObject(it), timeout))
-            }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Test entry 2 edited (M)" } != null }
     }
 
     @Test
-    fun deletesEntry() {
+    fun deletesEntry() = uiAutomator {
         // Create entry
-        device.findObject(By.res("entryListNewEntryButton"))?.click()
-        device.findObject(By.res("entryDetailContentTextField"))
-            ?.text = "Test entry 4"
-        device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val listItemSelector =
-            By.res("entryListItem").hasChild(By.text("Test entry 4"))
-        assertTrue(device.wait(Until.hasObject(listItemSelector), timeout))
+        onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
+        onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Test entry 4")
+        onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Delete entry
-        device.findObject(listItemSelector)?.swipe(Direction.LEFT, 0.5f)
-        By.res("entryListItemDeleteButton").let {
-            assertTrue(device.wait(Until.hasObject(it), timeout))
-            device.findObject(it)?.click()
-        }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Test entry 4" } != null }
+            .swipe(Direction.LEFT, 0.5f)
+        onElement { viewIdResourceName == "entryListItemDeleteButton" }.click()
 
         // Check entry list
-        assertTrue(device.wait(Until.gone(listItemSelector), timeout))
-
-        // Check entries count
-        assertTrue(
-            device.wait(Until.hasObject(By.text("Your notes (0)")), timeout)
-        )
+        onElement { textAsString() == "Your notes (0)" }
+        assertNull(onElementOrNull(ELEMENT_DOES_NOT_EXIST_TIMEOUT) { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Test entry 4" } != null })
     }
 
     @Test
-    fun filtersEntries() {
+    fun filtersEntries() = uiAutomator {
         // Create first entry
-        device.findObject(By.res("entryListNewEntryButton"))?.click()
-        By.res("entryDetailContentTextField").let {
-            device.wait(Until.hasObject(it), timeout)
-            device.findObject(it)?.text = "Apples Oranges"
-        }
-        device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val listItem1Selector =
-            By.res("entryListItem").hasChild(By.text("Apples Oranges"))
-        assertTrue(device.wait(Until.hasObject(listItem1Selector), timeout))
+        onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
+        onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Apples Oranges")
+        onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Create second entry
-        device.findObject(By.res("entryListNewEntryButton"))?.click()
-        By.res("entryDetailContentTextField").let {
-            device.wait(Until.hasObject(it), timeout)
-            device.findObject(it)?.text = "Oranges Bananas"
-        }
-        device.findObject(By.res("entryDetailSaveButton"))?.click()
-        val listItem2Selector =
-            By.res("entryListItem").hasChild(By.text("Oranges Bananas"))
-        assertTrue(
-            device.wait(Until.hasObject(listItem2Selector), timeout)
-        )
+        onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
+        onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Oranges Bananas")
+        onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Expand filter
-        By.res("entryListFilterExpandButton").let {
-            device.wait(Until.hasObject(it), timeout)
-            device.findObject(it)?.click()
-        }
+        onElement { viewIdResourceName == "entryListFilterExpandButton" }.click()
 
         // Filter by a term that only the first entry contains
-        device.findObject(By.res("entryListFilterQueryTextField"))
-            ?.text = "apple"
+        onElement { viewIdResourceName == "entryListFilterQueryTextField" }
+            .setText("apple")
 
         // Check that only the first entry is displayed
-        assertTrue(device.wait(Until.gone(listItem2Selector), timeout))
-        assertTrue(device.wait(Until.hasObject(listItem1Selector), timeout))
-        assertTrue(
-            device.wait(Until.hasObject(By.text("1 note out of 2")), timeout)
-        )
+        onElement { textAsString() == "1 note out of 2" }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Apples Oranges" } != null }
+        assertNull(onElementOrNull(ELEMENT_DOES_NOT_EXIST_TIMEOUT) { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Oranges Bananas" } != null })
 
         // Filter by a term that only the second entry contains
-        device.findObject(By.res("entryListFilterQueryTextField"))
-            ?.text = "banana"
+        onElement { viewIdResourceName == "entryListFilterQueryTextField" }.setText("banana")
 
         // Check that only the second entry is displayed
-        assertTrue(device.wait(Until.gone(listItem1Selector), timeout))
-        assertTrue(device.wait(Until.hasObject(listItem2Selector), timeout))
-        assertTrue(
-            device.wait(Until.hasObject(By.text("1 note out of 2")), timeout)
-        )
+        onElement { textAsString() == "1 note out of 2" }
+        assertNull(onElementOrNull(ELEMENT_DOES_NOT_EXIST_TIMEOUT) { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Apples Oranges" } != null })
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Oranges Bananas" } != null }
 
         // Filter by a term that both entries contain
-        device.findObject(By.res("entryListFilterQueryTextField"))
-            ?.text = "orange"
+        onElement { viewIdResourceName == "entryListFilterQueryTextField" }.setText("orange")
 
         // Check that both entries are displayed
-        assertTrue(device.wait(Until.hasObject(listItem1Selector), timeout))
-        assertTrue(device.wait(Until.hasObject(listItem2Selector), timeout))
-        assertTrue(
-            device.wait(Until.hasObject(By.text("2 notes out of 2")), timeout)
-        )
+        onElement { textAsString() == "2 notes out of 2" }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Apples Oranges" } != null }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Oranges Bananas" } != null }
 
         // Filter by a term that no entry contains
-        device.findObject(By.res("entryListFilterQueryTextField"))
-            ?.text = "spam"
+        onElement { viewIdResourceName == "entryListFilterQueryTextField" }.setText("spam")
 
         // Check that no entries are displayed
-        assertTrue(device.wait(Until.gone(listItem1Selector), timeout))
-        assertTrue(device.wait(Until.gone(listItem2Selector), timeout))
-        assertTrue(
-            device.wait(Until.hasObject(By.text("0 notes out of 2")), timeout)
-        )
+        onElement { textAsString() == "0 notes out of 2" }
+        assertNull(onElementOrNull(ELEMENT_DOES_NOT_EXIST_TIMEOUT) { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Apples Oranges" } != null })
+        assertNull(onElementOrNull(ELEMENT_DOES_NOT_EXIST_TIMEOUT) { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Oranges Bananas" } != null })
     }
 }

@@ -87,7 +87,7 @@ fun UnitSelect(
                                     expanded = false
                                     onVisibleUnitChange(unit)
                                 },
-                                modifier = Modifier.testTag("unitSelectDropdownMenuItem"),
+                                modifier = Modifier.testTag("unitSelectDropdownMenuItem_${unit.id}"),
                                 contentPadding = PaddingValues(
                                     horizontal = Spacing.medium,
                                     vertical = Spacing.small,
