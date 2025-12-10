@@ -1,6 +1,11 @@
 package app.traced_it.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,15 +20,18 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import app.traced_it.R
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import java.util.*
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.time.ExperimentalTime
 
 fun Modifier.verticalFade(): Modifier = this.then(
@@ -73,31 +81,26 @@ fun TracedTimePicker(
     val hourWeight = 1f
     val minuteWeight = 1f
 
-    val valueUtcDate = Date().apply { time = value }
-    val valueLocalCalendar = Calendar.getInstance(TimeZone.getDefault()).apply { time = valueUtcDate }
+    val calendar = Calendar.getInstance(TimeZone.getDefault()).apply { time = Date(value) }
 
     val initialDate = Triple(
-        valueLocalCalendar.get(Calendar.YEAR),
-        valueLocalCalendar.get(Calendar.MONTH) + 1,
-        valueLocalCalendar.get(Calendar.DAY_OF_MONTH),
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH) + 1,
+        calendar.get(Calendar.DAY_OF_MONTH),
     )
-    val initialHour = min(valueLocalCalendar.get(Calendar.HOUR_OF_DAY), 23)
-    val initialMinute = min(valueLocalCalendar.get(Calendar.MINUTE), 59)
-
-    var date by remember { mutableStateOf(initialDate) }
-    var hour by remember { mutableIntStateOf(initialHour) }
-    var minute by remember { mutableIntStateOf(initialMinute) }
+    val initialHour = min(calendar.get(Calendar.HOUR_OF_DAY), 23)
+    val initialMinute = min(calendar.get(Calendar.MINUTE), 59)
 
     val dateOptions = mapOf(initialDate to "today") // TODO
-    val minuteOptions = (0..23).associateWith { it.toString().padStart(2, '0') }
-    val hourOptions = (0..59).associateWith { it.toString().padStart(2, '0') }
+    val hourOptions = (0..23).associateWith { it.toString().padStart(2, '0') }
+    val minuteOptions = (0..59).associateWith { it.toString().padStart(2, '0') }
 
     Column(
         modifier
             .fillMaxWidth()
             .padding(horizontal = Spacing.windowPadding)
     ) {
-        Row(Modifier.padding(vertical = Spacing.small)) {
+        Row(Modifier.padding(bottom = Spacing.small)) {
             Text(
                 stringResource(R.string.detail_created_at_label_date),
                 Modifier.weight(dateWeight),
@@ -125,24 +128,33 @@ fun TracedTimePicker(
             Row(Modifier.height(Spacing.inputHeight)) {
                 TracedTimePickerSegment(
                     options = dateOptions,
-                    value = date,
-                    onValueChange = { date = it },
+                    initialValue = initialDate,
+                    onValueChange = { (year, month, date) ->
+                        calendar.set(year, month, date)
+                        onValueChange(calendar.timeInMillis)
+                    },
                     modifier = Modifier.weight(dateWeight),
                     borderWidth = borderWidth,
                     borderColor = borderColor,
                 )
                 TracedTimePickerSegment(
                     options = hourOptions,
-                    value = hour,
-                    onValueChange = { hour = it },
+                    initialValue = initialHour,
+                    onValueChange = { hour ->
+                        calendar.set(Calendar.HOUR, hour)
+                        onValueChange(calendar.timeInMillis)
+                    },
                     modifier = Modifier.weight(hourWeight),
                     borderWidth = borderWidth,
                     borderColor = borderColor,
                 )
                 TracedTimePickerSegment(
                     options = minuteOptions,
-                    value = minute,
-                    onValueChange = { minute = it },
+                    initialValue = initialMinute,
+                    onValueChange = { minute ->
+                        calendar.set(Calendar.MINUTE, minute)
+                        onValueChange(calendar.timeInMillis)
+                    },
                     modifier = Modifier.weight(minuteWeight),
                     borderWidth = borderWidth,
                     borderColor = borderColor,
@@ -154,15 +166,33 @@ fun TracedTimePicker(
 }
 
 @Composable
-private fun <T> TracedTimePickerSegment(
+private fun <T : Any> TracedTimePickerSegment(
     options: Map<T, String>,
-    value: T,
+    initialValue: T,
     onValueChange: (value: T) -> Unit,
     modifier: Modifier = Modifier,
     borderColor: Color,
     borderWidth: Dp,
+    optionSize: Dp = Spacing.inputHeight / 3.0f,
     last: Boolean = false,
 ) {
+    val density = LocalDensity.current
+    val draggableState = remember {
+        AnchoredDraggableState(
+            initialValue = initialValue,
+            anchors = DraggableAnchors {
+                options.keys.forEachIndexed { i, value ->
+                    value at i * with(density) { optionSize.toPx() }
+                }
+            },
+        )
+    }
+
+    LaunchedEffect(draggableState) {
+        snapshotFlow { draggableState.settledValue }
+            .collect { onValueChange(it) }
+    }
+
     Box(
         modifier
             .fillMaxHeight()
@@ -175,12 +205,30 @@ private fun <T> TracedTimePickerSegment(
                 }
             }
     ) {
-        Column(Modifier.fillMaxWidth().offset(y = Spacing.inputHeight / 3.0f)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .offset(y = optionSize)
+                .offset {
+                    IntOffset(
+                        x = 0,
+                        y = draggableState.requireOffset().roundToInt(),
+                    )
+                }
+                .anchoredDraggable(
+                    draggableState,
+                    orientation = Orientation.Vertical,
+                    flingBehavior = AnchoredDraggableDefaults.flingBehavior(
+                        draggableState,
+                        positionalThreshold = { distance -> distance * 0.5f },
+                    ),
+                ),
+        ) {
             options.values.forEach { text ->
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .height(Spacing.inputHeight / 3.0f),
+                        .height(optionSize),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text)

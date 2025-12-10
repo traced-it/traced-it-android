@@ -25,6 +25,7 @@ import app.traced_it.data.local.database.*
 import app.traced_it.ui.components.TracedBottomButton
 import app.traced_it.ui.components.TracedScaffold
 import app.traced_it.ui.components.TracedTextField
+import app.traced_it.ui.components.TracedTimePicker
 import app.traced_it.ui.components.TracedTopAppBar
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
@@ -149,6 +150,11 @@ fun EntryDetailDialog(
                         visibleUnit = newVisibleUnit
                         amountRaw = ""
                     },
+                )
+                TracedTimePicker(
+                    value = System.currentTimeMillis(), // TODO
+                    onValueChange = {}, // TODO
+                    modifier = Modifier.padding(top = Spacing.medium * 2),
                 )
             }
             HorizontalDivider()
