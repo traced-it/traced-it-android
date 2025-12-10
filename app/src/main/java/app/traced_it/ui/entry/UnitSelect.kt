@@ -1,6 +1,5 @@
 package app.traced_it.ui.entry
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -138,7 +137,7 @@ fun UnitSelect(
 @Composable
 private fun DefaultPreview() {
     AppTheme {
-        Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
+        Surface {
             UnitSelect(
                 "",
                 noneUnit,
@@ -152,7 +151,7 @@ private fun DefaultPreview() {
 @Composable
 private fun ClothingSizePreview() {
     AppTheme {
-        Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
+        Surface {
             UnitSelect(
                 "S",
                 clothingSizeUnit,
@@ -166,7 +165,7 @@ private fun ClothingSizePreview() {
 @Composable
 private fun SmallNumbersChoicePreview() {
     AppTheme {
-        Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
+        Surface {
             UnitSelect(
                 "2x",
                 smallNumbersChoiceUnit,
@@ -180,7 +179,7 @@ private fun SmallNumbersChoicePreview() {
 @Composable
 private fun FractionPreview() {
     AppTheme {
-        Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
+        Surface {
             UnitSelect(
                 "⅓",
                 fractionUnit,
@@ -194,7 +193,7 @@ private fun FractionPreview() {
 @Composable
 private fun DoublePreview() {
     AppTheme {
-        Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
+        Surface {
             UnitSelect(
                 "",
                 doubleUnit,
@@ -208,7 +207,7 @@ private fun DoublePreview() {
 @Composable
 private fun DoubleFrenchPreview() {
     AppTheme {
-        Box(Modifier.background(MaterialTheme.colorScheme.surface)) {
+        Surface {
             UnitSelect(
                 "",
                 doubleUnit,
