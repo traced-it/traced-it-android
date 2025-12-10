@@ -98,4 +98,5 @@
     <string name="detail_created_at_label_minute">Minute</string>
     <string name="detail_created_at_label_hour">Hour</string>
     <string name="detail_created_at_label_date">Date</string>
+    <string name="detail_created_at_today">today</string>
 </resources>
