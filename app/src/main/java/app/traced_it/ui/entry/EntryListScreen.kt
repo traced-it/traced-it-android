@@ -1,6 +1,5 @@
 package app.traced_it.ui.entry
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ClipData
 import android.content.Intent
@@ -10,7 +9,6 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -33,27 +31,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import app.traced_it.R
-import app.traced_it.data.di.FakeEntryRepository
 import app.traced_it.data.di.defaultFakeEntries
 import app.traced_it.data.local.database.Entry
 import app.traced_it.ui.components.*
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 
 private class MessageSnackbarVisuals(tracedMessage: Message) : SnackbarVisuals {
     override val message = tracedMessage.text
@@ -72,44 +71,79 @@ fun EntryListScreen(
     onNavigateToAboutScreen: () -> Unit = {},
     viewModel: EntryViewModel = hiltViewModel(),
 ) {
+    val resources = LocalResources.current
+
+    val allEntriesCount by viewModel.allEntriesCount.collectAsStateWithLifecycle()
+    val filterExpanded by viewModel.filterExpanded.collectAsStateWithLifecycle()
+    val filterQuery by viewModel.filterQuery.collectAsStateWithLifecycle()
+    val filteredEntries = viewModel.filteredEntries.collectAsLazyPagingItems()
+    val highlightedEntryUid by viewModel.highlightedEntryUid.collectAsStateWithLifecycle()
+    val latestEntry by viewModel.latestEntry.collectAsStateWithLifecycle()
+    val message by viewModel.message.collectAsStateWithLifecycle()
+
     EntryListScreen(
-        filteredEntriesFlow = viewModel.filteredEntries,
-        filterExpandedFlow = viewModel.filterExpanded,
-        filterQueryFlow = viewModel.filterQuery,
+        allEntriesCount = allEntriesCount,
+        filterExpanded = filterExpanded,
+        filterQuery = filterQuery,
+        filterQuerySanitizedForFilename = viewModel.filterQuerySanitizedForFilename,
+        filteredEntries = filteredEntries,
+        highlightedEntryUid = highlightedEntryUid,
+        latestEntry = latestEntry,
+        message = message,
+        onDeleteAllEntries = { viewModel.deleteAllEntries(resources) },
+        onDeleteEntry = { entry -> viewModel.deleteEntry(resources, entry) },
+        onDismissMessage = { viewModel.dismissMessage() },
+        onExportAllEntriesCsv = { writer -> viewModel.exportAllEntriesCsv(resources, writer) },
+        onExportFilteredEntriesCsv = { writer -> viewModel.exportFilteredEntriesCsv(resources, writer) },
+        onFilter = { filterQuery -> viewModel.filter(filterQuery) },
+        onImportEntriesCsv = { reader -> viewModel.importEntriesCsv(resources, reader) },
+        onInsertEntry = { entry -> viewModel.insertEntry(resources, entry) },
         onNavigateToAboutScreen = onNavigateToAboutScreen,
-        viewModel = viewModel,
+        onPerformMessageAction = { viewModel.performMessageAction() },
+        onSetFilterExpanded = { filterExpanded -> viewModel.setFilterExpanded(filterExpanded) },
+        onSetHighlightedEntryUid = { uid -> viewModel.setHighlightedEntryUid(uid) },
+        onUpdateEntry = { entry -> viewModel.updateEntry(resources, entry) },
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EntryListScreen(
-    filteredEntriesFlow: StateFlow<PagingData<Entry>>,
-    onNavigateToAboutScreen: () -> Unit = {},
-    filterExpandedFlow: StateFlow<Boolean>,
-    filterQueryFlow: StateFlow<String>,
+private fun EntryListScreen(
+    allEntriesCount: Int,
+    animationsEnabled: Boolean = true,
+    filterExpanded: Boolean,
+    filterQuery: String,
+    filterQuerySanitizedForFilename: String,
+    filteredEntries: LazyPagingItems<Entry>,
+    highlightedEntryUid: Int?,
     initialSelectedEntry: Entry? = null,
-    viewModel: EntryViewModel = hiltViewModel(),
+    latestEntry: Entry?,
+    message: Message?,
+    onDeleteAllEntries: () -> Unit,
+    onDeleteEntry: (entry: Entry) -> Unit,
+    onDismissMessage: () -> Unit,
+    onExportAllEntriesCsv: suspend (writer: OutputStreamWriter) -> Unit,
+    onExportFilteredEntriesCsv: suspend (writer: OutputStreamWriter) -> Unit,
+    onFilter: (filterQuery: String) -> Unit,
+    onImportEntriesCsv: suspend (reader: InputStreamReader) -> Unit,
+    onInsertEntry: (entry: Entry) -> Unit,
+    onNavigateToAboutScreen: () -> Unit,
+    onPerformMessageAction: () -> Unit,
+    onSetFilterExpanded: (filterExpanded: Boolean) -> Unit,
+    onSetHighlightedEntryUid: (uid: Int?) -> Unit,
+    onUpdateEntry: (entry: Entry) -> Unit,
 ) {
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val coroutineScope = rememberCoroutineScope()
     val resources = LocalResources.current
 
-    val allEntriesCount by viewModel.allEntriesCount.collectAsStateWithLifecycle()
-    val filteredEntries = filteredEntriesFlow.collectAsLazyPagingItems()
     val (deleteAllEntriesDialogOpen, setDeleteAllEntriesDialogOpen) = remember { mutableStateOf(false) }
-    var entryDetailAction by remember {
-        mutableStateOf<EntryDetailAction>(EntryDetailAction.Prefill(Entry()))
-    }
+    var focusedEntry by remember { mutableStateOf<Entry?>(null) }
+    var entryDetailAction by remember { mutableStateOf<EntryDetailAction>(EntryDetailAction.Prefill(Entry())) }
     var entryDetailOpen by remember { mutableStateOf(false) }
-    val filterExpanded by filterExpandedFlow.collectAsStateWithLifecycle()
     val filterFocusRequester = remember { FocusRequester() }
-    val filterQuery by filterQueryFlow.collectAsStateWithLifecycle()
-    val highlightedEntryUid by viewModel.highlightedEntryUid.collectAsStateWithLifecycle()
-    val latestEntry by viewModel.latestEntry.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    val message by viewModel.message.collectAsStateWithLifecycle()
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     val (selectedEntry, setSelectedEntry) = remember { mutableStateOf(initialSelectedEntry) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -120,7 +154,7 @@ fun EntryListScreen(
                 coroutineScope.launch {
                     context.contentResolver.openInputStream(uri)?.use { inputStream ->
                         inputStream.reader().use { reader ->
-                            viewModel.importEntriesCsv(resources, reader)
+                            onImportEntriesCsv(reader)
                         }
                     }
                 }
@@ -132,7 +166,7 @@ fun EntryListScreen(
                 coroutineScope.launch {
                     context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                         outputStream.writer().use { writer ->
-                            viewModel.exportAllEntriesCsv(resources, writer)
+                            onExportAllEntriesCsv(writer)
                         }
                     }
                 }
@@ -144,7 +178,7 @@ fun EntryListScreen(
                 coroutineScope.launch {
                     context.contentResolver.openOutputStream(uri)?.use { outputStream ->
                         outputStream.writer().use { writer ->
-                            viewModel.exportFilteredEntriesCsv(resources, writer)
+                            onExportFilteredEntriesCsv(writer)
                         }
                     }
                 }
@@ -159,17 +193,16 @@ fun EntryListScreen(
     }
 
     LaunchedEffect(message) {
-        message?.let { message ->
+        if (message != null) {
             val result = snackbarHostState.showSnackbar(MessageSnackbarVisuals(message))
             when (result) {
-                SnackbarResult.ActionPerformed -> viewModel.performMessageAction()
-                SnackbarResult.Dismissed -> viewModel.dismissMessage()
+                SnackbarResult.ActionPerformed -> onPerformMessageAction()
+                SnackbarResult.Dismissed -> onDismissMessage()
             }
         }
     }
 
-    // Scroll to the inserted, updated or restored item if it's above the
-    // currently visible lazy column items.
+    // Scroll to the inserted, updated or restored item if it's above the currently visible lazy column items.
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .map {
@@ -191,8 +224,8 @@ fun EntryListScreen(
         } else if (selectedEntry != null) {
             setSelectedEntry(null)
         } else {
-            viewModel.setFilterExpanded(false)
-            viewModel.filter("")
+            onSetFilterExpanded(false)
+            onFilter("")
             coroutineScope.launch {
                 listState.scrollToItem(0)
             }
@@ -209,7 +242,7 @@ fun EntryListScreen(
                         TracedTextField(
                             value = filterQuery,
                             onValueChange = {
-                                viewModel.filter(it)
+                                onFilter(it)
                                 coroutineScope.launch {
                                     listState.scrollToItem(0)
                                 }
@@ -239,10 +272,8 @@ fun EntryListScreen(
                 actions = {
                     if (selectedEntry != null) {
                         IconButton({
-                            selectedEntry.let {
-                                entryDetailAction = EntryDetailAction.Edit(it)
-                                entryDetailOpen = true
-                            }
+                            entryDetailAction = EntryDetailAction.Edit(selectedEntry)
+                            entryDetailOpen = true
                         }) {
                             Icon(
                                 Icons.Outlined.Edit,
@@ -250,9 +281,7 @@ fun EntryListScreen(
                             )
                         }
                         IconButton({
-                            selectedEntry.let {
-                                viewModel.deleteEntry(resources, it)
-                            }
+                            onDeleteEntry(selectedEntry)
                         }) {
                             Icon(
                                 Icons.Outlined.Delete,
@@ -262,48 +291,42 @@ fun EntryListScreen(
                         SelectedEntryMenu(
                             modifier = Modifier.padding(end = Spacing.windowPadding - 8.dp),
                             onAddWithSameContent = {
-                                selectedEntry.let {
-                                    entryDetailAction = EntryDetailAction.Prefill(it)
-                                    entryDetailOpen = true
-                                }
+                                entryDetailAction = EntryDetailAction.Prefill(selectedEntry)
+                                entryDetailOpen = true
                             },
                             onCopy = {
-                                selectedEntry.let { selectedEntry ->
-                                    coroutineScope.launch {
-                                        clipboard.setClipEntry(
-                                            ClipEntry(
-                                                ClipData.newPlainText("note", selectedEntry.format(context))
-                                            )
+                                coroutineScope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipEntry(
+                                            ClipData.newPlainText("note", selectedEntry.format(context))
                                         )
-                                        val systemHasClipboardEditor =
-                                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                                        if (!systemHasClipboardEditor) {
-                                            Toast.makeText(
-                                                context,
-                                                R.string.list_item_copied_to_clipboard,
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
-                                        }
+                                    )
+                                    val systemHasClipboardEditor =
+                                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                                    if (!systemHasClipboardEditor) {
+                                        Toast.makeText(
+                                            context,
+                                            R.string.list_item_copied_to_clipboard,
+                                            Toast.LENGTH_SHORT,
+                                        ).show()
                                     }
                                 }
                             },
                             onFilterWithSimilarContent = {
-                                selectedEntry.let {
-                                    viewModel.setFilterExpanded(true)
-                                    viewModel.filter(it.content)
-                                    coroutineScope.launch {
-                                        listState.scrollToItem(0)
-                                    }
-                                    setSelectedEntry(null)
+                                onSetFilterExpanded(true)
+                                onFilter(selectedEntry.content)
+                                coroutineScope.launch {
+                                    listState.scrollToItem(0)
                                 }
+                                setSelectedEntry(null)
                             },
                         )
                     } else if (filterExpanded) {
                         IconButton({
                             if (filterQuery.isEmpty()) {
-                                viewModel.setFilterExpanded(false)
+                                onSetFilterExpanded(false)
                             } else {
-                                viewModel.filter("")
+                                onFilter("")
                                 coroutineScope.launch {
                                     listState.scrollToItem(0)
                                 }
@@ -318,8 +341,8 @@ fun EntryListScreen(
                         }
                     } else {
                         IconButton(
-                            { viewModel.setFilterExpanded(true) },
-                            modifier = Modifier.testTag("entryListFilterExpandButton"),
+                            { onSetFilterExpanded(true) },
+                            Modifier.testTag("entryListFilterExpandButton"),
                             enabled = filteredEntries.itemCount > 0,
                         ) {
                             Icon(
@@ -377,8 +400,8 @@ fun EntryListScreen(
                     } else if (filterExpanded) {
                         IconButton(
                             onClick = {
-                                viewModel.setFilterExpanded(false)
-                                viewModel.filter("")
+                                onSetFilterExpanded(false)
+                                onFilter("")
                                 coroutineScope.launch {
                                     listState.scrollToItem(0)
                                 }
@@ -458,7 +481,7 @@ fun EntryListScreen(
                                 R.string.list_export_filtered_filename,
                                 resources.getString(R.string.app_name),
                                 Build.MODEL,
-                                viewModel.filterQuerySanitizedForFilename,
+                                filterQuerySanitizedForFilename,
                             )
                             exportFilteredLauncher.launch(
                                 Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -493,7 +516,6 @@ fun EntryListScreen(
                     filteredEntries[index]?.let { entry ->
                         EntryListItem(
                             entry = entry,
-                            modifier = Modifier.animateItem(),
                             prevEntry = index.takeIf { index != 0 }?.let {
                                 filteredEntries[index - 1]
                             },
@@ -501,18 +523,23 @@ fun EntryListScreen(
                             highlighted = highlightedEntryUid == entry.uid,
                             odd = index % 2 != 0,
                             selected = selectedEntry == entry,
+                            focused = focusedEntry == entry,
+                            animationsEnabled = animationsEnabled,
                             onAddWithSameText = {
                                 entryDetailAction = EntryDetailAction.Prefill(entry)
                                 entryDetailOpen = true
                             },
                             onDelete = {
-                                viewModel.deleteEntry(resources, entry)
+                                onDeleteEntry(entry)
                             },
                             onHighlightingFinished = {
-                                viewModel.setHighlightedEntryUid(null)
+                                onSetHighlightedEntryUid(null)
                             },
                             onToggle = {
                                 setSelectedEntry(if (entry == selectedEntry) null else entry)
+                            },
+                            onFocus = {
+                                focusedEntry = entry
                             },
                             onUpdate = {
                                 entryDetailAction = EntryDetailAction.Edit(entry)
@@ -547,13 +574,13 @@ fun EntryListScreen(
                     listState.scrollToItem(0)
                     setSelectedEntry(null)
                     entryDetailOpen = false
-                    viewModel.insertEntry(resources, it)
+                    onInsertEntry(it)
                 }
             },
             onUpdate = {
                 setSelectedEntry(null)
                 entryDetailOpen = false
-                viewModel.updateEntry(resources, it)
+                onUpdateEntry(it)
             },
             onDismiss = {
                 entryDetailOpen = false
@@ -570,7 +597,7 @@ fun EntryListScreen(
             onDismissRequest = { setDeleteAllEntriesDialogOpen(false) },
             onConfirmation = {
                 setDeleteAllEntriesDialogOpen(false)
-                viewModel.deleteAllEntries(resources)
+                onDeleteAllEntries()
             },
         )
     }
@@ -578,125 +605,189 @@ fun EntryListScreen(
 
 // Previews
 
-@SuppressLint("ViewModelConstructorInComposable")
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun DefaultPreview() {
     AppTheme {
         EntryListScreen(
-            filteredEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
-            filterExpandedFlow = MutableStateFlow(false),
-            filterQueryFlow = MutableStateFlow(""),
-            viewModel = EntryViewModel(
-                FakeEntryRepository(),
-                SavedStateHandle(),
-            ),
+            allEntriesCount = defaultFakeEntries.size,
+            animationsEnabled = false,
+            filterExpanded = false,
+            filterQuery = "",
+            filterQuerySanitizedForFilename = "",
+            filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
+            highlightedEntryUid = null,
+            latestEntry = defaultFakeEntries.first(),
+            message = null,
+            onDeleteAllEntries = {},
+            onDeleteEntry = {},
+            onDismissMessage = {},
+            onExportAllEntriesCsv = {},
+            onExportFilteredEntriesCsv = {},
+            onFilter = {},
+            onImportEntriesCsv = {},
+            onInsertEntry = {},
+            onNavigateToAboutScreen = {},
+            onPerformMessageAction = {},
+            onSetFilterExpanded = {},
+            onSetHighlightedEntryUid = {},
+            onUpdateEntry = {},
         )
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 private fun LightPreview() {
     AppTheme {
         EntryListScreen(
-            filteredEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
-            filterExpandedFlow = MutableStateFlow(false),
-            filterQueryFlow = MutableStateFlow(""),
-            viewModel = EntryViewModel(
-                FakeEntryRepository(),
-                SavedStateHandle(),
-            ),
+            allEntriesCount = defaultFakeEntries.size,
+            animationsEnabled = false,
+            filterExpanded = false,
+            filterQuery = "",
+            filterQuerySanitizedForFilename = "",
+            filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
+            highlightedEntryUid = null,
+            latestEntry = defaultFakeEntries.first(),
+            message = null,
+            onDeleteAllEntries = {},
+            onDeleteEntry = {},
+            onDismissMessage = {},
+            onExportAllEntriesCsv = {},
+            onExportFilteredEntriesCsv = {},
+            onFilter = {},
+            onImportEntriesCsv = {},
+            onInsertEntry = {},
+            onNavigateToAboutScreen = {},
+            onPerformMessageAction = {},
+            onSetFilterExpanded = {},
+            onSetHighlightedEntryUid = {},
+            onUpdateEntry = {},
         )
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun FilterPreview() {
     AppTheme {
         EntryListScreen(
-            filteredEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
-            filterExpandedFlow = MutableStateFlow(true),
-            filterQueryFlow = MutableStateFlow("ee"),
-            viewModel = EntryViewModel(
-                FakeEntryRepository(),
-                SavedStateHandle(),
-            ),
+            allEntriesCount = defaultFakeEntries.size,
+            animationsEnabled = false,
+            filterExpanded = true,
+            filterQuery = "ee",
+            filterQuerySanitizedForFilename = "",
+            filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
+            highlightedEntryUid = null,
+            latestEntry = defaultFakeEntries.first(),
+            message = null,
+            onDeleteAllEntries = {},
+            onDeleteEntry = {},
+            onDismissMessage = {},
+            onExportAllEntriesCsv = {},
+            onExportFilteredEntriesCsv = {},
+            onFilter = {},
+            onImportEntriesCsv = {},
+            onInsertEntry = {},
+            onNavigateToAboutScreen = {},
+            onPerformMessageAction = {},
+            onSetFilterExpanded = {},
+            onSetHighlightedEntryUid = {},
+            onUpdateEntry = {},
         )
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SelectedEntryPreview() {
     AppTheme {
         EntryListScreen(
-            filteredEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
+            allEntriesCount = defaultFakeEntries.size,
+            animationsEnabled = false,
+            filterExpanded = false,
+            filterQuery = "",
+            filterQuerySanitizedForFilename = "",
+            filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
+            highlightedEntryUid = null,
             initialSelectedEntry = defaultFakeEntries[2],
-            filterExpandedFlow = MutableStateFlow(false),
-            filterQueryFlow = MutableStateFlow(""),
-            viewModel = EntryViewModel(
-                FakeEntryRepository(),
-                SavedStateHandle(),
-            ),
+            latestEntry = defaultFakeEntries.first(),
+            message = null,
+            onDeleteAllEntries = {},
+            onDeleteEntry = {},
+            onDismissMessage = {},
+            onExportAllEntriesCsv = {},
+            onExportFilteredEntriesCsv = {},
+            onFilter = {},
+            onImportEntriesCsv = {},
+            onInsertEntry = {},
+            onNavigateToAboutScreen = {},
+            onPerformMessageAction = {},
+            onSetFilterExpanded = {},
+            onSetHighlightedEntryUid = {},
+            onUpdateEntry = {},
         )
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun EmptyPreview() {
     AppTheme {
         EntryListScreen(
-            filteredEntriesFlow = MutableStateFlow(PagingData.empty()),
-            filterExpandedFlow = MutableStateFlow(false),
-            filterQueryFlow = MutableStateFlow(""),
-            viewModel = EntryViewModel(
-                FakeEntryRepository(emptyList()),
-                SavedStateHandle(),
-            ),
+            allEntriesCount = 0,
+            animationsEnabled = false,
+            filterExpanded = false,
+            filterQuery = "",
+            filterQuerySanitizedForFilename = "",
+            filteredEntries = flowOf(PagingData.empty<Entry>()).collectAsLazyPagingItems(),
+            highlightedEntryUid = null,
+            latestEntry = defaultFakeEntries.first(),
+            message = null,
+            onDeleteAllEntries = {},
+            onDeleteEntry = {},
+            onDismissMessage = {},
+            onExportAllEntriesCsv = {},
+            onExportFilteredEntriesCsv = {},
+            onFilter = {},
+            onImportEntriesCsv = {},
+            onInsertEntry = {},
+            onNavigateToAboutScreen = {},
+            onPerformMessageAction = {},
+            onSetFilterExpanded = {},
+            onSetHighlightedEntryUid = {},
+            onUpdateEntry = {},
         )
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    widthDp = 480
-)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.TABLET)
 @Composable
-private fun PortraitPreview() {
+private fun TabletPreview() {
     AppTheme {
         EntryListScreen(
-            filteredEntriesFlow = MutableStateFlow(
-                PagingData.from(defaultFakeEntries)
-            ),
-            filterExpandedFlow = MutableStateFlow(false),
-            filterQueryFlow = MutableStateFlow(""),
-            viewModel = EntryViewModel(
-                FakeEntryRepository(),
-                SavedStateHandle(),
-            ),
+            allEntriesCount = defaultFakeEntries.size,
+            animationsEnabled = false,
+            filterExpanded = false,
+            filterQuery = "",
+            filterQuerySanitizedForFilename = "",
+            filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
+            highlightedEntryUid = null,
+            latestEntry = defaultFakeEntries.first(),
+            message = null,
+            onDeleteAllEntries = {},
+            onDeleteEntry = {},
+            onDismissMessage = {},
+            onExportAllEntriesCsv = {},
+            onExportFilteredEntriesCsv = {},
+            onFilter = {},
+            onImportEntriesCsv = {},
+            onInsertEntry = {},
+            onNavigateToAboutScreen = {},
+            onPerformMessageAction = {},
+            onSetFilterExpanded = {},
+            onSetHighlightedEntryUid = {},
+            onUpdateEntry = {},
         )
     }
 }

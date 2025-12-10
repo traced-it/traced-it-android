@@ -1,7 +1,5 @@
 package app.traced_it.ui.entry
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.EaseOutQuint
 import androidx.compose.animation.core.LinearEasing
@@ -11,16 +9,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,26 +38,30 @@ import app.traced_it.data.local.database.Entry
 import app.traced_it.data.local.database.noneUnit
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 private enum class DragValue { Start, Center, End }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, FlowPreview::class)
 @Composable
-fun EntryListItem(
+fun LazyItemScope.EntryListItem(
     entry: Entry,
-    modifier: Modifier = Modifier,
     prevEntry: Entry? = null,
     now: Long = System.currentTimeMillis(),
     highlighted: Boolean = false,
     odd: Boolean = false,
     selected: Boolean = false,
-    onToggle: () -> Unit = {},
-    onUpdate: () -> Unit = {},
-    onDelete: () -> Unit = {},
-    onAddWithSameText: () -> Unit = {},
-    onHighlightingFinished: () -> Unit = {},
+    focused: Boolean = false,
+    animationsEnabled: Boolean = true,
+    onAddWithSameText: () -> Unit,
+    onDelete: () -> Unit,
+    onHighlightingFinished: () -> Unit,
+    onFocus: () -> Unit,
+    onToggle: () -> Unit,
+    onUpdate: () -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -85,7 +86,7 @@ fun EntryListItem(
     // Reduce left action width to make sure no part of it is visible in the initial position due to rounding.
     val leftActionWidthAdjustment = -(1).dp
     val resistance = 2
-    val state = remember {
+    val draggableState = remember {
         AnchoredDraggableState(
             initialValue = DragValue.Center,
             anchors = DraggableAnchors {
@@ -94,6 +95,22 @@ fun EntryListItem(
                 DragValue.End at with(density) { Spacing.swipeActionWidth.toPx() * resistance }
             },
         )
+    }
+
+    // Mark the item as focused, when dragged
+    LaunchedEffect(draggableState) {
+        snapshotFlow { draggableState.currentValue }
+            .filter { it != DragValue.Center }
+            .collect {
+                onFocus()
+            }
+    }
+
+    // Reset the item to the center position, when another item gets focused
+    LaunchedEffect(focused) {
+        if (!focused && draggableState.currentValue != DragValue.Center) {
+            draggableState.animateTo(DragValue.Center)
+        }
     }
 
     LaunchedEffect(highlighted) {
@@ -123,15 +140,20 @@ fun EntryListItem(
     }
 
     Box(
-        modifier
+        (if (animationsEnabled) Modifier.animateItem() else Modifier)
             .background(containerColor)
-            .clip(RectangleShape)
+            .clip(RectangleShape),
     ) {
         Row(
             Modifier
                 .testTag("entryListItem")
                 .background(animatedBackground.value)
-                .clickable { onToggle() }
+                .clickable {
+                    // Mark the item as focused, when selected or deselected
+                    onFocus()
+                    // Select or deselect the item
+                    onToggle()
+                }
                 .fillMaxWidth()
                 .padding(
                     horizontal = Spacing.windowPadding,
@@ -139,15 +161,15 @@ fun EntryListItem(
                 )
                 .offset {
                     IntOffset(
-                        x = (state.requireOffset() / resistance).roundToInt(),
+                        x = (draggableState.requireOffset() / resistance).roundToInt(),
                         y = 0,
                     )
                 }
                 .anchoredDraggable(
-                    state,
+                    draggableState,
                     orientation = Orientation.Horizontal,
                     flingBehavior = AnchoredDraggableDefaults.flingBehavior(
-                        state,
+                        draggableState,
                         positionalThreshold = { distance -> distance * 0.5f },
                     ),
                 ),
@@ -198,18 +220,18 @@ fun EntryListItem(
             IconButton(
                 {
                     coroutineScope.launch {
-                        state.animateTo(DragValue.Center)
+                        draggableState.animateTo(DragValue.Center)
                     }
                     onUpdate()
                 },
-                modifier = Modifier
+                Modifier
                     .testTag("entryListItemEditButton")
                     .align(Alignment.CenterStart)
                     .width(Spacing.swipeActionWidth + leftActionWidthAdjustment)
                     .fillMaxHeight()
                     .offset {
                         IntOffset(
-                            x = (state.requireOffset() / resistance - Spacing.swipeActionWidth.toPx()).roundToInt(),
+                            x = (draggableState.requireOffset() / resistance - Spacing.swipeActionWidth.toPx()).roundToInt(),
                             y = 0,
                         )
                     }
@@ -224,20 +246,20 @@ fun EntryListItem(
                 )
             }
             IconButton(
-                onClick = {
+                {
                     coroutineScope.launch {
-                        state.animateTo(DragValue.Center)
+                        draggableState.animateTo(DragValue.Center)
                     }
                     onDelete()
                 },
-                modifier = Modifier
+                Modifier
                     .testTag("entryListItemDeleteButton")
                     .align(Alignment.CenterEnd)
                     .width(Spacing.swipeActionWidth)
                     .fillMaxHeight()
                     .offset {
                         IntOffset(
-                            x = (state.requireOffset() / resistance + Spacing.swipeActionWidth.toPx()).roundToInt(),
+                            x = (draggableState.requireOffset() / resistance + Spacing.swipeActionWidth.toPx()).roundToInt(),
                             y = 0,
                         )
                     }
@@ -255,30 +277,65 @@ fun EntryListItem(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 private fun DefaultPreview() {
     AppTheme {
-        Column(Modifier.background(MaterialTheme.colorScheme.surface)) {
-            EntryListItem(
-                entry = defaultFakeEntries[0],
-            )
-            EntryListItem(
-                entry = defaultFakeEntries[1],
-                prevEntry = defaultFakeEntries[0],
-                highlighted = true,
-            )
-            EntryListItem(
-                entry = defaultFakeEntries[2],
-                prevEntry = defaultFakeEntries[1],
-                odd = true,
-            )
-            EntryListItem(
-                entry = defaultFakeEntries[3],
-                prevEntry = defaultFakeEntries[2],
-                selected = true,
-            )
+        LazyColumn(Modifier.background(MaterialTheme.colorScheme.surface)) {
+            item {
+                EntryListItem(
+                    entry = defaultFakeEntries[0],
+                    animationsEnabled = false,
+                    onAddWithSameText = {},
+                    onDelete = {},
+                    onHighlightingFinished = {},
+                    onFocus = {},
+                    onToggle = {},
+                    onUpdate = {},
+                )
+            }
+            item {
+                EntryListItem(
+                    entry = defaultFakeEntries[1],
+                    prevEntry = defaultFakeEntries[0],
+                    highlighted = true,
+                    animationsEnabled = false,
+                    onAddWithSameText = {},
+                    onDelete = {},
+                    onHighlightingFinished = {},
+                    onFocus = {},
+                    onToggle = {},
+                    onUpdate = {},
+                )
+            }
+            item {
+                EntryListItem(
+                    entry = defaultFakeEntries[2],
+                    prevEntry = defaultFakeEntries[1],
+                    odd = true,
+                    animationsEnabled = false,
+                    onAddWithSameText = {},
+                    onDelete = {},
+                    onHighlightingFinished = {},
+                    onFocus = {},
+                    onToggle = {},
+                    onUpdate = {},
+                )
+            }
+            item {
+                EntryListItem(
+                    entry = defaultFakeEntries[3],
+                    prevEntry = defaultFakeEntries[2],
+                    selected = true,
+                    animationsEnabled = false,
+                    onAddWithSameText = {},
+                    onDelete = {},
+                    onHighlightingFinished = {},
+                    onFocus = {},
+                    onToggle = {},
+                    onUpdate = {},
+                )
+            }
         }
     }
 }
