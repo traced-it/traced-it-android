@@ -139,6 +139,7 @@ private fun EntryListScreen(
     val resources = LocalResources.current
 
     val (deleteAllEntriesDialogOpen, setDeleteAllEntriesDialogOpen) = remember { mutableStateOf(false) }
+    var focusedEntry by remember { mutableStateOf<Entry?>(null) }
     var entryDetailAction by remember { mutableStateOf<EntryDetailAction>(EntryDetailAction.Prefill(Entry())) }
     var entryDetailOpen by remember { mutableStateOf(false) }
     val filterFocusRequester = remember { FocusRequester() }
@@ -192,7 +193,7 @@ private fun EntryListScreen(
     }
 
     LaunchedEffect(message) {
-        message?.let { message ->
+        if (message != null) {
             val result = snackbarHostState.showSnackbar(MessageSnackbarVisuals(message))
             when (result) {
                 SnackbarResult.ActionPerformed -> onPerformMessageAction()
@@ -522,6 +523,7 @@ private fun EntryListScreen(
                             highlighted = highlightedEntryUid == entry.uid,
                             odd = index % 2 != 0,
                             selected = selectedEntry == entry,
+                            focused = focusedEntry == entry,
                             animationsEnabled = animationsEnabled,
                             onAddWithSameText = {
                                 entryDetailAction = EntryDetailAction.Prefill(entry)
@@ -535,6 +537,9 @@ private fun EntryListScreen(
                             },
                             onToggle = {
                                 setSelectedEntry(if (entry == selectedEntry) null else entry)
+                            },
+                            onFocus = {
+                                focusedEntry = entry
                             },
                             onUpdate = {
                                 entryDetailAction = EntryDetailAction.Edit(entry)

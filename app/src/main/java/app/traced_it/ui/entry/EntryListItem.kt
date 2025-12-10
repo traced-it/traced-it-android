@@ -17,10 +17,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,12 +38,14 @@ import app.traced_it.data.local.database.Entry
 import app.traced_it.data.local.database.noneUnit
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 private enum class DragValue { Start, Center, End }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, FlowPreview::class)
 @Composable
 fun LazyItemScope.EntryListItem(
     entry: Entry,
@@ -55,12 +54,14 @@ fun LazyItemScope.EntryListItem(
     highlighted: Boolean = false,
     odd: Boolean = false,
     selected: Boolean = false,
+    focused: Boolean = false,
     animationsEnabled: Boolean = true,
-    onToggle: () -> Unit = {},
-    onUpdate: () -> Unit = {},
-    onDelete: () -> Unit = {},
-    onAddWithSameText: () -> Unit = {},
-    onHighlightingFinished: () -> Unit = {},
+    onAddWithSameText: () -> Unit,
+    onDelete: () -> Unit,
+    onHighlightingFinished: () -> Unit,
+    onFocus: () -> Unit,
+    onToggle: () -> Unit,
+    onUpdate: () -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -85,7 +86,7 @@ fun LazyItemScope.EntryListItem(
     // Reduce left action width to make sure no part of it is visible in the initial position due to rounding.
     val leftActionWidthAdjustment = -(1).dp
     val resistance = 2
-    val state = remember {
+    val draggableState = remember {
         AnchoredDraggableState(
             initialValue = DragValue.Center,
             anchors = DraggableAnchors {
@@ -94,6 +95,22 @@ fun LazyItemScope.EntryListItem(
                 DragValue.End at with(density) { Spacing.swipeActionWidth.toPx() * resistance }
             },
         )
+    }
+
+    // Mark the item as focused, when dragged
+    LaunchedEffect(draggableState) {
+        snapshotFlow { draggableState.currentValue }
+            .filter { it != DragValue.Center }
+            .collect {
+                onFocus()
+            }
+    }
+
+    // Reset the item to the center position, when another item gets focused
+    LaunchedEffect(focused) {
+        if (!focused && draggableState.currentValue != DragValue.Center) {
+            draggableState.animateTo(DragValue.Center)
+        }
     }
 
     LaunchedEffect(highlighted) {
@@ -124,14 +141,19 @@ fun LazyItemScope.EntryListItem(
 
     Box(
         (if (animationsEnabled) Modifier.animateItem() else Modifier)
-             .background(containerColor)
-             .clip(RectangleShape),
+            .background(containerColor)
+            .clip(RectangleShape),
     ) {
         Row(
             Modifier
                 .testTag("entryListItem")
                 .background(animatedBackground.value)
-                .clickable { onToggle() }
+                .clickable {
+                    // Mark the item as focused, when selected or deselected
+                    onFocus()
+                    // Select or deselect the item
+                    onToggle()
+                }
                 .fillMaxWidth()
                 .padding(
                     horizontal = Spacing.windowPadding,
@@ -139,15 +161,15 @@ fun LazyItemScope.EntryListItem(
                 )
                 .offset {
                     IntOffset(
-                        x = (state.requireOffset() / resistance).roundToInt(),
+                        x = (draggableState.requireOffset() / resistance).roundToInt(),
                         y = 0,
                     )
                 }
                 .anchoredDraggable(
-                    state,
+                    draggableState,
                     orientation = Orientation.Horizontal,
                     flingBehavior = AnchoredDraggableDefaults.flingBehavior(
-                        state,
+                        draggableState,
                         positionalThreshold = { distance -> distance * 0.5f },
                     ),
                 ),
@@ -198,7 +220,7 @@ fun LazyItemScope.EntryListItem(
             IconButton(
                 {
                     coroutineScope.launch {
-                        state.animateTo(DragValue.Center)
+                        draggableState.animateTo(DragValue.Center)
                     }
                     onUpdate()
                 },
@@ -209,7 +231,7 @@ fun LazyItemScope.EntryListItem(
                     .fillMaxHeight()
                     .offset {
                         IntOffset(
-                            x = (state.requireOffset() / resistance - Spacing.swipeActionWidth.toPx()).roundToInt(),
+                            x = (draggableState.requireOffset() / resistance - Spacing.swipeActionWidth.toPx()).roundToInt(),
                             y = 0,
                         )
                     }
@@ -226,7 +248,7 @@ fun LazyItemScope.EntryListItem(
             IconButton(
                 {
                     coroutineScope.launch {
-                        state.animateTo(DragValue.Center)
+                        draggableState.animateTo(DragValue.Center)
                     }
                     onDelete()
                 },
@@ -237,7 +259,7 @@ fun LazyItemScope.EntryListItem(
                     .fillMaxHeight()
                     .offset {
                         IntOffset(
-                            x = (state.requireOffset() / resistance + Spacing.swipeActionWidth.toPx()).roundToInt(),
+                            x = (draggableState.requireOffset() / resistance + Spacing.swipeActionWidth.toPx()).roundToInt(),
                             y = 0,
                         )
                     }
@@ -264,6 +286,12 @@ private fun DefaultPreview() {
                 EntryListItem(
                     entry = defaultFakeEntries[0],
                     animationsEnabled = false,
+                    onAddWithSameText = {},
+                    onDelete = {},
+                    onHighlightingFinished = {},
+                    onFocus = {},
+                    onToggle = {},
+                    onUpdate = {},
                 )
             }
             item {
@@ -272,6 +300,12 @@ private fun DefaultPreview() {
                     prevEntry = defaultFakeEntries[0],
                     highlighted = true,
                     animationsEnabled = false,
+                    onAddWithSameText = {},
+                    onDelete = {},
+                    onHighlightingFinished = {},
+                    onFocus = {},
+                    onToggle = {},
+                    onUpdate = {},
                 )
             }
             item {
@@ -280,6 +314,12 @@ private fun DefaultPreview() {
                     prevEntry = defaultFakeEntries[1],
                     odd = true,
                     animationsEnabled = false,
+                    onAddWithSameText = {},
+                    onDelete = {},
+                    onHighlightingFinished = {},
+                    onFocus = {},
+                    onToggle = {},
+                    onUpdate = {},
                 )
             }
             item {
@@ -288,6 +328,12 @@ private fun DefaultPreview() {
                     prevEntry = defaultFakeEntries[2],
                     selected = true,
                     animationsEnabled = false,
+                    onAddWithSameText = {},
+                    onDelete = {},
+                    onHighlightingFinished = {},
+                    onFocus = {},
+                    onToggle = {},
+                    onUpdate = {},
                 )
             }
         }
