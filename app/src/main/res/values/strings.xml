@@ -95,4 +95,7 @@
     <string name="list_item_copied_to_clipboard">Copied</string>
     <string name="list_selected_back">Deselect note</string>
     <string name="list_selected_title">Selected note</string>
+    <string name="detail_created_at_label_minute">Minute</string>
+    <string name="detail_created_at_label_hour">Hour</string>
+    <string name="detail_created_at_label_date">Date</string>
 </resources>
