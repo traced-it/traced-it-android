@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -47,9 +48,7 @@ import app.traced_it.ui.components.*
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -77,7 +76,7 @@ fun EntryListScreen(
     val filterExpanded by viewModel.filterExpanded.collectAsStateWithLifecycle()
     val filterQuery by viewModel.filterQuery.collectAsStateWithLifecycle()
     val filteredEntries = viewModel.filteredEntries.collectAsLazyPagingItems()
-    val highlightedEntryUid by viewModel.highlightedEntryUid.collectAsStateWithLifecycle()
+    val highlightedEntryUidFlow = viewModel.highlightedEntryUid
     val latestEntry by viewModel.latestEntry.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
 
@@ -87,7 +86,7 @@ fun EntryListScreen(
         filterQuery = filterQuery,
         filterQuerySanitizedForFilename = viewModel.filterQuerySanitizedForFilename,
         filteredEntries = filteredEntries,
-        highlightedEntryUid = highlightedEntryUid,
+        highlightedEntryUidFlow = highlightedEntryUidFlow,
         latestEntry = latestEntry,
         message = message,
         onDeleteAllEntries = { viewModel.deleteAllEntries(resources) },
@@ -101,7 +100,7 @@ fun EntryListScreen(
         onNavigateToAboutScreen = onNavigateToAboutScreen,
         onPerformMessageAction = { viewModel.performMessageAction() },
         onSetFilterExpanded = { filterExpanded -> viewModel.setFilterExpanded(filterExpanded) },
-        onSetHighlightedEntryUid = { uid -> viewModel.setHighlightedEntryUid(uid) },
+        onUnsetHighlightedEntry = { viewModel.setHighlightedEntryUid(null) },
         onUpdateEntry = { entry -> viewModel.updateEntry(resources, entry) },
     )
 }
@@ -115,7 +114,7 @@ private fun EntryListScreen(
     filterQuery: String,
     filterQuerySanitizedForFilename: String,
     filteredEntries: LazyPagingItems<Entry>,
-    highlightedEntryUid: Int?,
+    highlightedEntryUidFlow: StateFlow<Int?>,
     initialSelectedEntry: Entry? = null,
     latestEntry: Entry?,
     message: Message?,
@@ -130,7 +129,7 @@ private fun EntryListScreen(
     onNavigateToAboutScreen: () -> Unit,
     onPerformMessageAction: () -> Unit,
     onSetFilterExpanded: (filterExpanded: Boolean) -> Unit,
-    onSetHighlightedEntryUid: (uid: Int?) -> Unit,
+    onUnsetHighlightedEntry: () -> Unit,
     onUpdateEntry: (entry: Entry) -> Unit,
 ) {
     val context = LocalContext.current
@@ -139,10 +138,11 @@ private fun EntryListScreen(
     val resources = LocalResources.current
 
     val (deleteAllEntriesDialogOpen, setDeleteAllEntriesDialogOpen) = remember { mutableStateOf(false) }
-    var focusedEntry by remember { mutableStateOf<Entry?>(null) }
     var entryDetailAction by remember { mutableStateOf<EntryDetailAction>(EntryDetailAction.Prefill(Entry())) }
     var entryDetailOpen by remember { mutableStateOf(false) }
     val filterFocusRequester = remember { FocusRequester() }
+    var focusedEntry by remember { mutableStateOf<Entry?>(null) }
+    val highlightedEntryUid by highlightedEntryUidFlow.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     val (selectedEntry, setSelectedEntry) = remember { mutableStateOf(initialSelectedEntry) }
@@ -202,19 +202,34 @@ private fun EntryListScreen(
         }
     }
 
-    // Scroll to the inserted, updated or restored item if it's above the currently visible lazy column items.
+    // Scroll to the inserted, updated or restored item if it's above the currently visible lazy column items
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
-            .map {
-                filteredEntries.itemSnapshotList.indexOfFirst {
-                    it?.uid == highlightedEntryUid
+            .filter { firstVisibleItemIndex -> firstVisibleItemIndex > 0 }
+            .combine(highlightedEntryUidFlow) { firstVisibleItemIndex, highlightedEntryUid ->
+                // To start scrolling only after the list has finished refreshing and the highlighted entry has been
+                // set, we combine firstVisibleItemIndex (emitted when finished refreshing) and highlightedEntryUidFlow
+                // (emitted when highlighted entry set).
+                if (highlightedEntryUid != null) {
+                    val highlightedItemIndex = filteredEntries.itemSnapshotList
+                        .indexOfFirst { entry -> entry?.uid == highlightedEntryUid }
+                    if (highlightedItemIndex in 0..firstVisibleItemIndex) {
+                        highlightedItemIndex
+                    } else {
+                        null
+                    }
+                } else {
+                    null
                 }
             }
-            .filter {
-                it != -1 && it <= listState.firstVisibleItemIndex
-            }
-            .collect {
-                listState.animateScrollToItem(it)
+            .filterNotNull()
+            .collect { highlightedItemIndex ->
+                Log.w(null, "ANIMATE $highlightedItemIndex)")
+                if (!listState.isScrollInProgress) {
+                    listState.animateScrollToItem(highlightedItemIndex)
+                } else {
+                    Log.w(null, "SCROLL IN PROGRESS")
+                }
             }
     }
 
@@ -532,9 +547,6 @@ private fun EntryListScreen(
                             onDelete = {
                                 onDeleteEntry(entry)
                             },
-                            onHighlightingFinished = {
-                                onSetHighlightedEntryUid(null)
-                            },
                             onToggle = {
                                 setSelectedEntry(if (entry == selectedEntry) null else entry)
                             },
@@ -545,6 +557,7 @@ private fun EntryListScreen(
                                 entryDetailAction = EntryDetailAction.Edit(entry)
                                 entryDetailOpen = true
                             },
+                            onUnsetHighlightedEntry = onUnsetHighlightedEntry,
                         )
                     } ?: Row {}
                 }
@@ -616,7 +629,7 @@ private fun DefaultPreview() {
             filterQuery = "",
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
-            highlightedEntryUid = null,
+            highlightedEntryUidFlow = MutableStateFlow(null),
             latestEntry = defaultFakeEntries.first(),
             message = null,
             onDeleteAllEntries = {},
@@ -630,7 +643,7 @@ private fun DefaultPreview() {
             onNavigateToAboutScreen = {},
             onPerformMessageAction = {},
             onSetFilterExpanded = {},
-            onSetHighlightedEntryUid = {},
+            onUnsetHighlightedEntry = {},
             onUpdateEntry = {},
         )
     }
@@ -647,7 +660,7 @@ private fun LightPreview() {
             filterQuery = "",
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
-            highlightedEntryUid = null,
+            highlightedEntryUidFlow = MutableStateFlow(null),
             latestEntry = defaultFakeEntries.first(),
             message = null,
             onDeleteAllEntries = {},
@@ -661,7 +674,7 @@ private fun LightPreview() {
             onNavigateToAboutScreen = {},
             onPerformMessageAction = {},
             onSetFilterExpanded = {},
-            onSetHighlightedEntryUid = {},
+            onUnsetHighlightedEntry = {},
             onUpdateEntry = {},
         )
     }
@@ -678,7 +691,7 @@ private fun FilterPreview() {
             filterQuery = "ee",
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
-            highlightedEntryUid = null,
+            highlightedEntryUidFlow = MutableStateFlow(null),
             latestEntry = defaultFakeEntries.first(),
             message = null,
             onDeleteAllEntries = {},
@@ -692,7 +705,7 @@ private fun FilterPreview() {
             onNavigateToAboutScreen = {},
             onPerformMessageAction = {},
             onSetFilterExpanded = {},
-            onSetHighlightedEntryUid = {},
+            onUnsetHighlightedEntry = {},
             onUpdateEntry = {},
         )
     }
@@ -709,7 +722,7 @@ private fun SelectedEntryPreview() {
             filterQuery = "",
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
-            highlightedEntryUid = null,
+            highlightedEntryUidFlow = MutableStateFlow(null),
             initialSelectedEntry = defaultFakeEntries[2],
             latestEntry = defaultFakeEntries.first(),
             message = null,
@@ -724,7 +737,7 @@ private fun SelectedEntryPreview() {
             onNavigateToAboutScreen = {},
             onPerformMessageAction = {},
             onSetFilterExpanded = {},
-            onSetHighlightedEntryUid = {},
+            onUnsetHighlightedEntry = {},
             onUpdateEntry = {},
         )
     }
@@ -741,7 +754,7 @@ private fun EmptyPreview() {
             filterQuery = "",
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.empty<Entry>()).collectAsLazyPagingItems(),
-            highlightedEntryUid = null,
+            highlightedEntryUidFlow = MutableStateFlow(null),
             latestEntry = defaultFakeEntries.first(),
             message = null,
             onDeleteAllEntries = {},
@@ -755,7 +768,7 @@ private fun EmptyPreview() {
             onNavigateToAboutScreen = {},
             onPerformMessageAction = {},
             onSetFilterExpanded = {},
-            onSetHighlightedEntryUid = {},
+            onUnsetHighlightedEntry = {},
             onUpdateEntry = {},
         )
     }
@@ -772,7 +785,7 @@ private fun TabletPreview() {
             filterQuery = "",
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
-            highlightedEntryUid = null,
+            highlightedEntryUidFlow = MutableStateFlow(null),
             latestEntry = defaultFakeEntries.first(),
             message = null,
             onDeleteAllEntries = {},
@@ -786,7 +799,7 @@ private fun TabletPreview() {
             onNavigateToAboutScreen = {},
             onPerformMessageAction = {},
             onSetFilterExpanded = {},
-            onSetHighlightedEntryUid = {},
+            onUnsetHighlightedEntry = {},
             onUpdateEntry = {},
         )
     }

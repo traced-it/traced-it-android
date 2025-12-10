@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
@@ -58,9 +59,9 @@ fun LazyItemScope.EntryListItem(
     animationsEnabled: Boolean = true,
     onAddWithSameText: () -> Unit,
     onDelete: () -> Unit,
-    onHighlightingFinished: () -> Unit,
     onFocus: () -> Unit,
     onToggle: () -> Unit,
+    onUnsetHighlightedEntry: () -> Unit,
     onUpdate: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -123,7 +124,7 @@ fun LazyItemScope.EntryListItem(
                 Color.Transparent,
                 tween(1000, easing = LinearEasing),
             )
-            onHighlightingFinished()
+            onUnsetHighlightedEntry()
         }
     }
 
@@ -147,7 +148,9 @@ fun LazyItemScope.EntryListItem(
         Row(
             Modifier
                 .testTag("entryListItem")
-                .background(animatedBackground.value)
+                .drawBehind {
+                    drawRect(animatedBackground.value)
+                }
                 .clickable {
                     // Mark the item as focused, when selected or deselected
                     onFocus()
@@ -288,7 +291,7 @@ private fun DefaultPreview() {
                     animationsEnabled = false,
                     onAddWithSameText = {},
                     onDelete = {},
-                    onHighlightingFinished = {},
+                    onUnsetHighlightedEntry = {},
                     onFocus = {},
                     onToggle = {},
                     onUpdate = {},
@@ -302,7 +305,7 @@ private fun DefaultPreview() {
                     animationsEnabled = false,
                     onAddWithSameText = {},
                     onDelete = {},
-                    onHighlightingFinished = {},
+                    onUnsetHighlightedEntry = {},
                     onFocus = {},
                     onToggle = {},
                     onUpdate = {},
@@ -316,7 +319,7 @@ private fun DefaultPreview() {
                     animationsEnabled = false,
                     onAddWithSameText = {},
                     onDelete = {},
-                    onHighlightingFinished = {},
+                    onUnsetHighlightedEntry = {},
                     onFocus = {},
                     onToggle = {},
                     onUpdate = {},
@@ -330,7 +333,7 @@ private fun DefaultPreview() {
                     animationsEnabled = false,
                     onAddWithSameText = {},
                     onDelete = {},
-                    onHighlightingFinished = {},
+                    onUnsetHighlightedEntry = {},
                     onFocus = {},
                     onToggle = {},
                     onUpdate = {},
