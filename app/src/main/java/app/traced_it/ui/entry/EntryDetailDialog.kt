@@ -152,8 +152,8 @@ fun EntryDetailDialog(
                     },
                 )
                 TracedTimePicker(
-                    value = System.currentTimeMillis(), // TODO
-                    onValueChange = {}, // TODO
+                    value = System.currentTimeMillis(), // TODO Set time picker initial value to entry value when editing
+                    onValueChange = {}, // TODO Change entry createdAt when time picker value changes
                     modifier = Modifier.padding(top = Spacing.medium * 2),
                 )
             }
