@@ -8,6 +8,8 @@
     <string name="detail_update_save">Update</string>
     <string name="detail_add_save">Save</string>
     <string name="detail_content_label">Write your note</string>
+    <string name="detail_created_at_label">Timestamp</string>
+    <string name="detail_created_at_today">today</string>
     <string name="list_item_update">Update</string>
     <string name="list_item_delete">Delete</string>
     <string name="list_menu">Menu</string>
@@ -95,8 +97,4 @@
     <string name="list_item_copied_to_clipboard">Copied</string>
     <string name="list_selected_back">Deselect note</string>
     <string name="list_selected_title">Selected note</string>
-    <string name="detail_created_at_label_minute">Minute</string>
-    <string name="detail_created_at_label_hour">Hour</string>
-    <string name="detail_created_at_label_date">Date</string>
-    <string name="detail_created_at_today">today</string>
 </resources>

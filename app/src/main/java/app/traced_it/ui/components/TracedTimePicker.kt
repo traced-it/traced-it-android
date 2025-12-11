@@ -13,15 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -31,44 +27,11 @@ import androidx.compose.ui.unit.times
 import app.traced_it.R
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
+import kotlinx.coroutines.flow.drop
 import java.util.*
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.time.ExperimentalTime
-
-fun Modifier.verticalFade(): Modifier = this.then(
-    Modifier
-        .graphicsLayer { alpha = 0.99f }
-        .drawWithContent {
-            drawContent()
-            drawRect(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color.Transparent,
-                        Color.White,
-                        Color.Transparent,
-                    ),
-                    startY = 0f,
-                    endY = size.height,
-                ),
-                blendMode = BlendMode.DstIn,
-            )
-        }
-)
-
-fun Modifier.rightBorder(
-    color: Color,
-    width: Dp,
-) = this.then(
-    Modifier.drawBehind {
-        drawLine(
-            color = color,
-            start = Offset(x = size.width, y = 0f),
-            end = Offset(x = size.width, y = size.height),
-            strokeWidth = width.toPx(),
-        )
-    }
-)
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -79,9 +42,10 @@ fun TracedTimePicker(
 ) {
     val context = LocalContext.current
 
+    val height = Spacing.inputHeight * 1.25f
+    val optionHeightFraction = 0.3f
     val borderColor = MaterialTheme.colorScheme.outline
     val borderWidth = 1.dp
-    val optionSize = Spacing.inputHeight / 3
     val dateWeight = 3f
     val hourWeight = 1f
     val minuteWeight = 1f
@@ -104,7 +68,11 @@ fun TracedTimePicker(
                 calendar.get(Calendar.MONTH) + 1,
                 calendar.get(Calendar.DAY_OF_MONTH),
             )
-            val text = DateUtils.formatDateTime(context, calendar.timeInMillis, DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE)
+            val text = DateUtils.formatDateTime(
+                context,
+                calendar.timeInMillis,
+                DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE
+            )
             add(0, value to @Composable { text })
         }
         calendar.add(Calendar.DAY_OF_MONTH, daysSize - 1)
@@ -121,32 +89,19 @@ fun TracedTimePicker(
             .fillMaxWidth()
             .padding(horizontal = Spacing.windowPadding)
     ) {
-        Row(Modifier.padding(bottom = Spacing.small)) {
-            Text(
-                stringResource(R.string.detail_created_at_label_date),
-                Modifier.weight(dateWeight),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Text(
-                stringResource(R.string.detail_created_at_label_hour),
-                Modifier.weight(hourWeight),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Text(
-                stringResource(R.string.detail_created_at_label_minute),
-                Modifier.weight(minuteWeight),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
+        Text(
+            stringResource(R.string.detail_created_at_label),
+            Modifier.padding(bottom = Spacing.small),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
+        )
         Surface(
             color = MaterialTheme.colorScheme.secondaryContainer,
+            shape = MaterialTheme.shapes.extraSmall,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             border = BorderStroke(width = borderWidth, color = MaterialTheme.colorScheme.outline),
         ) {
-            Row(Modifier.height(Spacing.inputHeight)) {
+            Row(Modifier.height(height)) {
                 TracedTimePickerSegment(
                     options = dateOptions,
                     initialValue = initialDate,
@@ -157,7 +112,8 @@ fun TracedTimePicker(
                     modifier = Modifier.weight(dateWeight),
                     borderWidth = borderWidth,
                     borderColor = borderColor,
-                    optionSize = optionSize,
+                    height = height,
+                    optionHeightFraction = optionHeightFraction,
                 )
                 TracedTimePickerSegment(
                     options = hourOptions,
@@ -169,7 +125,8 @@ fun TracedTimePicker(
                     modifier = Modifier.weight(hourWeight),
                     borderWidth = borderWidth,
                     borderColor = borderColor,
-                    optionSize = optionSize,
+                    height = height,
+                    optionHeightFraction = optionHeightFraction,
                 )
                 TracedTimePickerSegment(
                     options = minuteOptions,
@@ -181,7 +138,8 @@ fun TracedTimePicker(
                     modifier = Modifier.weight(minuteWeight),
                     borderWidth = borderWidth,
                     borderColor = borderColor,
-                    optionSize = optionSize,
+                    height = height,
+                    optionHeightFraction = optionHeightFraction,
                     last = true,
                 )
             }
@@ -197,24 +155,31 @@ private fun <T : Any> TracedTimePickerSegment(
     modifier: Modifier = Modifier,
     borderColor: Color,
     borderWidth: Dp,
-    optionSize: Dp,
+    height: Dp,
+    optionHeightFraction: Float,
     last: Boolean = false,
 ) {
     val density = LocalDensity.current
+    val hapticFeedback = LocalHapticFeedback.current
+    val resistance = 2
+    val optionHeight = height * optionHeightFraction
+    val optionHeightPx = with(density) { height.toPx() * optionHeightFraction }
+
     val draggableState = remember {
         AnchoredDraggableState(
             initialValue = initialValue,
             anchors = DraggableAnchors {
                 options.forEachIndexed { i, (value) ->
-                    value at i * (with(density) { -optionSize.toPx() })
+                    value at i * -optionHeightPx * resistance
                 }
             },
         )
     }
 
-    val contentHeight = options.size * optionSize
-
     LaunchedEffect(draggableState) {
+        snapshotFlow { draggableState.currentValue }
+            .drop(1)
+            .collect { hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick) }
         snapshotFlow { draggableState.settledValue }
             .collect { onValueChange(it) }
     }
@@ -234,15 +199,15 @@ private fun <T : Any> TracedTimePickerSegment(
         Column(
             Modifier
                 .fillMaxWidth()
-                .requiredHeight(contentHeight)
+                .requiredHeight(options.size * optionHeight)
                 .offset(
                     // The column is vertically centered inside the box by default, which we need to compensate here
-                    y = (contentHeight - optionSize) / 2
+                    y = (options.size - 1) * optionHeight / 2
                 )
                 .offset {
                     IntOffset(
                         x = 0,
-                        y = draggableState.requireOffset().roundToInt(),
+                        y = (draggableState.requireOffset() / resistance).roundToInt(),
                     )
                 }
                 .anchoredDraggable(
@@ -258,7 +223,7 @@ private fun <T : Any> TracedTimePickerSegment(
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .height(optionSize),
+                        .height(optionHeight),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text())
