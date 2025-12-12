@@ -1,3 +1,5 @@
+- Added the option to set and edit note time.
+- Changed default note time from the time the new note screen was saved to the time when the screen was open.
 - Removed the confirmation when deleting a single note; you can use the undo button.
 - Improved the add/edit note screen to focus the text field automatically.
 - Improved scrolling to added/edited/restored note.
