@@ -1,24 +1,25 @@
 package app.traced_it.ui.components
 
 import android.text.format.DateUtils
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -26,7 +27,9 @@ import app.traced_it.R
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.roundToInt
 import kotlin.time.ExperimentalTime
@@ -34,12 +37,12 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @Composable
 fun TracedTimePicker(
-    value: Long,
+    initialValue: Long,
     onValueChange: (value: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // TODO Advance time picker every minute automatically unless user changes the value
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     val height = Spacing.inputHeight * 1.25f
     val borderColor = MaterialTheme.colorScheme.outline
@@ -49,14 +52,14 @@ fun TracedTimePicker(
     val minuteWeight = 1f
     val daysSize = 31 // TODO Replace with infinite lazy list
 
-    val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply { time = Date(value) }
+    val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply { time = Date(initialValue) }
     val initialDate = Triple(
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH) + 1,
         calendar.get(Calendar.DAY_OF_MONTH),
     )
-    val initialHour = calendar.get(Calendar.HOUR_OF_DAY).coerceAtMost(23)
-    val initialMinute = calendar.get(Calendar.MINUTE).coerceAtMost(59)
+    val initialHour = calendar.get(Calendar.HOUR_OF_DAY)
+    val initialMinute = calendar.get(Calendar.MINUTE)
     val dateItems = buildList {
         add(initialDate to @Composable { stringResource(R.string.detail_created_at_today) })
         repeat(daysSize - 1) {
@@ -82,60 +85,111 @@ fun TracedTimePicker(
         minute to @Composable { minute.toString().padStart(2, '0') }
     }
 
+    val dateListState = rememberLazyListState(
+        initialFirstVisibleItemIndex = dateItems.indexOfFirst { it.first == initialDate }.coerceAtLeast(0)
+    )
+    val hourListState = rememberLazyListState(
+        initialFirstVisibleItemIndex = hourItems.indexOfFirst { it.first == initialHour }.coerceAtLeast(0)
+    )
+    val minuteListState = rememberLazyListState(
+        initialFirstVisibleItemIndex = minuteItems.indexOfFirst { it.first == initialMinute }.coerceAtLeast(0)
+    )
+
     Column(
         modifier
             .fillMaxWidth()
             .padding(horizontal = Spacing.windowPadding)
     ) {
-        Text(
-            stringResource(R.string.detail_created_at_label),
-            Modifier.padding(bottom = Spacing.small),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                stringResource(R.string.detail_created_at_label),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            TextButton(
+                onClick = {
+                    coroutineScope.launch {
+                        calendar.time = Date()
+                        val currentDate = Triple(
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH) + 1,
+                            calendar.get(Calendar.DAY_OF_MONTH),
+                        )
+                        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+                        val currentMinute = calendar.get(Calendar.MINUTE)
+
+                        val dateItemIndex = dateItems.indexOfFirst { it.first == currentDate }.coerceAtLeast(0)
+                        val hourItemIndex = hourItems.indexOfFirst { it.first == currentHour }.coerceAtLeast(0)
+                        val minuteItemIndex = minuteItems.indexOfFirst { it.first == currentMinute }.coerceAtLeast(0)
+                        Log.w(null, "currentDate=$currentDate, dateItemIndex=$dateItemIndex")
+                        Log.w(null, "currentHour=$currentHour, dateItemIndex=$hourItemIndex")
+                        Log.w(null, "currentMinute=$currentMinute, dateItemIndex=$minuteItemIndex")
+
+                        dateListState.animateScrollToItem(
+                            dateItems.indexOfFirst { it.first == currentDate }.coerceAtLeast(0)
+                        )
+                        hourListState.animateScrollToItem(
+                            hourItems.indexOfFirst { it.first == currentHour }.coerceAtLeast(0)
+                        )
+                        minuteListState.animateScrollToItem(
+                            minuteItems.indexOfFirst { it.first == currentMinute }.coerceAtLeast(0)
+                        )
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+            ) {
+                Text(
+                    stringResource(R.string.detail_created_at_reset),
+                    fontWeight = FontWeight.Normal,
+                )
+            }
+        }
         Surface(
             color = MaterialTheme.colorScheme.secondaryContainer,
             shape = MaterialTheme.shapes.extraSmall,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             border = BorderStroke(width = borderWidth, color = MaterialTheme.colorScheme.outline),
         ) {
-            Row(Modifier.height(height)) {
+            Row {
                 TracedTimePickerSegment(
+                    listState = dateListState,
                     items = dateItems,
-                    initialValue = initialDate,
                     onValueChange = { (year, month, date) ->
-                        calendar.set(year, month, date)
+                        calendar.set(year, month - 1, date) // FIXME Date is saved wrong
                         onValueChange(calendar.timeInMillis)
                     },
-                    borderWidth = borderWidth,
-                    borderColor = borderColor,
                     height = height,
-                    modifier = Modifier.weight(dateWeight),
+                    modifier = Modifier
+                        .weight(dateWeight)
+                        .rightBorder(borderColor, borderWidth),
                 )
                 TracedTimePickerSegment(
+                    listState = hourListState,
                     items = hourItems,
-                    initialValue = initialHour,
                     onValueChange = { hour ->
                         calendar.set(Calendar.HOUR, hour)
                         onValueChange(calendar.timeInMillis)
                     },
-                    borderWidth = borderWidth,
-                    borderColor = borderColor,
                     height = height,
-                    modifier = Modifier.weight(hourWeight),
+                    modifier = Modifier
+                        .weight(hourWeight)
+                        .rightBorder(borderColor, borderWidth),
                 )
                 TracedTimePickerSegment(
+                    listState = minuteListState,
                     items = minuteItems,
-                    initialValue = initialMinute,
                     onValueChange = { minute ->
                         calendar.set(Calendar.MINUTE, minute)
                         onValueChange(calendar.timeInMillis)
                     },
-                    borderWidth = borderWidth,
-                    borderColor = borderColor,
                     height = height,
                     modifier = Modifier.weight(minuteWeight),
-                    last = true,
                 )
             }
         }
@@ -145,23 +199,27 @@ fun TracedTimePicker(
 @OptIn(FlowPreview::class)
 @Composable
 private fun <T : Any> TracedTimePickerSegment(
+    listState: LazyListState,
     items: List<Pair<T, @Composable () -> String>>,
-    initialValue: T,
     onValueChange: (value: T) -> Unit,
-    borderColor: Color,
-    borderWidth: Dp,
     height: Dp,
     modifier: Modifier = Modifier,
-    last: Boolean = false,
 ) {
     val density = LocalDensity.current
     val hapticFeedback = LocalHapticFeedback.current
     val optionHeight = height * 0.333f
     val optionHeightPx = with(density) { optionHeight.toPx() }
 
-    val listState = rememberLazyListState(
-        initialFirstVisibleItemIndex = items.indexOfFirst { (value) -> value == initialValue }.coerceAtLeast(0)
-    )
+    // Call onValueChange()
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .drop(1) // Don't call onValueChange() when the composable is first rendered
+            .collect { firstVisibleItemIndex ->
+                items.getOrNull(firstVisibleItemIndex)?.let { (value) ->
+                    onValueChange(value)
+                }
+            }
+    }
 
     // Snap to nearest item when scrolling stops
     LaunchedEffect(listState) {
@@ -170,9 +228,6 @@ private fun <T : Any> TracedTimePickerSegment(
             .collect {
                 val nearestItemIndex = listState.firstVisibleItemIndex +
                     (listState.firstVisibleItemScrollOffset / optionHeightPx).roundToInt()
-                items.getOrNull(nearestItemIndex)?.let { (value) ->
-                    onValueChange(value)
-                }
                 try {
                     listState.animateScrollToItem(nearestItemIndex)
                 } catch (_: Exception) {
@@ -191,16 +246,10 @@ private fun <T : Any> TracedTimePickerSegment(
     }
 
     LazyColumn(
-        modifier = modifier
-            .fillMaxHeight()
+        modifier = Modifier
+            .height(height)
             .verticalFade()
-            .run {
-                if (!last) {
-                    rightBorder(borderColor, borderWidth)
-                } else {
-                    this
-                }
-            },
+            .then(modifier),
         state = listState,
     ) {
         item(-1) {
@@ -231,7 +280,7 @@ private fun DefaultPreview() {
     AppTheme {
         Surface {
             TracedTimePicker(
-                value = System.currentTimeMillis(),
+                initialValue = System.currentTimeMillis(),
                 onValueChange = {},
             )
         }

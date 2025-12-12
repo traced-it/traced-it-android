@@ -1,6 +1,7 @@
 package app.traced_it.ui.entry
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,10 +39,10 @@ sealed class EntryDetailAction(val entry: Entry) {
 @Composable
 fun EntryDetailDialog(
     action: EntryDetailAction,
-    latestEntryUnit: EntryUnit? = null,
-    onInsert: (Entry) -> Unit = {},
-    onUpdate: (Entry) -> Unit = {},
-    onDismiss: () -> Unit = {},
+    latestEntryUnit: EntryUnit?,
+    onInsert: (Entry) -> Unit,
+    onUpdate: (Entry) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     val resources = LocalResources.current
 
@@ -54,6 +55,7 @@ fun EntryDetailDialog(
         )
     }
     val contentFocusRequester = remember { FocusRequester() }
+    var createdAt by remember { mutableStateOf<Long?>(null) }
     var unit by remember {
         mutableStateOf(
             if (action.entry.amountUnit in visibleUnits) {
@@ -152,8 +154,8 @@ fun EntryDetailDialog(
                     },
                 )
                 TracedTimePicker(
-                    value = System.currentTimeMillis(), // TODO Set time picker initial value to entry value when editing
-                    onValueChange = {}, // TODO Change entry createdAt when time picker value changes
+                    initialValue = action.entry.createdAt,
+                    onValueChange = { createdAt = it },
                     modifier = Modifier.padding(top = Spacing.medium * 2),
                 )
             }
@@ -174,6 +176,7 @@ fun EntryDetailDialog(
                                 amount = amount,
                                 amountUnit = unit,
                                 content = contentFieldValue.text,
+                                createdAt = createdAt ?: action.entry.createdAt,
                             )
                         )
                     } else {
@@ -182,6 +185,7 @@ fun EntryDetailDialog(
                                 amount = amount,
                                 amountUnit = unit,
                                 content = contentFieldValue.text,
+                                createdAt = createdAt ?: action.entry.createdAt,
                             )
                         )
                     }
@@ -199,7 +203,13 @@ fun EntryDetailDialog(
 @Composable
 private fun DefaultPreview() {
     AppTheme {
-        EntryDetailDialog(EntryDetailAction.Prefill(Entry()))
+        EntryDetailDialog(
+            action = EntryDetailAction.Prefill(Entry()),
+            latestEntryUnit = null,
+            onInsert = {},
+            onUpdate = {},
+            onDismiss = {},
+        )
     }
 }
 
@@ -207,7 +217,13 @@ private fun DefaultPreview() {
 @Composable
 private fun LightPreview() {
     AppTheme {
-        EntryDetailDialog(EntryDetailAction.Prefill(Entry()))
+        EntryDetailDialog(
+            action = EntryDetailAction.Prefill(Entry()),
+            latestEntryUnit = null,
+            onInsert = {},
+            onUpdate = {},
+            onDismiss = {},
+        )
     }
 }
 
@@ -215,7 +231,13 @@ private fun LightPreview() {
 @Composable
 private fun PrefilledPreview() {
     AppTheme {
-        EntryDetailDialog(EntryDetailAction.Prefill(defaultFakeEntries[0]))
+        EntryDetailDialog(
+            action = EntryDetailAction.Prefill(defaultFakeEntries[0]),
+            latestEntryUnit = null,
+            onInsert = {},
+            onUpdate = {},
+            onDismiss = {},
+        )
     }
 }
 
@@ -223,7 +245,13 @@ private fun PrefilledPreview() {
 @Composable
 private fun EditPreview() {
     AppTheme {
-        EntryDetailDialog(EntryDetailAction.Edit(defaultFakeEntries[0]))
+        EntryDetailDialog(
+            action = EntryDetailAction.Edit(defaultFakeEntries[0]),
+            latestEntryUnit = null,
+            onInsert = {},
+            onUpdate = {},
+            onDismiss = {},
+        )
     }
 }
 
@@ -232,13 +260,17 @@ private fun EditPreview() {
 private fun InvisibleUnitPreview() {
     AppTheme {
         EntryDetailDialog(
-            EntryDetailAction.Edit(
+            action = EntryDetailAction.Edit(
                 Entry(
                     content = "Small numbers choice",
                     amount = 2.0,
                     amountUnit = smallNumbersChoiceUnit,
                 )
-            )
+            ),
+            latestEntryUnit = null,
+            onInsert = {},
+            onUpdate = {},
+            onDismiss = {},
         )
     }
 }
@@ -252,6 +284,12 @@ private fun InvisibleUnitPreview() {
 @Composable
 private fun PortraitPreview() {
     AppTheme {
-        EntryDetailDialog(EntryDetailAction.Prefill(defaultFakeEntries[0]))
+        EntryDetailDialog(
+            action = EntryDetailAction.Prefill(defaultFakeEntries[0]),
+            latestEntryUnit = null,
+            onInsert = {},
+            onUpdate = {},
+            onDismiss = {},
+        )
     }
 }
