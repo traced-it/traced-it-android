@@ -121,23 +121,21 @@ fun TracedTimePicker(
                         )
                         val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
                         val currentMinute = calendar.get(Calendar.MINUTE)
-
-                        val dateItemIndex = dateItems.indexOfFirst { it.first == currentDate }.coerceAtLeast(0)
-                        val hourItemIndex = hourItems.indexOfFirst { it.first == currentHour }.coerceAtLeast(0)
-                        val minuteItemIndex = minuteItems.indexOfFirst { it.first == currentMinute }.coerceAtLeast(0)
-                        Log.w(null, "currentDate=$currentDate, dateItemIndex=$dateItemIndex")
-                        Log.w(null, "currentHour=$currentHour, dateItemIndex=$hourItemIndex")
-                        Log.w(null, "currentMinute=$currentMinute, dateItemIndex=$minuteItemIndex")
-
-                        dateListState.animateScrollToItem(
-                            dateItems.indexOfFirst { it.first == currentDate }.coerceAtLeast(0)
-                        )
-                        hourListState.animateScrollToItem(
-                            hourItems.indexOfFirst { it.first == currentHour }.coerceAtLeast(0)
-                        )
-                        minuteListState.animateScrollToItem(
-                            minuteItems.indexOfFirst { it.first == currentMinute }.coerceAtLeast(0)
-                        )
+                        launch {
+                            dateListState.animateScrollToItem(
+                                dateItems.indexOfFirst { it.first == currentDate }.coerceAtLeast(0)
+                            )
+                        }
+                        launch {
+                            hourListState.animateScrollToItem(
+                                hourItems.indexOfFirst { it.first == currentHour }.coerceAtLeast(0)
+                            )
+                        }
+                        launch {
+                            minuteListState.animateScrollToItem(
+                                minuteItems.indexOfFirst { it.first == currentMinute }.coerceAtLeast(0)
+                            )
+                        }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
