@@ -8,10 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -23,6 +20,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import app.traced_it.R
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
@@ -34,6 +37,80 @@ import java.util.*
 import kotlin.math.roundToInt
 import kotlin.time.ExperimentalTime
 
+private data class Day(val year: Int, val month: Int, val date: Int)
+
+private var Calendar.day
+    get() = Day(this.get(Calendar.YEAR), this.get(Calendar.MONTH), this.get(Calendar.DATE))
+    set(day) {
+        this.set(day.year, day.month, day.date)
+    }
+
+private var Calendar.hour
+    get() = this.get(Calendar.HOUR_OF_DAY)
+    set(hour) {
+        this.set(Calendar.HOUR_OF_DAY, hour)
+    }
+
+private var Calendar.minute
+    get() = this.get(Calendar.MINUTE)
+    set(minute) {
+        this.set(Calendar.MINUTE, minute)
+    }
+
+private fun Calendar.addDays(days: Int) {
+    this.add(Calendar.DATE, days)
+}
+
+private class DayPagingSource(val initialValue: Day) : PagingSource<Int, Day>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Day> {
+        (params.key ?: 0).let { pageNumber ->
+            val data = buildList {
+                val calendar = GregorianCalendar.getInstance(TimeZone.getDefault())
+                calendar.day = initialValue
+                calendar.addDays(pageNumber * params.loadSize)
+                add(calendar.day)
+                repeat(params.loadSize - 1) {
+                    calendar.addDays(1)
+                    add(calendar.day)
+                }
+            }
+            Log.i(null, "DayPagingSource(initialValue=$initialValue).load(pageNumber=$pageNumber, loadSize=${params.loadSize}) -> $data")
+            return LoadResult.Page(
+                data = data,
+                prevKey = pageNumber - 1,
+                nextKey = pageNumber + 1,
+            )
+        }
+    }
+
+    override fun getRefreshKey(state: PagingState<Int, Day>): Int? =
+        state.anchorPosition?.let {
+            state.closestPageToPosition(it)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
+        }
+}
+
+private class RangePagingSource(val from: Int, val to: Int, val initialValue: Int) : PagingSource<Int, Int>() {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Int> =
+        (params.key ?: 0).let { pageNumber ->
+            val rangeSize = (to - from + 1)
+            val firstNumber = initialValue + pageNumber * params.loadSize
+            val data = (0..<params.loadSize).map { i -> (firstNumber + i).mod(rangeSize) }
+            Log.i(null, "RangePagingSource(from=$from, to=$to, initialValue=$initialValue).load(pageNumber=$pageNumber, loadSize=${params.loadSize}) -> $data")
+            LoadResult.Page(
+                data = data,
+                prevKey = pageNumber - 1,
+                nextKey = pageNumber + 1,
+            )
+        }
+
+    override fun getRefreshKey(state: PagingState<Int, Int>): Int? =
+        state.anchorPosition?.let {
+            state.closestPageToPosition(it)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
+        }
+}
+
 @OptIn(ExperimentalTime::class)
 @Composable
 fun TracedTimePicker(
@@ -41,59 +118,38 @@ fun TracedTimePicker(
     onValueChange: (value: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
     val height = Spacing.inputHeight * 1.25f
     val borderColor = MaterialTheme.colorScheme.outline
     val borderWidth = 1.dp
-    val dateWeight = 3f
+    val dayWeight = 3f
     val hourWeight = 1f
     val minuteWeight = 1f
-    val daysSize = 31 // TODO Replace with infinite lazy list
 
-    val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply { time = Date(initialValue) }
-    val initialDate = Triple(
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH) + 1,
-        calendar.get(Calendar.DAY_OF_MONTH),
-    )
-    val initialHour = calendar.get(Calendar.HOUR_OF_DAY)
-    val initialMinute = calendar.get(Calendar.MINUTE)
-    val dateItems = buildList {
-        add(initialDate to @Composable { stringResource(R.string.detail_created_at_today) })
-        repeat(daysSize - 1) {
-            calendar.add(Calendar.DAY_OF_MONTH, -1)
-            val value = Triple(
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.DAY_OF_MONTH),
-            )
-            val text = DateUtils.formatDateTime(
-                context,
-                calendar.timeInMillis,
-                DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE
-            )
-            add(0, value to @Composable { text })
-        }
-        calendar.add(Calendar.DAY_OF_MONTH, daysSize - 1)
-    }
-    val hourItems = (0..23).map { hour ->
-        hour to @Composable { hour.toString().padStart(2, '0') }
-    }
-    val minuteItems = (0..59).map { minute ->
-        minute to @Composable { minute.toString().padStart(2, '0') }
+    val initialCalendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply { time = Date(initialValue) }
+    var day by remember { mutableStateOf(initialCalendar.day) }
+    var hour by remember { mutableStateOf(initialCalendar.hour) }
+    var minute by remember { mutableStateOf(initialCalendar.minute) }
+    val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply {
+        this.time = Date(initialValue)
+        this.day = day
+        this.hour = hour
+        this.minute = minute
     }
 
-    val dateListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = dateItems.indexOfFirst { it.first == initialDate }.coerceAtLeast(0)
-    )
-    val hourListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = hourItems.indexOfFirst { it.first == initialHour }.coerceAtLeast(0)
-    )
-    val minuteListState = rememberLazyListState(
-        initialFirstVisibleItemIndex = minuteItems.indexOfFirst { it.first == initialMinute }.coerceAtLeast(0)
-    )
+    val days = Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
+        DayPagingSource(day)
+    }.flow.collectAsLazyPagingItems()
+    val hours = Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
+        RangePagingSource(0, 23, hour)
+    }.flow.collectAsLazyPagingItems()
+    val minutes = Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
+        RangePagingSource(0, 59, minute)
+    }.flow.collectAsLazyPagingItems()
+    val dayListState = rememberLazyListState()
+    val hourListState = rememberLazyListState()
+    val minuteListState = rememberLazyListState()
 
     Column(
         modifier
@@ -113,29 +169,12 @@ fun TracedTimePicker(
             TextButton(
                 onClick = {
                     coroutineScope.launch {
-                        calendar.time = Date()
-                        val currentDate = Triple(
-                            calendar.get(Calendar.YEAR),
-                            calendar.get(Calendar.MONTH) + 1,
-                            calendar.get(Calendar.DAY_OF_MONTH),
-                        )
-                        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-                        val currentMinute = calendar.get(Calendar.MINUTE)
-                        launch {
-                            dateListState.animateScrollToItem(
-                                dateItems.indexOfFirst { it.first == currentDate }.coerceAtLeast(0)
-                            )
-                        }
-                        launch {
-                            hourListState.animateScrollToItem(
-                                hourItems.indexOfFirst { it.first == currentHour }.coerceAtLeast(0)
-                            )
-                        }
-                        launch {
-                            minuteListState.animateScrollToItem(
-                                minuteItems.indexOfFirst { it.first == currentMinute }.coerceAtLeast(0)
-                            )
-                        }
+                        day = initialCalendar.day
+                        hour = initialCalendar.hour
+                        minute = initialCalendar.minute
+                        launch { dayListState.animateScrollToItem(0) }
+                        launch { hourListState.animateScrollToItem(0) }
+                        launch { minuteListState.animateScrollToItem(0) }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -156,20 +195,31 @@ fun TracedTimePicker(
         ) {
             Row {
                 TracedTimePickerSegment(
-                    listState = dateListState,
-                    items = dateItems,
-                    onValueChange = { (year, month, date) ->
-                        calendar.set(year, month - 1, date) // FIXME Date is saved wrong
+                    listState = dayListState,
+                    items = days,
+                    onValueChange = {
+                        day = it
                         onValueChange(calendar.timeInMillis)
                     },
                     height = height,
                     modifier = Modifier
-                        .weight(dateWeight)
+                        .weight(dayWeight)
                         .rightBorder(borderColor, borderWidth),
-                )
+                ) { index, day ->
+                    if (index == 0) {
+                        stringResource(R.string.detail_created_at_today)
+                    } else {
+                        val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply { this.day = day }
+                        DateUtils.formatDateTime(
+                            LocalContext.current,
+                            calendar.timeInMillis,
+                            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
+                        )
+                    }
+                }
                 TracedTimePickerSegment(
                     listState = hourListState,
-                    items = hourItems,
+                    items = hours,
                     onValueChange = { hour ->
                         calendar.set(Calendar.HOUR, hour)
                         onValueChange(calendar.timeInMillis)
@@ -178,17 +228,21 @@ fun TracedTimePicker(
                     modifier = Modifier
                         .weight(hourWeight)
                         .rightBorder(borderColor, borderWidth),
-                )
+                ) { _, hour ->
+                    hour.toString().padStart(2, '0')
+                }
                 TracedTimePickerSegment(
                     listState = minuteListState,
-                    items = minuteItems,
+                    items = minutes,
                     onValueChange = { minute ->
                         calendar.set(Calendar.MINUTE, minute)
                         onValueChange(calendar.timeInMillis)
                     },
                     height = height,
                     modifier = Modifier.weight(minuteWeight),
-                )
+                ) { _, minute ->
+                    minute.toString().padStart(2, '0')
+                }
             }
         }
     }
@@ -198,10 +252,11 @@ fun TracedTimePicker(
 @Composable
 private fun <T : Any> TracedTimePickerSegment(
     listState: LazyListState,
-    items: List<Pair<T, @Composable () -> String>>,
+    items: LazyPagingItems<T>,
     onValueChange: (value: T) -> Unit,
     height: Dp,
     modifier: Modifier = Modifier,
+    text: @Composable (index: Int, value: T) -> String,
 ) {
     val density = LocalDensity.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -213,7 +268,7 @@ private fun <T : Any> TracedTimePickerSegment(
         snapshotFlow { listState.firstVisibleItemIndex }
             .drop(1) // Don't call onValueChange() when the composable is first rendered
             .collect { firstVisibleItemIndex ->
-                items.getOrNull(firstVisibleItemIndex)?.let { (value) ->
+                items[firstVisibleItemIndex]?.let { value ->
                     onValueChange(value)
                 }
             }
@@ -250,22 +305,21 @@ private fun <T : Any> TracedTimePickerSegment(
             .then(modifier),
         state = listState,
     ) {
-        item(-1) {
-            // Add spacer as the first and last item, so the selected item is in the middle of the box, not at the top
-            Spacer(Modifier.height(optionHeight))
-        }
-        items(items.size, key = { i -> items[i].first }) { i ->
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(optionHeight),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(items[i].second())
-            }
-        }
-        item(items.size + 1) {
-            Spacer(Modifier.height(optionHeight))
+        // FIXME Fix infinite loading from paging source backwards
+        items(
+            items.itemCount,
+            key = { index -> index }
+        ) { index ->
+            items[index]?.let { value ->
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(optionHeight),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text(index, value))
+                }
+            } ?: Box {}
         }
     }
 }
