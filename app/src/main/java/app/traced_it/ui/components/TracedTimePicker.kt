@@ -69,11 +69,12 @@ private class DayPagingSource(val initialValue: Day) : PagingSource<Int, Item<Da
         (params.key ?: 0).let { pageNumber ->
             val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply { day = initialValue }
             calendar.addDays(pageNumber * params.loadSize)
-            val data = (0..<params.loadSize).map { i ->
+            var index = pageNumber * params.loadSize
+            val data = List(params.loadSize) { i ->
                 if (i != 0) {
                     calendar.addDays(1)
                 }
-                Item(index = pageNumber * params.loadSize + i, value = calendar.day)
+                Item(value = calendar.day, index = index++)
             }
             Log.i(
                 null,
@@ -98,9 +99,9 @@ private class RangePagingSource(val from: Int, val to: Int, val initialValue: In
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item<Int>> =
         (params.key ?: 0).let { pageNumber ->
             val rangeSize = (to - from + 1)
-            val firstNumber = initialValue + pageNumber * params.loadSize
-            val data = (0..<params.loadSize).map { i ->
-                Item(index = firstNumber + i, value = (firstNumber + i).mod(rangeSize))
+            var index = pageNumber * params.loadSize
+            val data = List(params.loadSize) {
+                Item(value = (index + initialValue).mod(rangeSize), index = index++)
             }
             Log.i(
                 null,
@@ -136,25 +137,19 @@ fun TracedTimePicker(
     val hourWeight = 1f
     val minuteWeight = 1f
 
+    val today = GregorianCalendar.getInstance(TimeZone.getDefault()).apply { time = Date() }.day
     val initialCalendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply { time = Date(initialValue) }
     var day by remember { mutableStateOf(initialCalendar.day) }
     var hour by remember { mutableIntStateOf(initialCalendar.hour) }
     var minute by remember { mutableIntStateOf(initialCalendar.minute) }
-    val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply {
-        this.time = Date(initialValue)
-        this.day = day
-        this.hour = hour
-        this.minute = minute
-    }
-
     val days = Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
-        DayPagingSource(day)
+        DayPagingSource(initialCalendar.day)
     }.flow.collectAsLazyPagingItems()
     val hours = Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
-        RangePagingSource(0, 23, hour)
+        RangePagingSource(0, 23, initialCalendar.hour)
     }.flow.collectAsLazyPagingItems()
     val minutes = Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
-        RangePagingSource(0, 59, minute)
+        RangePagingSource(0, 59, initialCalendar.minute)
     }.flow.collectAsLazyPagingItems()
     val dayListState = rememberLazyListState()
     val hourListState = rememberLazyListState()
@@ -181,10 +176,16 @@ fun TracedTimePicker(
                         day = initialCalendar.day
                         hour = initialCalendar.hour
                         minute = initialCalendar.minute
-                        // TODO
-                        // launch { dayListState.animateScrollToItem(0) }
-                        // launch { hourListState.animateScrollToItem(0) }
-                        // launch { minuteListState.animateScrollToItem(0) }
+                        days.itemSnapshotList.items.indexOfFirst { it.index == 0 }.takeIf { it != -1 }?.let {
+                            launch { dayListState.animateScrollToItem(it) }
+                        }
+                        hours.itemSnapshotList.items.indexOfFirst { it.index == 0 }.takeIf { it != -1 }?.let {
+                            launch { hourListState.animateScrollToItem(it) }
+                        }
+                        minutes.itemSnapshotList.items.indexOfFirst { it.index == 0 }.takeIf { it != -1 }?.let {
+                            launch { minuteListState.animateScrollToItem(it) }
+                        }
+                        // TODO If index is not found, recompose the whole composable
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -208,16 +209,21 @@ fun TracedTimePicker(
                     listState = dayListState,
                     items = days,
                     onValueChange = { item ->
-                        // TODO
-                        // day = item.value
-                        // onValueChange(calendar.timeInMillis)
+                        day = item.value
+                        val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply {
+                            this.time = Date(initialValue)
+                            this.day = day
+                            this.hour = hour
+                            this.minute = minute
+                        }
+                        onValueChange(calendar.timeInMillis)
                     },
                     height = height,
                     modifier = Modifier
                         .weight(dayWeight)
                         .rightBorder(borderColor, borderWidth),
                 ) { item ->
-                    if (item.index == 0) {
+                    if (item.value == today) {
                         stringResource(R.string.detail_created_at_today)
                     } else {
                         val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply {
@@ -234,9 +240,14 @@ fun TracedTimePicker(
                     listState = hourListState,
                     items = hours,
                     onValueChange = { item ->
-                        // TODO
-                        // hour = item.value
-                        // onValueChange(calendar.timeInMillis)
+                        hour = item.value
+                        val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply {
+                            this.time = Date(initialValue)
+                            this.day = day
+                            this.hour = hour
+                            this.minute = minute
+                        }
+                        onValueChange(calendar.timeInMillis)
                     },
                     height = height,
                     modifier = Modifier
@@ -249,9 +260,14 @@ fun TracedTimePicker(
                     listState = minuteListState,
                     items = minutes,
                     onValueChange = { item ->
-                        // TODO
-                        // minute = item.value
-                        // onValueChange(calendar.timeInMillis)
+                        minute = item.value
+                        val calendar = GregorianCalendar.getInstance(TimeZone.getDefault()).apply {
+                            this.time = Date(initialValue)
+                            this.day = day
+                            this.hour = hour
+                            this.minute = minute
+                        }
+                        onValueChange(calendar.timeInMillis)
                     },
                     height = height,
                     modifier = Modifier.weight(minuteWeight),
@@ -320,21 +336,21 @@ private fun <T : Any> TracedTimePickerSegment(
             .then(modifier),
         state = listState,
     ) {
-        // FIXME Fix infinite loading from paging source backwards
         items(
             items.itemCount,
             key = items.itemKey { it.index }
         ) { index ->
-            items[index]?.let { item ->
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(optionHeight),
-                    contentAlignment = Alignment.Center
-                ) {
+            // TODO Offset by one position
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(optionHeight),
+                contentAlignment = Alignment.Center
+            ) {
+                items[index]?.let { item ->
                     Text(text(item))
                 }
-            } ?: Box {}
+            }
         }
     }
 }
