@@ -2,6 +2,8 @@ package app.traced_it.ui.components
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.MutatePriority
+import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -166,31 +168,40 @@ fun TracedTimePicker(
                         days.itemSnapshotList.items.indexOfFirst { it.index == -middleItemIndexAdjustment }
                             .takeIf { it != -1 }
                             ?.let {
-                                if (abs(day.index) > dayPageSize) {
-                                    // If the current item is further than one page from the initial item, do a quick
-                                    // non-animated scroll, because the animated scroll is not smooth when a page needs to
-                                    // be loaded in the process.
-                                    launch { dayListState.scrollToItem(it) }
-                                } else {
-                                    launch { dayListState.animateScrollToItem(it) }
+                                launch {
+                                    dayListState.stopScroll(MutatePriority.UserInput)
+                                    if (abs(day.index) > dayPageSize) {
+                                        // If the current item is further than one page from the initial item, do a quick
+                                        // non-animated scroll, because the animated scroll is not smooth when a page needs to
+                                        // be loaded in the process.
+                                        dayListState.scrollToItem(it)
+                                    } else {
+                                        dayListState.animateScrollToItem(it)
+                                    }
                                 }
                             }
                         hours.itemSnapshotList.items.indexOfFirst { it.index == -middleItemIndexAdjustment }
                             .takeIf { it != -1 }
                             ?.let {
-                                if (abs(hour.index) > hourPageSize) {
-                                    launch { hourListState.scrollToItem(it) }
-                                } else {
-                                    launch { hourListState.animateScrollToItem(it) }
+                                launch {
+                                    hourListState.stopScroll(MutatePriority.UserInput)
+                                    if (abs(hour.index) > hourPageSize) {
+                                        hourListState.scrollToItem(it)
+                                    } else {
+                                        hourListState.animateScrollToItem(it)
+                                    }
                                 }
                             }
                         minutes.itemSnapshotList.items.indexOfFirst { it.index == -middleItemIndexAdjustment }
                             .takeIf { it != -1 }
                             ?.let {
-                                if (abs(minute.index) > minutePageSize) {
-                                    launch { minuteListState.scrollToItem(it) }
-                                } else {
-                                    launch { minuteListState.animateScrollToItem(it) }
+                                launch {
+                                    minuteListState.stopScroll(MutatePriority.UserInput)
+                                    if (abs(minute.index) > minutePageSize) {
+                                        minuteListState.scrollToItem(it)
+                                    } else {
+                                        minuteListState.animateScrollToItem(it)
+                                    }
                                 }
                             }
                         day = Item(initialCalendar.day, 0)
