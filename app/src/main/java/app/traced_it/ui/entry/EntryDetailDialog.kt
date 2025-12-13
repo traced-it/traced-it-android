@@ -1,7 +1,6 @@
 package app.traced_it.ui.entry
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,11 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import app.traced_it.R
 import app.traced_it.data.di.defaultFakeEntries
 import app.traced_it.data.local.database.*
-import app.traced_it.ui.components.TracedBottomButton
-import app.traced_it.ui.components.TracedScaffold
-import app.traced_it.ui.components.TracedTextField
-import app.traced_it.ui.components.TracedTimePicker
-import app.traced_it.ui.components.TracedTopAppBar
+import app.traced_it.ui.components.*
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 
