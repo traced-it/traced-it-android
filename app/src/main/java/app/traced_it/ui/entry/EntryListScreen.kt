@@ -5,7 +5,6 @@ import android.content.ClipData
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -224,11 +223,8 @@ private fun EntryListScreen(
             }
             .filterNotNull()
             .collect { highlightedItemIndex ->
-                Log.w(null, "ANIMATE $highlightedItemIndex)")
                 if (!listState.isScrollInProgress) {
                     listState.animateScrollToItem(highlightedItemIndex)
-                } else {
-                    Log.w(null, "SCROLL IN PROGRESS")
                 }
             }
     }

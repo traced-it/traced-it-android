@@ -50,7 +50,12 @@ fun EntryDetailDialog(
         )
     }
     val contentFocusRequester = remember { FocusRequester() }
-    var createdAt by remember { mutableStateOf<Long?>(null) }
+    val initialCreatedAt = if (action is EntryDetailAction.Edit) {
+        action.entry.createdAt
+    } else {
+        System.currentTimeMillis()
+    }
+    var createdAt by remember { mutableLongStateOf(initialCreatedAt) }
     var unit by remember {
         mutableStateOf(
             if (action.entry.amountUnit in visibleUnits) {
@@ -149,7 +154,7 @@ fun EntryDetailDialog(
                     },
                 )
                 TracedTimePicker(
-                    initialValue = action.entry.createdAt,
+                    initialValue = initialCreatedAt,
                     onValueChange = { createdAt = it },
                     modifier = Modifier.padding(top = Spacing.medium * 2),
                 )
@@ -171,7 +176,7 @@ fun EntryDetailDialog(
                                 amount = amount,
                                 amountUnit = unit,
                                 content = contentFieldValue.text,
-                                createdAt = createdAt ?: action.entry.createdAt,
+                                createdAt = createdAt,
                             )
                         )
                     } else {
@@ -180,7 +185,7 @@ fun EntryDetailDialog(
                                 amount = amount,
                                 amountUnit = unit,
                                 content = contentFieldValue.text,
-                                createdAt = createdAt ?: action.entry.createdAt,
+                                createdAt = createdAt,
                             )
                         )
                     }
