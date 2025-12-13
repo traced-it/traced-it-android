@@ -27,6 +27,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import app.traced_it.R
+import app.traced_it.lib.*
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.FlowPreview
@@ -39,47 +40,10 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.ExperimentalTime
 
-private data class Day(val year: Int, val month: Int, val date: Int)
-
-private fun gregorianCalendar(
-    zone: TimeZone,
-    time: Long? = null,
-    day: Day? = null,
-    hour: Int? = null,
-    minute: Int? = null,
-): Calendar =
-    GregorianCalendar.getInstance(zone).apply {
-        if (time != null) this.time = Date(time)
-        if (day != null) this.day = day
-        if (hour != null) this.hour = hour
-        if (minute != null) this.minute = minute
-    }
-
-private var Calendar.day
-    get() = Day(this.get(Calendar.YEAR), this.get(Calendar.MONTH), this.get(Calendar.DATE))
-    set(day) {
-        this.set(day.year, day.month, day.date)
-    }
-
-private var Calendar.hour
-    get() = this.get(Calendar.HOUR_OF_DAY)
-    set(hour) {
-        this.set(Calendar.HOUR_OF_DAY, hour)
-    }
-
-private var Calendar.minute
-    get() = this.get(Calendar.MINUTE)
-    set(minute) {
-        this.set(Calendar.MINUTE, minute)
-    }
-
-private fun Calendar.addDays(days: Int) {
-    this.add(Calendar.DATE, days)
-}
-
 private data class Item<T>(val value: T, val index: Int)
 
 private class DayPagingSource(
+    val middleItemIndexAdjustment: Int,
     val zone: TimeZone,
     val initialValue: Day,
     val batchSize: Int, // Use instead of LoadParams.loadSize to have pages of equal size and prevent key conflicts
@@ -87,9 +51,9 @@ private class DayPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item<Day>> {
         (params.key ?: 0).let { pageNumber ->
             val calendar = gregorianCalendar(zone, day = initialValue, hour = 12)
-            // Subtract 1 from index, so the first item we render is an item before the initial one, and the initial
-            // item is thus on the second position, i.e. in the middle of the scroll container.
-            var index = pageNumber * batchSize - 1
+            // Adjust the index, so the first item we render is an item before the initial one, and the initial item is
+            // thus in the middle of the scroll container height.
+            var index = pageNumber * batchSize - middleItemIndexAdjustment
             calendar.addDays(index)
             val data = List(batchSize) { i ->
                 if (i != 0) {
@@ -113,17 +77,17 @@ private class DayPagingSource(
 }
 
 private class RangePagingSource(
-    val from: Int,
-    val to: Int,
+    val middleItemIndexAdjustment: Int,
+    val range: IntRange,
     val initialValue: Int,
     val batchSize: Int, // Use instead of LoadParams.loadSize to have pages of equal size and prevent key conflicts
 ) : PagingSource<Int, Item<Int>>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item<Int>> =
         (params.key ?: 0).let { pageNumber ->
-            val rangeSize = (to - from + 1)
-            // Subtract 1 from index, so the first item we render is an item before the initial one, and the initial
-            // item is thus on the second position, i.e. in the middle of the scroll container.
-            var index = pageNumber * batchSize - 1
+            val rangeSize = (range.last - range.first + 1)
+            // Adjust the index, so the first item we render is an item before the initial one, and the initial item is
+            // thus in the middle of the scroll container height.
+            var index = pageNumber * batchSize - middleItemIndexAdjustment
             val data = List(batchSize) {
                 Item(value = (index + initialValue).mod(rangeSize), index++)
             }
@@ -151,11 +115,10 @@ fun TracedTimePicker(
     val coroutineScope = rememberCoroutineScope()
 
     val height = Spacing.inputHeight * 1.25f
+    val itemsPerHeight = 3
+    val middleItemIndexAdjustment = itemsPerHeight / 2
     val borderColor = MaterialTheme.colorScheme.outline
     val borderWidth = 1.dp
-    val dayWeight = 3f
-    val hourWeight = 1f
-    val minuteWeight = 1f
     val dayPageSize = 7
     val hourPageSize = 12
     val minutePageSize = 30
@@ -164,18 +127,18 @@ fun TracedTimePicker(
     val today = gregorianCalendar(zone).day
     val initialCalendar = gregorianCalendar(zone, initialValue)
 
-    var day by remember { mutableStateOf(Item(value = initialCalendar.day, index = 0)) }
-    var hour by remember { mutableStateOf(Item(value = initialCalendar.hour, index = 0)) }
-    var minute by remember { mutableStateOf(Item(value = initialCalendar.minute, index = 0)) }
+    var day by remember { mutableStateOf(Item(value = initialCalendar.day, index = -middleItemIndexAdjustment)) }
+    var hour by remember { mutableStateOf(Item(value = initialCalendar.hour, index = -middleItemIndexAdjustment)) }
+    var minute by remember { mutableStateOf(Item(value = initialCalendar.minute, index = -middleItemIndexAdjustment)) }
 
     val days = Pager(PagingConfig(pageSize = dayPageSize, enablePlaceholders = true)) {
-        DayPagingSource(zone,initialCalendar.day, batchSize = dayPageSize)
+        DayPagingSource(middleItemIndexAdjustment, zone, initialCalendar.day, batchSize = dayPageSize)
     }.flow.collectAsLazyPagingItems()
     val hours = Pager(PagingConfig(pageSize = hourPageSize, enablePlaceholders = true)) {
-        RangePagingSource(0, 23, initialCalendar.hour, batchSize = hourPageSize)
+        RangePagingSource(middleItemIndexAdjustment, 0..23, initialCalendar.hour, batchSize = hourPageSize)
     }.flow.collectAsLazyPagingItems()
     val minutes = Pager(PagingConfig(pageSize = minutePageSize, enablePlaceholders = true)) {
-        RangePagingSource(0, 59, initialCalendar.minute, batchSize = minutePageSize)
+        RangePagingSource(middleItemIndexAdjustment, 0..59, initialCalendar.minute, batchSize = minutePageSize)
     }.flow.collectAsLazyPagingItems()
 
     val dayListState = rememberLazyListState()
@@ -200,30 +163,36 @@ fun TracedTimePicker(
             TextButton(
                 onClick = {
                     coroutineScope.launch {
-                        days.itemSnapshotList.items.indexOfFirst { it.index == -1 }.takeIf { it != -1 }?.let {
-                            if (abs(day.index) > dayPageSize) {
-                                // If the current item is further than one page from the initial item, do a quick
-                                // non-animated scroll, because the animated scroll is not smooth when a page needs to
-                                // be loaded in the process
-                                launch { dayListState.scrollToItem(it) }
-                            } else {
-                                launch { dayListState.animateScrollToItem(it) }
+                        days.itemSnapshotList.items.indexOfFirst { it.index == -middleItemIndexAdjustment }
+                            .takeIf { it != -1 }
+                            ?.let {
+                                if (abs(day.index) > dayPageSize) {
+                                    // If the current item is further than one page from the initial item, do a quick
+                                    // non-animated scroll, because the animated scroll is not smooth when a page needs to
+                                    // be loaded in the process.
+                                    launch { dayListState.scrollToItem(it) }
+                                } else {
+                                    launch { dayListState.animateScrollToItem(it) }
+                                }
                             }
-                        }
-                        hours.itemSnapshotList.items.indexOfFirst { it.index == -1 }.takeIf { it != -1 }?.let {
-                            if (abs(hour.index) > hourPageSize) {
-                                launch { hourListState.scrollToItem(it) }
-                            } else {
-                                launch { hourListState.animateScrollToItem(it) }
+                        hours.itemSnapshotList.items.indexOfFirst { it.index == -middleItemIndexAdjustment }
+                            .takeIf { it != -1 }
+                            ?.let {
+                                if (abs(hour.index) > hourPageSize) {
+                                    launch { hourListState.scrollToItem(it) }
+                                } else {
+                                    launch { hourListState.animateScrollToItem(it) }
+                                }
                             }
-                        }
-                        minutes.itemSnapshotList.items.indexOfFirst { it.index == -1 }.takeIf { it != -1 }?.let {
-                            if (abs(minute.index) > minutePageSize) {
-                                launch { minuteListState.scrollToItem(it) }
-                            } else {
-                                launch { minuteListState.animateScrollToItem(it) }
+                        minutes.itemSnapshotList.items.indexOfFirst { it.index == -middleItemIndexAdjustment }
+                            .takeIf { it != -1 }
+                            ?.let {
+                                if (abs(minute.index) > minutePageSize) {
+                                    launch { minuteListState.scrollToItem(it) }
+                                } else {
+                                    launch { minuteListState.animateScrollToItem(it) }
+                                }
                             }
-                        }
                         day = Item(initialCalendar.day, 0)
                         hour = Item(initialCalendar.hour, 0)
                         minute = Item(initialCalendar.minute, 0)
@@ -259,8 +228,9 @@ fun TracedTimePicker(
                         )
                     },
                     height = height,
+                    itemsPerHeight = itemsPerHeight,
                     modifier = Modifier
-                        .weight(dayWeight)
+                        .weight(3f)
                         .rightBorder(borderColor, borderWidth),
                 ) { item ->
                     if (item.value == today) {
@@ -283,8 +253,9 @@ fun TracedTimePicker(
                         )
                     },
                     height = height,
+                    itemsPerHeight = itemsPerHeight,
                     modifier = Modifier
-                        .weight(hourWeight)
+                        .weight(1f)
                         .rightBorder(borderColor, borderWidth),
                 ) { item ->
                     if (item.value <= 9) {
@@ -303,7 +274,8 @@ fun TracedTimePicker(
                         )
                     },
                     height = height,
-                    modifier = Modifier.weight(minuteWeight),
+                    itemsPerHeight = itemsPerHeight,
+                    modifier = Modifier.weight(1f),
                 ) { item ->
                     if (item.value <= 9) {
                         "0${item.value}"
@@ -323,21 +295,22 @@ private fun <T : Any> TracedTimePickerSegment(
     items: LazyPagingItems<Item<T>>,
     onValueChange: (item: Item<T>) -> Unit,
     height: Dp,
+    itemsPerHeight: Int,
     modifier: Modifier = Modifier,
     text: @Composable (item: Item<T>) -> String,
 ) {
     val density = LocalDensity.current
     val hapticFeedback = LocalHapticFeedback.current
-    val itemHeight = height * 0.333f
-    val itemHeightPx = with(density) { itemHeight.toPx() }
+    val itemHeight = height / itemsPerHeight.toFloat()
 
     // Call onValueChange()
     LaunchedEffect(listState) {
+        val middleItemIndexAdjustment = itemsPerHeight / 2
         snapshotFlow { listState.firstVisibleItemIndex }
             .drop(1) // Don't call onValueChange() when the composable is first rendered
             .debounce(100) // Prevent too many emissions when resetting the segment
             .collect { firstVisibleItemIndex ->
-                items[firstVisibleItemIndex]?.let { value ->
+                items[firstVisibleItemIndex + middleItemIndexAdjustment]?.let { value ->
                     onValueChange(value)
                 }
             }
@@ -345,6 +318,7 @@ private fun <T : Any> TracedTimePickerSegment(
 
     // Snap to nearest item when scrolling stops
     LaunchedEffect(listState) {
+        val itemHeightPx = with(density) { itemHeight.toPx() }
         snapshotFlow { listState.isScrollInProgress }
             .filter { !it && listState.firstVisibleItemScrollOffset > 0 }
             .collect {
