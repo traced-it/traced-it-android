@@ -16,28 +16,35 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.traced_it.R
 import app.traced_it.data.local.database.*
 import app.traced_it.ui.components.TracedTextField
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun UnitSelect(
     amountRaw: String,
     selectedUnit: EntryUnit,
-    latestEntryUnit: EntryUnit?,
+    latestEntryUnitFlow: StateFlow<EntryUnit?>,
     modifier: Modifier = Modifier,
     onAmountRawChange: (newAmountRaw: String) -> Unit,
     onUnitChange: (newUnit: EntryUnit) -> Unit,
     onVisibleUnitChange: () -> Unit,
 ) {
-    val initialVisibleUnit = selectedUnit.takeIf { it in visibleUnits }
-        ?: latestEntryUnit.takeIf { it in visibleUnits }
-        ?: defaultVisibleUnit
-    var visibleUnit by remember { mutableStateOf(initialVisibleUnit) }
+    val latestEntryUnit by latestEntryUnitFlow.collectAsStateWithLifecycle()
     var expanded by remember { mutableStateOf(false) }
+    var visibleUnit by remember {
+        mutableStateOf(
+            selectedUnit.takeIf { it in visibleUnits }
+                ?: latestEntryUnit.takeIf { it in visibleUnits }
+                ?: defaultVisibleUnit
+        )
+    }
 
     Column(
         modifier = modifier
@@ -146,7 +153,7 @@ private fun DefaultPreview() {
             UnitSelect(
                 amountRaw = "",
                 selectedUnit = noneUnit,
-                latestEntryUnit = clothingSizeUnit,
+                latestEntryUnitFlow = MutableStateFlow(clothingSizeUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -163,7 +170,7 @@ private fun ClothingSizePreview() {
             UnitSelect(
                 amountRaw = "S",
                 selectedUnit = clothingSizeUnit,
-                latestEntryUnit = clothingSizeUnit,
+                latestEntryUnitFlow = MutableStateFlow(clothingSizeUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -180,7 +187,7 @@ private fun SmallNumbersChoicePreview() {
             UnitSelect(
                 amountRaw = "2x",
                 selectedUnit = smallNumbersChoiceUnit,
-                latestEntryUnit = smallNumbersChoiceUnit,
+                latestEntryUnitFlow = MutableStateFlow(smallNumbersChoiceUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -197,7 +204,7 @@ private fun FractionPreview() {
             UnitSelect(
                 amountRaw = "⅓",
                 selectedUnit = fractionUnit,
-                latestEntryUnit = fractionUnit,
+                latestEntryUnitFlow = MutableStateFlow(fractionUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -214,7 +221,7 @@ private fun DoublePreview() {
             UnitSelect(
                 amountRaw = "",
                 selectedUnit = doubleUnit,
-                latestEntryUnit = doubleUnit,
+                latestEntryUnitFlow = MutableStateFlow(doubleUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -231,7 +238,7 @@ private fun DoubleFrenchPreview() {
             UnitSelect(
                 amountRaw = "",
                 selectedUnit = doubleUnit,
-                latestEntryUnit = doubleUnit,
+                latestEntryUnitFlow = MutableStateFlow(doubleUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},

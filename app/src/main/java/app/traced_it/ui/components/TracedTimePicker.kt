@@ -30,6 +30,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import app.traced_it.R
 import app.traced_it.lib.*
+import app.traced_it.ui.entry.EntryDetailAction
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.FlowPreview
@@ -110,7 +111,7 @@ private class RangePagingSource(
 @OptIn(ExperimentalTime::class)
 @Composable
 fun TracedTimePicker(
-    initialValue: Long,
+    action: EntryDetailAction,
     onValueChange: (value: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -127,6 +128,12 @@ fun TracedTimePicker(
 
     val zone = TimeZone.getDefault()
     val today = gregorianCalendar(zone).day
+    val initialValue = when (action) {
+        // Reduce recompositions of this component by reading action here and not in EntryDetailDialog
+        is EntryDetailAction.New -> System.currentTimeMillis()
+        is EntryDetailAction.Edit -> action.entry.createdAt
+        is EntryDetailAction.Prefill -> System.currentTimeMillis()
+    }
     val initialCalendar = gregorianCalendar(zone, initialValue)
 
     var day by remember { mutableStateOf(Item(value = initialCalendar.day, index = -middleItemIndexAdjustment)) }
@@ -386,7 +393,7 @@ private fun DefaultPreview() {
     AppTheme {
         Surface {
             TracedTimePicker(
-                initialValue = System.currentTimeMillis(),
+                action = EntryDetailAction.New(),
                 onValueChange = {},
             )
         }

@@ -25,50 +25,82 @@ import app.traced_it.data.local.database.*
 import app.traced_it.ui.components.*
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-sealed class EntryDetailAction(val entry: Entry) {
-    class Edit(entry: Entry) : EntryDetailAction(entry)
-    class Prefill(entry: Entry) : EntryDetailAction(entry)
+sealed interface EntryDetailAction {
+    class New : EntryDetailAction
+    data class Edit(val entry: Entry) : EntryDetailAction
+    data class Prefill(val entry: Entry) : EntryDetailAction
 }
 
 @Composable
 fun EntryDetailDialog(
     action: EntryDetailAction,
-    latestEntryUnit: EntryUnit?,
+    latestEntryUnitFlow: StateFlow<EntryUnit?>,
     onInsert: (Entry) -> Unit,
     onUpdate: (Entry) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val resources = LocalResources.current
 
-    val initialCreatedAt = if (action is EntryDetailAction.Edit) {
-        action.entry.createdAt
-    } else {
-        System.currentTimeMillis()
-    }
-    val initialUnit = if (action.entry.amountUnit in visibleUnits) {
-        action.entry.amountUnit
-    } else if (action.entry.amount != 0.0) {
-        // If we're editing or prefilling an entry that has a deprecated unit (such as smallNumbersChoiceUnit),
-        // convert the unit into doubleUnit.
-        doubleUnit
-    } else {
-        noneUnit
-    }
-    val initialAmountRaw = initialUnit.format(resources, action.entry.amount)
-
     val contentFocusRequester = remember { FocusRequester() }
     var contentFieldValue by remember {
         mutableStateOf(
-            TextFieldValue(
-                text = action.entry.content,
-                selection = TextRange(action.entry.content.length),
+            when (action) {
+                is EntryDetailAction.New -> ""
+                is EntryDetailAction.Edit -> action.entry.content
+                is EntryDetailAction.Prefill -> action.entry.content
+            }.let { content ->
+                TextFieldValue(
+                    text = content,
+                    selection = TextRange(content.length),
+                )
+            }
+        )
+    }
+    var createdAt by remember {
+        mutableLongStateOf(
+            when (action) {
+                is EntryDetailAction.New -> System.currentTimeMillis()
+                is EntryDetailAction.Edit -> action.entry.createdAt
+                is EntryDetailAction.Prefill -> System.currentTimeMillis()
+            }
+        )
+    }
+    var unit by remember {
+        mutableStateOf(
+            when (action) {
+                is EntryDetailAction.New -> null
+                is EntryDetailAction.Edit -> action.entry
+                is EntryDetailAction.Prefill -> action.entry
+            }.let { entry ->
+                if (entry == null) {
+                    noneUnit
+                } else if (entry.amountUnit in visibleUnits) {
+                    entry.amountUnit
+                } else if (entry.amount != 0.0) {
+                    // If we're editing or prefilling an entry that has a deprecated unit (such as smallNumbersChoiceUnit),
+                    // convert the unit into doubleUnit.
+                    doubleUnit
+                } else {
+                    noneUnit
+                }
+            }
+        )
+    }
+    var amountRaw by remember {
+        mutableStateOf(
+            unit.format(
+                resources,
+                when (action) {
+                    is EntryDetailAction.New -> 0.0
+                    is EntryDetailAction.Edit -> action.entry.amount
+                    is EntryDetailAction.Prefill -> action.entry.amount
+                }
             )
         )
     }
-    var createdAt by remember { mutableLongStateOf(initialCreatedAt) }
-    var unit by remember { mutableStateOf(initialUnit) }
-    var amountRaw by remember { mutableStateOf(initialAmountRaw) }
 
     LaunchedEffect(Unit) {
         contentFocusRequester.requestFocus()
@@ -135,7 +167,7 @@ fun EntryDetailDialog(
                 UnitSelect(
                     amountRaw = amountRaw,
                     selectedUnit = unit,
-                    latestEntryUnit = latestEntryUnit,
+                    latestEntryUnitFlow = latestEntryUnitFlow,
                     modifier = Modifier.padding(top = Spacing.medium * 2),
                     onAmountRawChange = { amountRaw = it },
                     onUnitChange = { unit = it },
@@ -145,7 +177,7 @@ fun EntryDetailDialog(
                     },
                 )
                 TracedTimePicker(
-                    initialValue = initialCreatedAt,
+                    action = action,
                     onValueChange = { createdAt = it },
                     modifier = Modifier.padding(top = Spacing.medium * 2),
                 )
@@ -153,32 +185,33 @@ fun EntryDetailDialog(
             HorizontalDivider()
             TracedBottomButton(
                 text = stringResource(
-                    if (action is EntryDetailAction.Edit) {
-                        R.string.detail_update_save
-                    } else {
-                        R.string.detail_add_save
+                    when (action) {
+                        is EntryDetailAction.Edit -> R.string.detail_update_save
+                        else -> R.string.detail_add_save
                     }
                 ),
                 onClick = {
                     val amount = unit.parse(resources, amountRaw)
-                    if (action is EntryDetailAction.Edit) {
-                        onUpdate(
-                            action.entry.copy(
-                                amount = amount,
-                                amountUnit = unit,
-                                content = contentFieldValue.text,
-                                createdAt = createdAt,
+                    when (action) {
+                        is EntryDetailAction.Edit ->
+                            onUpdate(
+                                action.entry.copy(
+                                    amount = amount,
+                                    amountUnit = unit,
+                                    content = contentFieldValue.text,
+                                    createdAt = createdAt,
+                                )
                             )
-                        )
-                    } else {
-                        onInsert(
-                            Entry(
-                                amount = amount,
-                                amountUnit = unit,
-                                content = contentFieldValue.text,
-                                createdAt = createdAt,
+
+                        else ->
+                            onInsert(
+                                Entry(
+                                    amount = amount,
+                                    amountUnit = unit,
+                                    content = contentFieldValue.text,
+                                    createdAt = createdAt,
+                                )
                             )
-                        )
                     }
                 },
                 modifier = Modifier.testTag("entryDetailSaveButton"),
@@ -195,8 +228,8 @@ fun EntryDetailDialog(
 private fun DefaultPreview() {
     AppTheme {
         EntryDetailDialog(
-            action = EntryDetailAction.Prefill(Entry()),
-            latestEntryUnit = null,
+            action = EntryDetailAction.New(),
+            latestEntryUnitFlow = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -209,8 +242,8 @@ private fun DefaultPreview() {
 private fun LightPreview() {
     AppTheme {
         EntryDetailDialog(
-            action = EntryDetailAction.Prefill(Entry()),
-            latestEntryUnit = null,
+            action = EntryDetailAction.New(),
+            latestEntryUnitFlow = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -224,7 +257,7 @@ private fun PrefilledPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.Prefill(defaultFakeEntries[0]),
-            latestEntryUnit = null,
+            latestEntryUnitFlow = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -238,7 +271,7 @@ private fun EditPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.Edit(defaultFakeEntries[0]),
-            latestEntryUnit = null,
+            latestEntryUnitFlow = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -258,7 +291,7 @@ private fun InvisibleUnitPreview() {
                     amountUnit = smallNumbersChoiceUnit,
                 )
             ),
-            latestEntryUnit = null,
+            latestEntryUnitFlow = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -277,7 +310,7 @@ private fun PortraitPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.Prefill(defaultFakeEntries[0]),
-            latestEntryUnit = null,
+            latestEntryUnitFlow = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
