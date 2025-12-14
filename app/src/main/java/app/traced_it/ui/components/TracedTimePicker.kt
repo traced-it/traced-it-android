@@ -306,6 +306,7 @@ private fun <T : Any> TracedTimePickerSegment(
     items: LazyPagingItems<Item<T>>,
     onValueChange: (item: Item<T>) -> Unit,
     height: Dp,
+    @Suppress("SameParameterValue")
     itemsPerHeight: Int,
     modifier: Modifier = Modifier,
     text: @Composable (item: Item<T>) -> String,
