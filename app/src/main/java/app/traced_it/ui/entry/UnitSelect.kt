@@ -27,12 +27,16 @@ import app.traced_it.ui.theme.Spacing
 fun UnitSelect(
     amountRaw: String,
     selectedUnit: EntryUnit,
-    visibleUnit: EntryUnit,
+    latestEntryUnit: EntryUnit?,
     modifier: Modifier = Modifier,
-    onAmountRawChange: (newAmountRaw: String) -> Unit = {},
-    onUnitChange: (newUnit: EntryUnit) -> Unit = {},
-    onVisibleUnitChange: (newVisibleUnit: EntryUnit) -> Unit = {},
+    onAmountRawChange: (newAmountRaw: String) -> Unit,
+    onUnitChange: (newUnit: EntryUnit) -> Unit,
+    onVisibleUnitChange: () -> Unit,
 ) {
+    val initialVisibleUnit = selectedUnit.takeIf { it in visibleUnits }
+        ?: latestEntryUnit.takeIf { it in visibleUnits }
+        ?: defaultVisibleUnit
+    var visibleUnit by remember { mutableStateOf(initialVisibleUnit) }
     var expanded by remember { mutableStateOf(false) }
 
     Column(
@@ -84,7 +88,8 @@ fun UnitSelect(
                                 },
                                 onClick = {
                                     expanded = false
-                                    onVisibleUnitChange(unit)
+                                    visibleUnit = unit
+                                    onVisibleUnitChange()
                                 },
                                 modifier = Modifier.testTag("unitSelectDropdownMenuItem_${unit.id}"),
                                 contentPadding = PaddingValues(
@@ -139,9 +144,12 @@ private fun DefaultPreview() {
     AppTheme {
         Surface {
             UnitSelect(
-                "",
-                noneUnit,
-                clothingSizeUnit,
+                amountRaw = "",
+                selectedUnit = noneUnit,
+                latestEntryUnit = clothingSizeUnit,
+                onAmountRawChange = {},
+                onUnitChange = {},
+                onVisibleUnitChange = {},
             )
         }
     }
@@ -153,9 +161,12 @@ private fun ClothingSizePreview() {
     AppTheme {
         Surface {
             UnitSelect(
-                "S",
-                clothingSizeUnit,
-                clothingSizeUnit,
+                amountRaw = "S",
+                selectedUnit = clothingSizeUnit,
+                latestEntryUnit = clothingSizeUnit,
+                onAmountRawChange = {},
+                onUnitChange = {},
+                onVisibleUnitChange = {},
             )
         }
     }
@@ -167,9 +178,12 @@ private fun SmallNumbersChoicePreview() {
     AppTheme {
         Surface {
             UnitSelect(
-                "2x",
-                smallNumbersChoiceUnit,
-                smallNumbersChoiceUnit,
+                amountRaw = "2x",
+                selectedUnit = smallNumbersChoiceUnit,
+                latestEntryUnit = smallNumbersChoiceUnit,
+                onAmountRawChange = {},
+                onUnitChange = {},
+                onVisibleUnitChange = {},
             )
         }
     }
@@ -181,9 +195,12 @@ private fun FractionPreview() {
     AppTheme {
         Surface {
             UnitSelect(
-                "⅓",
-                fractionUnit,
-                fractionUnit,
+                amountRaw = "⅓",
+                selectedUnit = fractionUnit,
+                latestEntryUnit = fractionUnit,
+                onAmountRawChange = {},
+                onUnitChange = {},
+                onVisibleUnitChange = {},
             )
         }
     }
@@ -195,9 +212,12 @@ private fun DoublePreview() {
     AppTheme {
         Surface {
             UnitSelect(
-                "",
-                doubleUnit,
-                doubleUnit,
+                amountRaw = "",
+                selectedUnit = doubleUnit,
+                latestEntryUnit = doubleUnit,
+                onAmountRawChange = {},
+                onUnitChange = {},
+                onVisibleUnitChange = {},
             )
         }
     }
@@ -209,9 +229,12 @@ private fun DoubleFrenchPreview() {
     AppTheme {
         Surface {
             UnitSelect(
-                "",
-                doubleUnit,
-                doubleUnit,
+                amountRaw = "",
+                selectedUnit = doubleUnit,
+                latestEntryUnit = doubleUnit,
+                onAmountRawChange = {},
+                onUnitChange = {},
+                onVisibleUnitChange = {},
             )
         }
     }

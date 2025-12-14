@@ -43,6 +43,7 @@ import androidx.paging.compose.itemKey
 import app.traced_it.R
 import app.traced_it.data.di.defaultFakeEntries
 import app.traced_it.data.local.database.Entry
+import app.traced_it.data.local.database.EntryUnit
 import app.traced_it.ui.components.*
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
@@ -76,7 +77,7 @@ fun EntryListScreen(
     val filterQuery by viewModel.filterQuery.collectAsStateWithLifecycle()
     val filteredEntries = viewModel.filteredEntries.collectAsLazyPagingItems()
     val highlightedEntryUidFlow = viewModel.highlightedEntryUid
-    val latestEntry by viewModel.latestEntry.collectAsStateWithLifecycle()
+    val latestEntryUnit by viewModel.latestEntryUnit.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
 
     EntryListScreen(
@@ -86,7 +87,7 @@ fun EntryListScreen(
         filterQuerySanitizedForFilename = viewModel.filterQuerySanitizedForFilename,
         filteredEntries = filteredEntries,
         highlightedEntryUidFlow = highlightedEntryUidFlow,
-        latestEntry = latestEntry,
+        latestEntryUnit = latestEntryUnit,
         message = message,
         onDeleteAllEntries = { viewModel.deleteAllEntries(resources) },
         onDeleteEntry = { entry -> viewModel.deleteEntry(resources, entry) },
@@ -115,7 +116,7 @@ private fun EntryListScreen(
     filteredEntries: LazyPagingItems<Entry>,
     highlightedEntryUidFlow: StateFlow<Int?>,
     initialSelectedEntry: Entry? = null,
-    latestEntry: Entry?,
+    latestEntryUnit: EntryUnit?,
     message: Message?,
     onDeleteAllEntries: () -> Unit,
     onDeleteEntry: (entry: Entry) -> Unit,
@@ -577,18 +578,18 @@ private fun EntryListScreen(
     ) {
         EntryDetailDialog(
             entryDetailAction,
-            latestEntryUnit = latestEntry?.amountUnit,
+            latestEntryUnit = latestEntryUnit,
             onInsert = {
+                entryDetailOpen = false
+                setSelectedEntry(null)
+                onInsertEntry(it)
                 coroutineScope.launch {
                     listState.scrollToItem(0)
-                    setSelectedEntry(null)
-                    entryDetailOpen = false
-                    onInsertEntry(it)
                 }
             },
             onUpdate = {
-                setSelectedEntry(null)
                 entryDetailOpen = false
+                setSelectedEntry(null)
                 onUpdateEntry(it)
             },
             onDismiss = {
@@ -626,7 +627,7 @@ private fun DefaultPreview() {
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
             highlightedEntryUidFlow = MutableStateFlow(null),
-            latestEntry = defaultFakeEntries.first(),
+            latestEntryUnit = defaultFakeEntries.first().amountUnit,
             message = null,
             onDeleteAllEntries = {},
             onDeleteEntry = {},
@@ -657,7 +658,7 @@ private fun LightPreview() {
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
             highlightedEntryUidFlow = MutableStateFlow(null),
-            latestEntry = defaultFakeEntries.first(),
+            latestEntryUnit = defaultFakeEntries.first().amountUnit,
             message = null,
             onDeleteAllEntries = {},
             onDeleteEntry = {},
@@ -688,7 +689,7 @@ private fun FilterPreview() {
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
             highlightedEntryUidFlow = MutableStateFlow(null),
-            latestEntry = defaultFakeEntries.first(),
+            latestEntryUnit = defaultFakeEntries.first().amountUnit,
             message = null,
             onDeleteAllEntries = {},
             onDeleteEntry = {},
@@ -720,7 +721,7 @@ private fun SelectedEntryPreview() {
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
             highlightedEntryUidFlow = MutableStateFlow(null),
             initialSelectedEntry = defaultFakeEntries[2],
-            latestEntry = defaultFakeEntries.first(),
+            latestEntryUnit = defaultFakeEntries.first().amountUnit,
             message = null,
             onDeleteAllEntries = {},
             onDeleteEntry = {},
@@ -751,7 +752,7 @@ private fun EmptyPreview() {
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.empty<Entry>()).collectAsLazyPagingItems(),
             highlightedEntryUidFlow = MutableStateFlow(null),
-            latestEntry = defaultFakeEntries.first(),
+            latestEntryUnit = defaultFakeEntries.first().amountUnit,
             message = null,
             onDeleteAllEntries = {},
             onDeleteEntry = {},
@@ -782,7 +783,7 @@ private fun TabletPreview() {
             filterQuerySanitizedForFilename = "",
             filteredEntries = flowOf(PagingData.from(defaultFakeEntries)).collectAsLazyPagingItems(),
             highlightedEntryUidFlow = MutableStateFlow(null),
-            latestEntry = defaultFakeEntries.first(),
+            latestEntryUnit = defaultFakeEntries.first().amountUnit,
             message = null,
             onDeleteAllEntries = {},
             onDeleteEntry = {},

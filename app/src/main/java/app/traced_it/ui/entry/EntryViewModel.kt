@@ -81,7 +81,7 @@ class EntryViewModel @Inject constructor(
             }.flow
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty())
 
-    val latestEntry: StateFlow<Entry?> = entryRepository.getLatest()
+    val latestEntryUnit: StateFlow<EntryUnit?> = entryRepository.getLatest().map { it?.amountUnit }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     fun insertEntry(resources: Resources, entry: Entry) {

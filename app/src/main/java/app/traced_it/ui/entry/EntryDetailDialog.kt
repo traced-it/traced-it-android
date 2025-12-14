@@ -41,6 +41,23 @@ fun EntryDetailDialog(
 ) {
     val resources = LocalResources.current
 
+    val initialCreatedAt = if (action is EntryDetailAction.Edit) {
+        action.entry.createdAt
+    } else {
+        System.currentTimeMillis()
+    }
+    val initialUnit = if (action.entry.amountUnit in visibleUnits) {
+        action.entry.amountUnit
+    } else if (action.entry.amount != 0.0) {
+        // If we're editing or prefilling an entry that has a deprecated unit (such as smallNumbersChoiceUnit),
+        // convert the unit into doubleUnit.
+        doubleUnit
+    } else {
+        noneUnit
+    }
+    val initialAmountRaw = initialUnit.format(resources, action.entry.amount)
+
+    val contentFocusRequester = remember { FocusRequester() }
     var contentFieldValue by remember {
         mutableStateOf(
             TextFieldValue(
@@ -49,34 +66,9 @@ fun EntryDetailDialog(
             )
         )
     }
-    val contentFocusRequester = remember { FocusRequester() }
-    val initialCreatedAt = if (action is EntryDetailAction.Edit) {
-        action.entry.createdAt
-    } else {
-        System.currentTimeMillis()
-    }
     var createdAt by remember { mutableLongStateOf(initialCreatedAt) }
-    var unit by remember {
-        mutableStateOf(
-            if (action.entry.amountUnit in visibleUnits) {
-                action.entry.amountUnit
-            } else if (action.entry.amount != 0.0) {
-                // If we're editing or prefilling an entry that has a deprecated unit (such as smallNumbersChoiceUnit),
-                // convert the unit into doubleUnit.
-                doubleUnit
-            } else {
-                noneUnit
-            }
-        )
-    }
-    var amountRaw by remember { mutableStateOf(unit.format(resources, action.entry.amount)) }
-    var visibleUnit by remember {
-        mutableStateOf(
-            unit.takeIf { it in visibleUnits }
-                ?: latestEntryUnit.takeIf { it in visibleUnits }
-                ?: defaultVisibleUnit
-        )
-    }
+    var unit by remember { mutableStateOf(initialUnit) }
+    var amountRaw by remember { mutableStateOf(initialAmountRaw) }
 
     LaunchedEffect(Unit) {
         contentFocusRequester.requestFocus()
@@ -143,13 +135,12 @@ fun EntryDetailDialog(
                 UnitSelect(
                     amountRaw = amountRaw,
                     selectedUnit = unit,
-                    visibleUnit = visibleUnit,
+                    latestEntryUnit = latestEntryUnit,
                     modifier = Modifier.padding(top = Spacing.medium * 2),
                     onAmountRawChange = { amountRaw = it },
                     onUnitChange = { unit = it },
-                    onVisibleUnitChange = { newVisibleUnit ->
+                    onVisibleUnitChange = {
                         unit = noneUnit
-                        visibleUnit = newVisibleUnit
                         amountRaw = ""
                     },
                 )
