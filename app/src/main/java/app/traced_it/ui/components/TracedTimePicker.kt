@@ -21,10 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
+import androidx.paging.*
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -37,6 +34,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.abs
@@ -45,24 +43,23 @@ import kotlin.time.ExperimentalTime
 
 private data class Item<T>(val value: T, val index: Int)
 
+private const val ITEMS_PER_HEIGHT = 3
+private const val MIDDLE_ITEM_INDEX_ADJUSTMENT = ITEMS_PER_HEIGHT / 2
+private const val DAYS_PAGE_SIZE = 7
+private const val HOURS_PAGE_SIZE = 12
+private const val MINUTES_PAGE_SIZE = 30
+
 private class DayPagingSource(
-    val middleItemIndexAdjustment: Int,
-    val zone: TimeZone,
-    val initialValue: Day,
+    val initialCalendar: Calendar,
     val batchSize: Int, // Use instead of LoadParams.loadSize to have pages of equal size and prevent key conflicts
 ) : PagingSource<Int, Item<Day>>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item<Day>> {
         (params.key ?: 0).let { pageNumber ->
-            val calendar = gregorianCalendar(zone, day = initialValue, hour = 12)
             // Adjust the index, so the first item we render is an item before the initial one, and the initial item is
             // thus in the middle of the scroll container height.
-            var index = pageNumber * batchSize - middleItemIndexAdjustment
-            calendar.addDays(index)
-            val data = List(batchSize) { i ->
-                if (i != 0) {
-                    calendar.addDays(1)
-                }
-                Item(value = calendar.day, index++)
+            val startOffset = pageNumber * batchSize - MIDDLE_ITEM_INDEX_ADJUSTMENT
+            val data = initialCalendar.generateDaysList(startOffset, batchSize).mapIndexed { i, value ->
+                Item(value, startOffset + i)
             }
             return LoadResult.Page(
                 data = data,
@@ -80,19 +77,17 @@ private class DayPagingSource(
 }
 
 private class RangePagingSource(
-    val middleItemIndexAdjustment: Int,
     val range: IntRange,
     val initialValue: Int,
     val batchSize: Int, // Use instead of LoadParams.loadSize to have pages of equal size and prevent key conflicts
 ) : PagingSource<Int, Item<Int>>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item<Int>> =
         (params.key ?: 0).let { pageNumber ->
-            val rangeSize = (range.last - range.first + 1)
             // Adjust the index, so the first item we render is an item before the initial one, and the initial item is
             // thus in the middle of the scroll container height.
-            var index = pageNumber * batchSize - middleItemIndexAdjustment
-            val data = List(batchSize) {
-                Item(value = (index + initialValue).mod(rangeSize), index++)
+            val startOffset = pageNumber * batchSize - MIDDLE_ITEM_INDEX_ADJUSTMENT
+            val data = range.generateNumbersList(initialValue + startOffset, batchSize).mapIndexed { i, value ->
+                Item(value, startOffset + i)
             }
             LoadResult.Page(
                 data = data,
@@ -115,41 +110,74 @@ fun TracedTimePicker(
     onValueChange: (value: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
-    val height = Spacing.inputHeight * 1.25f
-    val itemsPerHeight = 3
-    val middleItemIndexAdjustment = itemsPerHeight / 2
-    val borderColor = MaterialTheme.colorScheme.outline
-    val borderWidth = 1.dp
-    val dayPageSize = 7
-    val hourPageSize = 12
-    val minutePageSize = 30
-
     val zone = TimeZone.getDefault()
-    val today = gregorianCalendar(zone).day
     val initialValue = when (action) {
-        // Reduce recompositions of this component by reading action here and not in EntryDetailDialog
+        // Reading action here and not in EntryDetailDialog reduces the number of recompositions
         is EntryDetailAction.New -> System.currentTimeMillis()
         is EntryDetailAction.Edit -> action.entry.createdAt
         is EntryDetailAction.Prefill -> System.currentTimeMillis()
     }
     val initialCalendar = gregorianCalendar(zone, initialValue)
 
-    var day by remember { mutableStateOf(Item(value = initialCalendar.day, index = -middleItemIndexAdjustment)) }
-    var hour by remember { mutableStateOf(Item(value = initialCalendar.hour, index = -middleItemIndexAdjustment)) }
-    var minute by remember { mutableStateOf(Item(value = initialCalendar.minute, index = -middleItemIndexAdjustment)) }
-
-    val days = Pager(PagingConfig(pageSize = dayPageSize, enablePlaceholders = true)) {
-        DayPagingSource(middleItemIndexAdjustment, zone, initialCalendar.day, batchSize = dayPageSize)
+    val days = Pager(PagingConfig(pageSize = DAYS_PAGE_SIZE, enablePlaceholders = true)) {
+        DayPagingSource(initialCalendar, batchSize = DAYS_PAGE_SIZE)
     }.flow.collectAsLazyPagingItems()
-    val hours = Pager(PagingConfig(pageSize = hourPageSize, enablePlaceholders = true)) {
-        RangePagingSource(middleItemIndexAdjustment, 0..23, initialCalendar.hour, batchSize = hourPageSize)
+    val hours = Pager(PagingConfig(pageSize = HOURS_PAGE_SIZE, enablePlaceholders = true)) {
+        RangePagingSource(0..23, initialCalendar.hour, batchSize = HOURS_PAGE_SIZE)
     }.flow.collectAsLazyPagingItems()
-    val minutes = Pager(PagingConfig(pageSize = minutePageSize, enablePlaceholders = true)) {
-        RangePagingSource(middleItemIndexAdjustment, 0..59, initialCalendar.minute, batchSize = minutePageSize)
+    val minutes = Pager(PagingConfig(pageSize = MINUTES_PAGE_SIZE, enablePlaceholders = true)) {
+        RangePagingSource(0..59, initialCalendar.minute, batchSize = MINUTES_PAGE_SIZE)
     }.flow.collectAsLazyPagingItems()
 
+    TracedTimePicker(
+        initialCalendar = initialCalendar,
+        days = days,
+        hours = hours,
+        minutes = minutes,
+        itemsPerHeight = ITEMS_PER_HEIGHT,
+        dayPageSize = DAYS_PAGE_SIZE,
+        hourPageSize = HOURS_PAGE_SIZE,
+        minutePageSize = MINUTES_PAGE_SIZE,
+        onValueChange = onValueChange,
+        modifier = modifier,
+    )
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun TracedTimePicker(
+    initialCalendar: Calendar,
+    days: LazyPagingItems<Item<Day>>,
+    hours: LazyPagingItems<Item<Int>>,
+    minutes: LazyPagingItems<Item<Int>>,
+    @Suppress("SameParameterValue")
+    itemsPerHeight: Int,
+    @Suppress("SameParameterValue")
+    dayPageSize: Int,
+    @Suppress("SameParameterValue")
+    hourPageSize: Int,
+    @Suppress("SameParameterValue")
+    minutePageSize: Int,
+    onValueChange: (value: Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val height = Spacing.inputHeight * 1.25f
+    val borderColor = MaterialTheme.colorScheme.outline
+    val borderWidth = 1.dp
+
+    val zone = initialCalendar.timeZone
+    val today = gregorianCalendar(zone).day
+    var day by remember {
+        mutableStateOf(Item(value = initialCalendar.day, index = -MIDDLE_ITEM_INDEX_ADJUSTMENT))
+    }
+    var hour by remember {
+        mutableStateOf(Item(value = initialCalendar.hour, index = -MIDDLE_ITEM_INDEX_ADJUSTMENT))
+    }
+    var minute by remember {
+        mutableStateOf(Item(value = initialCalendar.minute,index = -MIDDLE_ITEM_INDEX_ADJUSTMENT))
+    }
     val dayListState = rememberLazyListState()
     val hourListState = rememberLazyListState()
     val minuteListState = rememberLazyListState()
@@ -172,7 +200,7 @@ fun TracedTimePicker(
             TextButton(
                 onClick = {
                     coroutineScope.launch {
-                        days.itemSnapshotList.items.indexOfFirst { it.index == -middleItemIndexAdjustment }
+                        days.itemSnapshotList.items.indexOfFirst { it.index == -MIDDLE_ITEM_INDEX_ADJUSTMENT }
                             .takeIf { it != -1 }
                             ?.let {
                                 launch {
@@ -187,7 +215,7 @@ fun TracedTimePicker(
                                     }
                                 }
                             }
-                        hours.itemSnapshotList.items.indexOfFirst { it.index == -middleItemIndexAdjustment }
+                        hours.itemSnapshotList.items.indexOfFirst { it.index == -MIDDLE_ITEM_INDEX_ADJUSTMENT }
                             .takeIf { it != -1 }
                             ?.let {
                                 launch {
@@ -199,7 +227,7 @@ fun TracedTimePicker(
                                     }
                                 }
                             }
-                        minutes.itemSnapshotList.items.indexOfFirst { it.index == -middleItemIndexAdjustment }
+                        minutes.itemSnapshotList.items.indexOfFirst { it.index == -MIDDLE_ITEM_INDEX_ADJUSTMENT }
                             .takeIf { it != -1 }
                             ?.let {
                                 launch {
@@ -214,9 +242,7 @@ fun TracedTimePicker(
                         day = Item(initialCalendar.day, 0)
                         hour = Item(initialCalendar.hour, 0)
                         minute = Item(initialCalendar.minute, 0)
-                        onValueChange(
-                            gregorianCalendar(zone, initialValue, day.value, hour.value, minute.value).timeInMillis
-                        )
+                        onValueChange(initialCalendar.copy(day.value, hour.value, minute.value).timeInMillis)
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -241,9 +267,7 @@ fun TracedTimePicker(
                     items = days,
                     onValueChange = { item ->
                         day = item
-                        onValueChange(
-                            gregorianCalendar(zone, initialValue, day.value, hour.value, minute.value).timeInMillis
-                        )
+                        onValueChange(initialCalendar.copy(day.value, hour.value, minute.value).timeInMillis)
                     },
                     height = height,
                     itemsPerHeight = itemsPerHeight,
@@ -266,9 +290,7 @@ fun TracedTimePicker(
                     items = hours,
                     onValueChange = { item ->
                         hour = item
-                        onValueChange(
-                            gregorianCalendar(zone, initialValue, day.value, hour.value, minute.value).timeInMillis
-                        )
+                        onValueChange(initialCalendar.copy(day.value, hour.value, minute.value).timeInMillis)
                     },
                     height = height,
                     itemsPerHeight = itemsPerHeight,
@@ -287,9 +309,7 @@ fun TracedTimePicker(
                     items = minutes,
                     onValueChange = { item ->
                         minute = item
-                        onValueChange(
-                            gregorianCalendar(zone, initialValue, day.value, hour.value, minute.value).timeInMillis
-                        )
+                        onValueChange(initialCalendar.copy(day.value, hour.value, minute.value).timeInMillis)
                     },
                     height = height,
                     itemsPerHeight = itemsPerHeight,
@@ -324,12 +344,11 @@ private fun <T : Any> TracedTimePickerSegment(
 
     // Call onValueChange()
     LaunchedEffect(listState) {
-        val middleItemIndexAdjustment = itemsPerHeight / 2
         snapshotFlow { listState.firstVisibleItemIndex }
             .drop(1) // Don't call onValueChange() when the composable is first rendered
             .debounce(100) // Prevent too many emissions when resetting the segment
             .collect { firstVisibleItemIndex ->
-                items[firstVisibleItemIndex + middleItemIndexAdjustment]?.let { value ->
+                items[firstVisibleItemIndex + MIDDLE_ITEM_INDEX_ADJUSTMENT]?.let { value ->
                     onValueChange(value)
                 }
             }
@@ -392,8 +411,31 @@ private fun <T : Any> TracedTimePickerSegment(
 private fun DefaultPreview() {
     AppTheme {
         Surface {
+            val initialCalendar = gregorianCalendar(TimeZone.getDefault())
             TracedTimePicker(
-                action = EntryDetailAction.New(),
+                initialCalendar = initialCalendar,
+                days = flowOf(
+                    PagingData.from(
+                        initialCalendar.generateDaysList(-MIDDLE_ITEM_INDEX_ADJUSTMENT, DAYS_PAGE_SIZE)
+                            .mapIndexed { i, value -> Item(value, -MIDDLE_ITEM_INDEX_ADJUSTMENT + i) }
+                    )
+                ).collectAsLazyPagingItems(),
+                hours = flowOf(
+                    PagingData.from(
+                        (0..23).generateNumbersList(initialCalendar.hour -MIDDLE_ITEM_INDEX_ADJUSTMENT, HOURS_PAGE_SIZE)
+                            .mapIndexed { i, value -> Item(value, -MIDDLE_ITEM_INDEX_ADJUSTMENT + i) }
+                    )
+                ).collectAsLazyPagingItems(),
+                minutes = flowOf(
+                    PagingData.from(
+                        (0..59).generateNumbersList(initialCalendar.minute -MIDDLE_ITEM_INDEX_ADJUSTMENT, MINUTES_PAGE_SIZE)
+                            .mapIndexed { i, value -> Item(value, -MIDDLE_ITEM_INDEX_ADJUSTMENT + i) }
+                    )
+                ).collectAsLazyPagingItems(),
+                itemsPerHeight = 3,
+                dayPageSize = 7,
+                hourPageSize = 30,
+                minutePageSize = 30,
                 onValueChange = {},
             )
         }
