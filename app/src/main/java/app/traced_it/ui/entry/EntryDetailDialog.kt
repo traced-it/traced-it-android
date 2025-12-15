@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.window.core.layout.WindowSizeClass
 import app.traced_it.R
 import app.traced_it.data.di.defaultFakeEntries
 import app.traced_it.data.local.database.*
@@ -43,6 +45,9 @@ fun EntryDetailDialog(
     onDismiss: () -> Unit,
 ) {
     val resources = LocalResources.current
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val smallWindow = !windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND)
+    val labelTopPadding = if (smallWindow) Spacing.small else Spacing.medium
 
     val contentFocusRequester = remember { FocusRequester() }
     var contentFieldValue by remember {
@@ -147,7 +152,7 @@ fun EntryDetailDialog(
                     stringResource(R.string.detail_content_label),
                     Modifier
                         .padding(horizontal = Spacing.windowPadding)
-                        .padding(top = Spacing.medium, bottom = Spacing.small),
+                        .padding(top = labelTopPadding, bottom = Spacing.small),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -168,7 +173,7 @@ fun EntryDetailDialog(
                     amountRaw = amountRaw,
                     selectedUnit = unit,
                     latestEntryUnitFlow = latestEntryUnitFlow,
-                    modifier = Modifier.padding(top = Spacing.medium * 2),
+                    modifier = Modifier.padding(top = labelTopPadding),
                     onAmountRawChange = { amountRaw = it },
                     onUnitChange = { unit = it },
                     onVisibleUnitChange = {
@@ -179,7 +184,7 @@ fun EntryDetailDialog(
                 TracedTimePicker(
                     action = action,
                     onValueChange = { createdAt = it },
-                    modifier = Modifier.padding(top = Spacing.medium * 2),
+                    modifier = Modifier.padding(top = labelTopPadding),
                 )
             }
             HorizontalDivider()
@@ -302,11 +307,28 @@ private fun InvisibleUnitPreview() {
 @Preview(
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
-    widthDp = 1024,
-    heightDp = 768,
+    device = "id:Nexus 5",
 )
 @Composable
-private fun PortraitPreview() {
+private fun SmallPreview() {
+    AppTheme {
+        EntryDetailDialog(
+            action = EntryDetailAction.Prefill(defaultFakeEntries[0]),
+            latestEntryUnitFlow = MutableStateFlow(null),
+            onInsert = {},
+            onUpdate = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    device = "spec:width=1280dp,height=800dp,dpi=240",
+)
+@Composable
+private fun TabletPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.Prefill(defaultFakeEntries[0]),
