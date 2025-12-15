@@ -143,6 +143,26 @@ fun TracedTimePicker(
     )
 }
 
+private suspend fun <T> reset(
+    currentItem: Item<T>,
+    items: LazyPagingItems<Item<T>>,
+    listState: LazyListState,
+    pageSize: Int,
+) {
+    val initialItemListIndex =
+        items.itemSnapshotList.items.indexOfFirst { it.index == -MIDDLE_ITEM_INDEX_ADJUSTMENT }
+    if (initialItemListIndex != -1) {
+        listState.stopScroll(MutatePriority.UserInput)
+        if (abs(currentItem.index + MIDDLE_ITEM_INDEX_ADJUSTMENT) > pageSize) {
+            // If the current item is further than one page from the initial item, do a quick non-animated scroll,
+            // because the animated scroll is not smooth when a page needs to be loaded in the process.
+            listState.scrollToItem(initialItemListIndex)
+        } else {
+            listState.animateScrollToItem(initialItemListIndex)
+        }
+    }
+}
+
 @OptIn(ExperimentalTime::class)
 @Composable
 private fun TracedTimePicker(
@@ -176,7 +196,7 @@ private fun TracedTimePicker(
         mutableStateOf(Item(value = initialCalendar.hour, index = -MIDDLE_ITEM_INDEX_ADJUSTMENT))
     }
     var minute by remember {
-        mutableStateOf(Item(value = initialCalendar.minute,index = -MIDDLE_ITEM_INDEX_ADJUSTMENT))
+        mutableStateOf(Item(value = initialCalendar.minute, index = -MIDDLE_ITEM_INDEX_ADJUSTMENT))
     }
     val dayListState = rememberLazyListState()
     val hourListState = rememberLazyListState()
@@ -200,45 +220,9 @@ private fun TracedTimePicker(
             TextButton(
                 onClick = {
                     coroutineScope.launch {
-                        days.itemSnapshotList.items.indexOfFirst { it.index == -MIDDLE_ITEM_INDEX_ADJUSTMENT }
-                            .takeIf { it != -1 }
-                            ?.let {
-                                launch {
-                                    dayListState.stopScroll(MutatePriority.UserInput)
-                                    if (abs(day.index) > dayPageSize) {
-                                        // If the current item is further than one page from the initial item, do a quick
-                                        // non-animated scroll, because the animated scroll is not smooth when a page needs to
-                                        // be loaded in the process.
-                                        dayListState.scrollToItem(it)
-                                    } else {
-                                        dayListState.animateScrollToItem(it)
-                                    }
-                                }
-                            }
-                        hours.itemSnapshotList.items.indexOfFirst { it.index == -MIDDLE_ITEM_INDEX_ADJUSTMENT }
-                            .takeIf { it != -1 }
-                            ?.let {
-                                launch {
-                                    hourListState.stopScroll(MutatePriority.UserInput)
-                                    if (abs(hour.index) > hourPageSize) {
-                                        hourListState.scrollToItem(it)
-                                    } else {
-                                        hourListState.animateScrollToItem(it)
-                                    }
-                                }
-                            }
-                        minutes.itemSnapshotList.items.indexOfFirst { it.index == -MIDDLE_ITEM_INDEX_ADJUSTMENT }
-                            .takeIf { it != -1 }
-                            ?.let {
-                                launch {
-                                    minuteListState.stopScroll(MutatePriority.UserInput)
-                                    if (abs(minute.index) > minutePageSize) {
-                                        minuteListState.scrollToItem(it)
-                                    } else {
-                                        minuteListState.animateScrollToItem(it)
-                                    }
-                                }
-                            }
+                        reset(day, days, dayListState, dayPageSize)
+                        reset(hour, hours, hourListState, hourPageSize)
+                        reset(minute, minutes, minuteListState, minutePageSize)
                         day = Item(initialCalendar.day, 0)
                         hour = Item(initialCalendar.hour, 0)
                         minute = Item(initialCalendar.minute, 0)
@@ -416,19 +400,25 @@ private fun DefaultPreview() {
                 initialCalendar = initialCalendar,
                 days = flowOf(
                     PagingData.from(
-                        initialCalendar.generateDaysList(-MIDDLE_ITEM_INDEX_ADJUSTMENT, DAYS_PAGE_SIZE)
+                        initialCalendar.generateDaysList(
+                            -MIDDLE_ITEM_INDEX_ADJUSTMENT, DAYS_PAGE_SIZE
+                        )
                             .mapIndexed { i, value -> Item(value, -MIDDLE_ITEM_INDEX_ADJUSTMENT + i) }
                     )
                 ).collectAsLazyPagingItems(),
                 hours = flowOf(
                     PagingData.from(
-                        (0..23).generateNumbersList(initialCalendar.hour -MIDDLE_ITEM_INDEX_ADJUSTMENT, HOURS_PAGE_SIZE)
+                        (0..23).generateNumbersList(
+                            initialCalendar.hour - MIDDLE_ITEM_INDEX_ADJUSTMENT, HOURS_PAGE_SIZE
+                        )
                             .mapIndexed { i, value -> Item(value, -MIDDLE_ITEM_INDEX_ADJUSTMENT + i) }
                     )
                 ).collectAsLazyPagingItems(),
                 minutes = flowOf(
                     PagingData.from(
-                        (0..59).generateNumbersList(initialCalendar.minute -MIDDLE_ITEM_INDEX_ADJUSTMENT, MINUTES_PAGE_SIZE)
+                        (0..59).generateNumbersList(
+                            initialCalendar.minute - MIDDLE_ITEM_INDEX_ADJUSTMENT, MINUTES_PAGE_SIZE
+                        )
                             .mapIndexed { i, value -> Item(value, -MIDDLE_ITEM_INDEX_ADJUSTMENT + i) }
                     )
                 ).collectAsLazyPagingItems(),
