@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.ExperimentalTime
 
@@ -138,32 +137,18 @@ fun TracedTimePicker(
         hours = hours,
         minutes = minutes,
         itemsPerHeight = ITEMS_PER_HEIGHT,
-        dayPageSize = DAYS_PAGE_SIZE,
-        hourPageSize = HOURS_PAGE_SIZE,
-        minutePageSize = MINUTES_PAGE_SIZE,
         onValueChange = onValueChange,
         viewportBounds = viewportBounds,
         modifier = modifier,
     )
 }
 
-private suspend fun <T> reset(
-    currentItem: Item<T>,
-    items: LazyPagingItems<Item<T>>,
-    listState: LazyListState,
-    pageSize: Int,
-) {
+private suspend fun <T> reset(items: LazyPagingItems<Item<T>>, listState: LazyListState) {
     val initialItemListIndex =
         items.itemSnapshotList.items.indexOfFirst { it.index == -MIDDLE_ITEM_INDEX_ADJUSTMENT }
     if (initialItemListIndex != -1) {
         listState.stopScroll(MutatePriority.UserInput)
-        if (abs(currentItem.index + MIDDLE_ITEM_INDEX_ADJUSTMENT) > pageSize) {
-            // If the current item is further than one page from the initial item, do a quick non-animated scroll,
-            // because the animated scroll is not smooth when a page needs to be loaded in the process.
-            listState.scrollToItem(initialItemListIndex)
-        } else {
-            listState.animateScrollToItem(initialItemListIndex)
-        }
+        listState.scrollToItem(initialItemListIndex)
     }
 }
 
@@ -176,17 +161,12 @@ private fun TracedTimePicker(
     minutes: LazyPagingItems<Item<Int>>,
     @Suppress("SameParameterValue")
     itemsPerHeight: Int,
-    @Suppress("SameParameterValue")
-    dayPageSize: Int,
-    @Suppress("SameParameterValue")
-    hourPageSize: Int,
-    @Suppress("SameParameterValue")
-    minutePageSize: Int,
     viewportBounds: LayoutBoundsHolder?,
     onValueChange: (value: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val hapticFeedback = LocalHapticFeedback.current
 
     val height = Spacing.inputHeight * 1.25f
     val borderColor = MaterialTheme.colorScheme.outline
@@ -226,9 +206,12 @@ private fun TracedTimePicker(
             TextButton(
                 onClick = {
                     coroutineScope.launch {
-                        reset(day, days, dayListState, dayPageSize)
-                        reset(hour, hours, hourListState, hourPageSize)
-                        reset(minute, minutes, minuteListState, minutePageSize)
+                        // Reset segments in sequence and set state in sequence, because when doing it in parallel,
+                        // a segment sometimes ends up showing an incorrect value for some reason.
+                        reset(days, dayListState)
+                        reset(hours, hourListState)
+                        reset(minutes, minuteListState)
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
                         day = Item(initialCalendar.day, 0)
                         hour = Item(initialCalendar.hour, 0)
                         minute = Item(initialCalendar.minute, 0)
@@ -440,10 +423,7 @@ private fun DefaultPreview() {
                             .mapIndexed { i, value -> Item(value, -MIDDLE_ITEM_INDEX_ADJUSTMENT + i) }
                     )
                 ).collectAsLazyPagingItems(),
-                itemsPerHeight = 3,
-                dayPageSize = 7,
-                hourPageSize = 30,
-                minutePageSize = 30,
+                itemsPerHeight = ITEMS_PER_HEIGHT,
                 viewportBounds = null,
                 onValueChange = {},
             )
