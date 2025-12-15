@@ -229,6 +229,7 @@ private fun TracedTimePicker(
                         onValueChange(initialCalendar.copy(day.value, hour.value, minute.value).timeInMillis)
                     }
                 },
+                modifier = Modifier.padding(end = 7.dp), // Align with UnitSelect's dropdown
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
