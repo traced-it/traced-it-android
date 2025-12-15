@@ -13,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.LayoutBoundsHolder
+import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -108,6 +110,7 @@ private class RangePagingSource(
 fun TracedTimePicker(
     action: EntryDetailAction,
     onValueChange: (value: Long) -> Unit,
+    viewportBounds: LayoutBoundsHolder?,
     modifier: Modifier = Modifier,
 ) {
     val zone = TimeZone.getDefault()
@@ -139,6 +142,7 @@ fun TracedTimePicker(
         hourPageSize = HOURS_PAGE_SIZE,
         minutePageSize = MINUTES_PAGE_SIZE,
         onValueChange = onValueChange,
+        viewportBounds = viewportBounds,
         modifier = modifier,
     )
 }
@@ -178,6 +182,7 @@ private fun TracedTimePicker(
     hourPageSize: Int,
     @Suppress("SameParameterValue")
     minutePageSize: Int,
+    viewportBounds: LayoutBoundsHolder?,
     onValueChange: (value: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -201,6 +206,7 @@ private fun TracedTimePicker(
     val dayListState = rememberLazyListState()
     val hourListState = rememberLazyListState()
     val minuteListState = rememberLazyListState()
+    var userScrollEnabled by remember { mutableStateOf(false) }
 
     Column(
         modifier
@@ -241,6 +247,12 @@ private fun TracedTimePicker(
             }
         }
         Surface(
+            modifier = Modifier.onVisibilityChanged(
+                minFractionVisible = 0.5f,
+                viewportBounds = viewportBounds,
+            ) { visible ->
+                userScrollEnabled = visible
+            },
             color = MaterialTheme.colorScheme.secondaryContainer,
             shape = MaterialTheme.shapes.extraSmall,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -259,6 +271,7 @@ private fun TracedTimePicker(
                     modifier = Modifier
                         .weight(3f)
                         .rightBorder(borderColor, borderWidth),
+                    userScrollEnabled = userScrollEnabled,
                 ) { item ->
                     if (item.value == today) {
                         stringResource(R.string.detail_created_at_today)
@@ -282,6 +295,7 @@ private fun TracedTimePicker(
                     modifier = Modifier
                         .weight(1f)
                         .rightBorder(borderColor, borderWidth),
+                    userScrollEnabled = userScrollEnabled,
                 ) { item ->
                     if (item.value <= 9) {
                         "0${item.value}"
@@ -298,6 +312,7 @@ private fun TracedTimePicker(
                     },
                     height = height,
                     itemsPerHeight = itemsPerHeight,
+                    userScrollEnabled = userScrollEnabled,
                     modifier = Modifier.weight(1f),
                 ) { item ->
                     if (item.value <= 9) {
@@ -320,6 +335,7 @@ private fun <T : Any> TracedTimePickerSegment(
     height: Dp,
     @Suppress("SameParameterValue")
     itemsPerHeight: Int,
+    userScrollEnabled: Boolean,
     modifier: Modifier = Modifier,
     text: @Composable (item: Item<T>) -> String,
 ) {
@@ -370,6 +386,7 @@ private fun <T : Any> TracedTimePickerSegment(
             .verticalFade()
             .then(modifier),
         state = listState,
+        userScrollEnabled = userScrollEnabled,
     ) {
         items(
             items.itemCount,
@@ -427,6 +444,7 @@ private fun DefaultPreview() {
                 dayPageSize = 7,
                 hourPageSize = 30,
                 minutePageSize = 30,
+                viewportBounds = null,
                 onValueChange = {},
             )
         }

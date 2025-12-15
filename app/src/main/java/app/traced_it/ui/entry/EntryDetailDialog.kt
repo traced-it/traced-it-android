@@ -13,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.LayoutBoundsHolder
+import androidx.compose.ui.layout.layoutBounds
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -45,6 +47,7 @@ fun EntryDetailDialog(
     onDismiss: () -> Unit,
 ) {
     val resources = LocalResources.current
+    val viewportBounds = remember { LayoutBoundsHolder() }
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val smallWindow = !windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND)
     val labelTopPadding = if (smallWindow) Spacing.small else Spacing.medium
@@ -146,6 +149,7 @@ fun EntryDetailDialog(
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .layoutBounds(viewportBounds)
                     .verticalScroll(rememberScrollState())
             ) {
                 Text(
@@ -184,6 +188,7 @@ fun EntryDetailDialog(
                 TracedTimePicker(
                     action = action,
                     onValueChange = { createdAt = it },
+                    viewportBounds = viewportBounds,
                     modifier = Modifier.padding(top = labelTopPadding),
                 )
             }
