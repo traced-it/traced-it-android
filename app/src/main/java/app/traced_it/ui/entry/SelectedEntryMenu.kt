@@ -1,4 +1,4 @@
-package app.traced_it.ui.components
+package app.traced_it.ui.entry
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons

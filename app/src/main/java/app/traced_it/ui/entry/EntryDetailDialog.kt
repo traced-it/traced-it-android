@@ -8,7 +8,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -22,13 +21,11 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.window.core.layout.WindowSizeClass
 import app.traced_it.R
 import app.traced_it.data.di.defaultFakeEntries
 import app.traced_it.data.local.database.*
 import app.traced_it.ui.components.*
 import app.traced_it.ui.theme.AppTheme
-import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -48,9 +45,6 @@ fun EntryDetailDialog(
 ) {
     val resources = LocalResources.current
     val viewportBounds = remember { LayoutBoundsHolder() }
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val smallWindow = !windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND)
-    val labelTopPadding = if (smallWindow) Spacing.small else Spacing.medium
 
     val contentFocusRequester = remember { FocusRequester() }
     var contentFieldValue by remember {
@@ -152,32 +146,26 @@ fun EntryDetailDialog(
                     .layoutBounds(viewportBounds)
                     .verticalScroll(rememberScrollState())
             ) {
-                Text(
-                    stringResource(R.string.detail_content_label),
-                    Modifier
-                        .padding(horizontal = Spacing.windowPadding)
-                        .padding(top = labelTopPadding, bottom = Spacing.small),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                TracedTextField(
-                    value = contentFieldValue,
-                    onValueChange = { contentFieldValue = it },
-                    modifier = Modifier
-                        .testTag("entryDetailContentTextField")
-                        .focusRequester(contentFocusRequester)
-                        .padding(horizontal = Spacing.windowPadding)
-                        .fillMaxWidth(),
-                    isError = contentFieldValue.text.isEmpty(),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences
-                    ),
-                )
-                UnitSelect(
+                TracedControl(
+                    label = stringResource(R.string.detail_content_label),
+                ) {
+                    TracedTextField(
+                        value = contentFieldValue,
+                        onValueChange = { contentFieldValue = it },
+                        modifier = Modifier
+                            .testTag("entryDetailContentTextField")
+                            .focusRequester(contentFocusRequester)
+                            .fillMaxWidth(),
+                        isError = contentFieldValue.text.isEmpty(),
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences
+                        ),
+                    )
+                }
+                UnitControl(
                     amountRaw = amountRaw,
                     selectedUnit = unit,
                     latestEntryUnitFlow = latestEntryUnitFlow,
-                    modifier = Modifier.padding(top = labelTopPadding),
                     onAmountRawChange = { amountRaw = it },
                     onUnitChange = { unit = it },
                     onVisibleUnitChange = {
@@ -185,11 +173,10 @@ fun EntryDetailDialog(
                         amountRaw = ""
                     },
                 )
-                TracedTimePicker(
+                CreatedAtControl(
                     action = action,
                     onValueChange = { createdAt = it },
                     viewportBounds = viewportBounds,
-                    modifier = Modifier.padding(top = labelTopPadding),
                 )
             }
             HorizontalDivider()

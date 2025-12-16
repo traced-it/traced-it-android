@@ -1,12 +1,14 @@
 package app.traced_it.ui.entry
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -19,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.traced_it.R
 import app.traced_it.data.local.database.*
+import app.traced_it.ui.components.TracedControl
 import app.traced_it.ui.components.TracedTextField
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
@@ -27,11 +30,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun UnitSelect(
+fun UnitControl(
     amountRaw: String,
     selectedUnit: EntryUnit,
     latestEntryUnitFlow: StateFlow<EntryUnit?>,
-    modifier: Modifier = Modifier,
     onAmountRawChange: (newAmountRaw: String) -> Unit,
     onUnitChange: (newUnit: EntryUnit) -> Unit,
     onVisibleUnitChange: () -> Unit,
@@ -46,22 +48,9 @@ fun UnitSelect(
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = Spacing.windowPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                stringResource(R.string.detail_unit_label),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+    TracedControl(
+        label = stringResource(R.string.detail_unit_label),
+        labelMenu = {
             Box {
                 TextButton(
                     onClick = { expanded = true },
@@ -107,7 +96,8 @@ fun UnitSelect(
                         }
                 }
             }
-        }
+        },
+    ) {
         if (visibleUnit.choices.isNotEmpty()) {
             UnitSelectChoice(
                 amountRaw = amountRaw,
@@ -150,7 +140,7 @@ fun UnitSelect(
 private fun DefaultPreview() {
     AppTheme {
         Surface {
-            UnitSelect(
+            UnitControl(
                 amountRaw = "",
                 selectedUnit = noneUnit,
                 latestEntryUnitFlow = MutableStateFlow(clothingSizeUnit),
@@ -167,7 +157,7 @@ private fun DefaultPreview() {
 private fun ClothingSizePreview() {
     AppTheme {
         Surface {
-            UnitSelect(
+            UnitControl(
                 amountRaw = "S",
                 selectedUnit = clothingSizeUnit,
                 latestEntryUnitFlow = MutableStateFlow(clothingSizeUnit),
@@ -184,7 +174,7 @@ private fun ClothingSizePreview() {
 private fun SmallNumbersChoicePreview() {
     AppTheme {
         Surface {
-            UnitSelect(
+            UnitControl(
                 amountRaw = "2x",
                 selectedUnit = smallNumbersChoiceUnit,
                 latestEntryUnitFlow = MutableStateFlow(smallNumbersChoiceUnit),
@@ -201,7 +191,7 @@ private fun SmallNumbersChoicePreview() {
 private fun FractionPreview() {
     AppTheme {
         Surface {
-            UnitSelect(
+            UnitControl(
                 amountRaw = "⅓",
                 selectedUnit = fractionUnit,
                 latestEntryUnitFlow = MutableStateFlow(fractionUnit),
@@ -218,7 +208,7 @@ private fun FractionPreview() {
 private fun DoublePreview() {
     AppTheme {
         Surface {
-            UnitSelect(
+            UnitControl(
                 amountRaw = "",
                 selectedUnit = doubleUnit,
                 latestEntryUnitFlow = MutableStateFlow(doubleUnit),
@@ -235,7 +225,7 @@ private fun DoublePreview() {
 private fun DoubleFrenchPreview() {
     AppTheme {
         Surface {
-            UnitSelect(
+            UnitControl(
                 amountRaw = "",
                 selectedUnit = doubleUnit,
                 latestEntryUnitFlow = MutableStateFlow(doubleUnit),
