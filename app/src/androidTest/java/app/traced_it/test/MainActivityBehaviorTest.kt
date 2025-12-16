@@ -104,11 +104,20 @@ open class MainActivityBehaviorTest {
         // Set unit
         onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "M" }.click()
 
+        // Set created at
+        onElement { viewIdResourceName == "tracedTimePickerDaySegment" }
+            .scroll(Direction.UP,0.5f) // Minus one day
+        onElement { viewIdResourceName == "tracedTimePickerHourSegment" }
+            .scroll(Direction.DOWN,0.5f) // Plus one hour
+        onElement { viewIdResourceName == "tracedTimePickerMinuteSegment" }
+            .scroll(Direction.DOWN,0.5f) // Plus one minute
+
         // Save
         onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Check entry list
         onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "Test entry 2 edited (M)" } != null }
+        onElement { viewIdResourceName == "entryListItem" && onElementOrNull { textAsString() == "22 h 59 min ago" } != null }
     }
 
     @Test
