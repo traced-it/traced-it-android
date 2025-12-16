@@ -1,8 +1,11 @@
 package app.traced_it.data.local.database
 
+import android.annotation.SuppressLint
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
+import androidx.room.util.convertUUIDToByte
 import androidx.sqlite.db.SupportSQLiteDatabase
+import java.util.*
 
 class Converters {
     @TypeConverter
@@ -17,12 +20,8 @@ class Converters {
     version = 4,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
-        AutoMigration(
-            from = 2,
-            to = 3,
-            spec = AppDatabase.AutoMigration2To3::class,
-        ),
-        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 2, to = 3, spec = AppDatabase.AutoMigration2To3::class),
+        AutoMigration(from = 3, to = 4, spec = AppDatabase.AutoMigration3To4::class),
     ],
 )
 @TypeConverters(Converters::class)
@@ -32,9 +31,28 @@ abstract class AppDatabase : RoomDatabase() {
     class AutoMigration2To3 : AutoMigrationSpec {
         override fun onPostMigrate(db: SupportSQLiteDatabase) {
             super.onPostMigrate(db)
-            db.execSQL(
-                "INSERT INTO entry_fts(entry_fts) VALUES ('rebuild')"
-            )
+            db.execSQL("INSERT INTO entry_fts(entry_fts) VALUES ('rebuild')")
+        }
+    }
+
+    class AutoMigration3To4 : AutoMigrationSpec {
+        @SuppressLint("RestrictedApi")
+        override fun onPostMigrate(db: SupportSQLiteDatabase) {
+            super.onPostMigrate(db)
+            val uids = mutableListOf<ByteArray>()
+            val cursor = db.query("SELECT uid FROM Entry")
+            with(cursor) {
+                while (moveToNext()) {
+                    uids.add(getBlob(0))
+                }
+            }
+            cursor.close()
+            val statement = db.compileStatement("UPDATE Entry SET uid = ? WHERE uid = ?")
+            for (uid in uids) {
+                statement.bindBlob(1, convertUUIDToByte(UUID.randomUUID()))
+                statement.bindBlob(2, uid)
+                statement.execute()
+            }
         }
     }
 }
