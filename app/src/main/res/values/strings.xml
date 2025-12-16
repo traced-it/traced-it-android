@@ -8,7 +8,7 @@
     <string name="detail_update_save">Update</string>
     <string name="detail_add_save">Save</string>
     <string name="detail_content_label">Write your note</string>
-    <string name="detail_created_at_label">Timestamp</string>
+    <string name="detail_created_at_label">Time</string>
     <string name="detail_created_at_reset">reset</string>
     <string name="detail_created_at_today">today</string>
     <string name="list_item_update">Update</string>
