@@ -20,7 +20,11 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import app.traced_it.R
 import app.traced_it.lib.*
-import app.traced_it.ui.entry.EntryDetailAction
+import app.traced_it.ui.components.DayPagingSource
+import app.traced_it.ui.components.RangePagingSource
+import app.traced_it.ui.components.TracedControl
+import app.traced_it.ui.components.TracedTimePicker
+import app.traced_it.ui.components.TracedTimePickerItem
 import app.traced_it.ui.theme.AppTheme
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -29,7 +33,7 @@ import kotlin.collections.indexOfFirst
 import kotlin.time.ExperimentalTime
 
 private suspend fun <T> reset(
-    items: LazyPagingItems<app.traced_it.ui.components.TracedTimePickerItem<T>>,
+    items: LazyPagingItems<TracedTimePickerItem<T>>,
     listState: LazyListState,
     itemsPerHeight: Int,
 ) {
@@ -48,6 +52,7 @@ private suspend fun <T> reset(
 fun CreatedAtControl(
     action: EntryDetailAction,
     onValueChange: (value: Long) -> Unit,
+    onChangeInProgress: (changeInProgress: Boolean) -> Unit,
     viewportBounds: LayoutBoundsHolder?,
 ) {
     val itemsPerHeight = 3
@@ -65,10 +70,10 @@ fun CreatedAtControl(
     val initialCalendar = gregorianCalendar(zone, initialValue)
 
     val days = Pager(PagingConfig(pageSize = daysPageSize, enablePlaceholders = true)) {
-        _root_ide_package_.app.traced_it.ui.components.DayPagingSource(initialCalendar, daysPageSize, itemsPerHeight)
+        DayPagingSource(initialCalendar, daysPageSize, itemsPerHeight)
     }.flow.collectAsLazyPagingItems()
     val hours = Pager(PagingConfig(pageSize = hoursPageSize, enablePlaceholders = true)) {
-        _root_ide_package_.app.traced_it.ui.components.RangePagingSource(
+        RangePagingSource(
             0..23,
             initialCalendar.hour,
             hoursPageSize,
@@ -76,7 +81,7 @@ fun CreatedAtControl(
         )
     }.flow.collectAsLazyPagingItems()
     val minutes = Pager(PagingConfig(pageSize = minutesPageSize, enablePlaceholders = true)) {
-        _root_ide_package_.app.traced_it.ui.components.RangePagingSource(
+        RangePagingSource(
             0..59,
             initialCalendar.minute,
             minutesPageSize,
@@ -90,6 +95,7 @@ fun CreatedAtControl(
         hours = hours,
         minutes = minutes,
         onValueChange = onValueChange,
+        onChangeInProgress = onChangeInProgress,
         itemsPerHeight = itemsPerHeight,
         viewportBounds = viewportBounds,
     )
@@ -99,10 +105,11 @@ fun CreatedAtControl(
 @Composable
 private fun CreatedAtControl(
     initialCalendar: Calendar,
-    days: LazyPagingItems<app.traced_it.ui.components.TracedTimePickerItem<Day>>,
-    hours: LazyPagingItems<app.traced_it.ui.components.TracedTimePickerItem<Int>>,
-    minutes: LazyPagingItems<app.traced_it.ui.components.TracedTimePickerItem<Int>>,
+    days: LazyPagingItems<TracedTimePickerItem<Day>>,
+    hours: LazyPagingItems<TracedTimePickerItem<Int>>,
+    minutes: LazyPagingItems<TracedTimePickerItem<Int>>,
     onValueChange: (value: Long) -> Unit,
+    onChangeInProgress: (changeInProgress: Boolean) -> Unit,
     @Suppress("SameParameterValue")
     itemsPerHeight: Int,
     viewportBounds: LayoutBoundsHolder?,
@@ -114,7 +121,7 @@ private fun CreatedAtControl(
 
     var day by remember {
         mutableStateOf(
-            _root_ide_package_.app.traced_it.ui.components.TracedTimePickerItem(
+            TracedTimePickerItem(
                 value = initialCalendar.day,
                 index = -middleItemIndexAdjustment
             )
@@ -122,7 +129,7 @@ private fun CreatedAtControl(
     }
     var hour by remember {
         mutableStateOf(
-            _root_ide_package_.app.traced_it.ui.components.TracedTimePickerItem(
+            TracedTimePickerItem(
                 value = initialCalendar.hour,
                 index = -middleItemIndexAdjustment
             )
@@ -130,17 +137,17 @@ private fun CreatedAtControl(
     }
     var minute by remember {
         mutableStateOf(
-            _root_ide_package_.app.traced_it.ui.components.TracedTimePickerItem(
+            TracedTimePickerItem(
                 value = initialCalendar.minute,
                 index = -middleItemIndexAdjustment
             )
         )
     }
-    val daysListState = rememberLazyListState()
-    val hoursListState = rememberLazyListState()
-    val minutesListState = rememberLazyListState()
+    val dayListState = rememberLazyListState()
+    val hourListState = rememberLazyListState()
+    val minuteListState = rememberLazyListState()
 
-    _root_ide_package_.app.traced_it.ui.components.TracedControl(
+    TracedControl(
         label = stringResource(R.string.detail_created_at_label),
         labelButton = {
             TextButton(
@@ -148,18 +155,13 @@ private fun CreatedAtControl(
                     coroutineScope.launch {
                         // Reset segments in sequence and set state in sequence, because when doing it in parallel,
                         // a segment sometimes ends up showing an incorrect value for some reason.
-                        reset(days, daysListState, itemsPerHeight)
-                        reset(hours, hoursListState, itemsPerHeight)
-                        reset(minutes, minutesListState, itemsPerHeight)
+                        reset(days, dayListState, itemsPerHeight)
+                        reset(hours, hourListState, itemsPerHeight)
+                        reset(minutes, minuteListState, itemsPerHeight)
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
-                        day =
-                            _root_ide_package_.app.traced_it.ui.components.TracedTimePickerItem(initialCalendar.day, 0)
-                        hour =
-                            _root_ide_package_.app.traced_it.ui.components.TracedTimePickerItem(initialCalendar.hour, 0)
-                        minute = _root_ide_package_.app.traced_it.ui.components.TracedTimePickerItem(
-                            initialCalendar.minute,
-                            0
-                        )
+                        day = TracedTimePickerItem(initialCalendar.day, 0)
+                        hour = TracedTimePickerItem(initialCalendar.hour, 0)
+                        minute = TracedTimePickerItem(initialCalendar.minute,0)
                         onValueChange(initialCalendar.copy(day.value, hour.value, minute.value).timeInMillis)
                     }
                 },
@@ -175,13 +177,13 @@ private fun CreatedAtControl(
             }
         },
     ) {
-        _root_ide_package_.app.traced_it.ui.components.TracedTimePicker(
+        TracedTimePicker(
             days = days,
             hours = hours,
             minutes = minutes,
-            daysListState = daysListState,
-            hoursListState = hoursListState,
-            minutesListState = minutesListState,
+            dayListState = dayListState,
+            hourListState = hourListState,
+            minuteListState = minuteListState,
             onDayChange = { item ->
                 day = item
                 onValueChange(initialCalendar.copy(day.value, hour.value, minute.value).timeInMillis)
@@ -194,6 +196,7 @@ private fun CreatedAtControl(
                 minute = item
                 onValueChange(initialCalendar.copy(day.value, hour.value, minute.value).timeInMillis)
             },
+            onChangeInProgress = onChangeInProgress,
             itemsPerHeight = itemsPerHeight,
             viewportBounds = viewportBounds,
             zone = initialCalendar.timeZone,
@@ -222,7 +225,7 @@ private fun DefaultPreview() {
                             -middleItemIndexAdjustment, daysPageSize
                         )
                             .mapIndexed { i, value ->
-                                _root_ide_package_.app.traced_it.ui.components.TracedTimePickerItem(
+                                TracedTimePickerItem(
                                     value,
                                     -middleItemIndexAdjustment + i
                                 )
@@ -235,7 +238,7 @@ private fun DefaultPreview() {
                             initialCalendar.hour - middleItemIndexAdjustment, hoursPageSize
                         )
                             .mapIndexed { i, value ->
-                                _root_ide_package_.app.traced_it.ui.components.TracedTimePickerItem(
+                                TracedTimePickerItem(
                                     value,
                                     -middleItemIndexAdjustment + i
                                 )
@@ -248,7 +251,7 @@ private fun DefaultPreview() {
                             initialCalendar.minute - middleItemIndexAdjustment, minutesPageSize
                         )
                             .mapIndexed { i, value ->
-                                _root_ide_package_.app.traced_it.ui.components.TracedTimePickerItem(
+                                TracedTimePickerItem(
                                     value,
                                     -middleItemIndexAdjustment + i
                                 )
@@ -256,6 +259,7 @@ private fun DefaultPreview() {
                     )
                 ).collectAsLazyPagingItems(),
                 onValueChange = {},
+                onChangeInProgress = {},
                 itemsPerHeight = itemsPerHeight,
                 viewportBounds = null,
             )

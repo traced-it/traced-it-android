@@ -21,6 +21,7 @@ import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -36,7 +37,6 @@ import app.traced_it.lib.*
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOf
@@ -108,12 +108,13 @@ fun TracedTimePicker(
     days: LazyPagingItems<TracedTimePickerItem<Day>>,
     hours: LazyPagingItems<TracedTimePickerItem<Int>>,
     minutes: LazyPagingItems<TracedTimePickerItem<Int>>,
-    daysListState: LazyListState,
-    hoursListState: LazyListState,
-    minutesListState: LazyListState,
+    dayListState: LazyListState,
+    hourListState: LazyListState,
+    minuteListState: LazyListState,
     onDayChange: (item: TracedTimePickerItem<Day>) -> Unit,
     onHourChange: (item: TracedTimePickerItem<Int>) -> Unit,
     onMinuteChange: (item: TracedTimePickerItem<Int>) -> Unit,
+    onChangeInProgress: (changeInProgress: Boolean) -> Unit,
     itemsPerHeight: Int,
     viewportBounds: LayoutBoundsHolder?,
     zone: TimeZone,
@@ -139,12 +140,14 @@ fun TracedTimePicker(
     ) {
         Row {
             TracedTimePickerSegment(
-                listState = daysListState,
+                listState = dayListState,
                 items = days,
+                onChangeInProgress = onChangeInProgress,
                 onValueChange = onDayChange,
                 height = height,
                 itemsPerHeight = itemsPerHeight,
                 modifier = Modifier
+                    .testTag("tracedTimePickerDaySegment")
                     .weight(3f)
                     .rightBorder(borderColor, borderWidth),
                 userScrollEnabled = userScrollEnabled,
@@ -160,12 +163,14 @@ fun TracedTimePicker(
                 }
             }
             TracedTimePickerSegment(
-                listState = hoursListState,
+                listState = hourListState,
                 items = hours,
+                onChangeInProgress = onChangeInProgress,
                 onValueChange = onHourChange,
                 height = height,
                 itemsPerHeight = itemsPerHeight,
                 modifier = Modifier
+                    .testTag("tracedTimePickerHourSegment")
                     .weight(1f)
                     .rightBorder(borderColor, borderWidth),
                 userScrollEnabled = userScrollEnabled,
@@ -177,13 +182,16 @@ fun TracedTimePicker(
                 }
             }
             TracedTimePickerSegment(
-                listState = minutesListState,
+                listState = minuteListState,
                 items = minutes,
+                onChangeInProgress = onChangeInProgress,
                 onValueChange = onMinuteChange,
                 height = height,
                 itemsPerHeight = itemsPerHeight,
                 userScrollEnabled = userScrollEnabled,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .testTag("tracedTimePickerMinuteSegment")
+                    .weight(1f),
             ) { item ->
                 if (item.value <= 9) {
                     "0${item.value}"
@@ -200,6 +208,7 @@ fun TracedTimePicker(
 private fun <T : Any> TracedTimePickerSegment(
     listState: LazyListState,
     items: LazyPagingItems<TracedTimePickerItem<T>>,
+    onChangeInProgress: (changeInProgress: Boolean) -> Unit,
     onValueChange: (item: TracedTimePickerItem<T>) -> Unit,
     height: Dp,
     itemsPerHeight: Int,
@@ -212,11 +221,18 @@ private fun <T : Any> TracedTimePickerSegment(
     val itemHeight = height / itemsPerHeight.toFloat()
     val middleItemIndexAdjustment = itemsPerHeight / 2
 
+    // Call onChangeInProgress()
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }
+            .collect {
+                onChangeInProgress(listState.isScrollInProgress)
+            }
+    }
+
     // Call onValueChange()
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .drop(1) // Don't call onValueChange() when the composable is first rendered
-            .debounce(100) // Prevent too many emissions when resetting the segment
             .collect { firstVisibleItemIndex ->
                 items[firstVisibleItemIndex + middleItemIndexAdjustment]?.let { value ->
                     onValueChange(value)
@@ -288,9 +304,9 @@ private fun DefaultPreview() {
             val daysPageSize = 7
             val hoursPageSize = 12
             val minutesPageSize = 30
-            val daysListState = rememberLazyListState()
-            val hoursListState = rememberLazyListState()
-            val minutesListState = rememberLazyListState()
+            val dayListState = rememberLazyListState()
+            val hourListState = rememberLazyListState()
+            val minuteListState = rememberLazyListState()
             TracedTimePicker(
                 days = flowOf(
                     PagingData.from(
@@ -316,12 +332,13 @@ private fun DefaultPreview() {
                             .mapIndexed { i, value -> TracedTimePickerItem(value, -middleItemIndexAdjustment + i) }
                     )
                 ).collectAsLazyPagingItems(),
-                daysListState = daysListState,
-                hoursListState = hoursListState,
-                minutesListState = minutesListState,
+                dayListState = dayListState,
+                hourListState = hourListState,
+                minuteListState = minuteListState,
                 onDayChange = {},
                 onHourChange = {},
                 onMinuteChange = {},
+                onChangeInProgress = {},
                 itemsPerHeight = itemsPerHeight,
                 viewportBounds = null,
                 zone = TimeZone.getDefault(),

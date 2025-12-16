@@ -7,7 +7,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -103,9 +106,35 @@ fun EntryDetailDialog(
             )
         )
     }
+    var saveRequested by remember { mutableStateOf(false) }
+    var changeInProgress by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        contentFocusRequester.requestFocus()
+    // Save the entry when clicking the save button, once the dialog is not in the change-in-progress state
+    if (saveRequested && !changeInProgress) {
+        val amount = unit.parse(resources, amountRaw)
+        when (action) {
+            is EntryDetailAction.Edit ->
+                onUpdate(
+                    action.entry.copy(
+                        amount = amount,
+                        amountUnit = unit,
+                        content = contentFieldValue.text,
+                        createdAt = createdAt,
+                    )
+                )
+
+            else ->
+                onInsert(
+                    Entry(
+                        amount = amount,
+                        amountUnit = unit,
+                        content = contentFieldValue.text,
+                        createdAt = createdAt,
+                    )
+                )
+        }
+        @Suppress("AssignedValueIsNeverRead")
+        saveRequested = false
     }
 
     TracedScaffold(
@@ -175,7 +204,14 @@ fun EntryDetailDialog(
                 )
                 CreatedAtControl(
                     action = action,
-                    onValueChange = { createdAt = it },
+                    onValueChange = {
+                        @Suppress("AssignedValueIsNeverRead")
+                        createdAt = it
+                    },
+                    onChangeInProgress = {
+                        @Suppress("AssignedValueIsNeverRead")
+                        changeInProgress = it
+                    },
                     viewportBounds = viewportBounds,
                 )
             }
@@ -188,28 +224,8 @@ fun EntryDetailDialog(
                     }
                 ),
                 onClick = {
-                    val amount = unit.parse(resources, amountRaw)
-                    when (action) {
-                        is EntryDetailAction.Edit ->
-                            onUpdate(
-                                action.entry.copy(
-                                    amount = amount,
-                                    amountUnit = unit,
-                                    content = contentFieldValue.text,
-                                    createdAt = createdAt,
-                                )
-                            )
-
-                        else ->
-                            onInsert(
-                                Entry(
-                                    amount = amount,
-                                    amountUnit = unit,
-                                    content = contentFieldValue.text,
-                                    createdAt = createdAt,
-                                )
-                            )
-                    }
+                    @Suppress("AssignedValueIsNeverRead")
+                    saveRequested = true
                 },
                 modifier = Modifier.testTag("entryDetailSaveButton"),
                 enabled = contentFieldValue.text.isNotEmpty(),
