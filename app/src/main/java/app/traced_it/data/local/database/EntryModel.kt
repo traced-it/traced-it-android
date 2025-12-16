@@ -6,8 +6,11 @@ import androidx.paging.PagingSource
 import androidx.room.*
 import app.traced_it.R
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 @Entity
 data class Entry(
     val amount: Double = 0.0,
@@ -15,7 +18,7 @@ data class Entry(
     val content: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     @ColumnInfo(defaultValue = "0") var deleted: Boolean = false,
-    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
+    @PrimaryKey val uid: UUID = UUID.randomUUID(),
 ) {
     fun format(context: Context): String {
         val contentWithAmount = buildString {
@@ -101,7 +104,10 @@ interface EntryDao {
     @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
     fun getAll(): PagingSource<Int, Entry>
 
-    @Query("SELECT * FROM entry WHERE createdAt = :createdAt AND NOT deleted")
+    @Query("SELECT * FROM entry WHERE uid = :uid")
+    suspend fun getByUid(uid: UUID): Entry?
+
+    @Query("SELECT * FROM entry WHERE createdAt = :createdAt")
     suspend fun getByCreatedAt(createdAt: Long): Entry?
 
     @Query("SELECT * FROM entry WHERE NOT deleted AND amountUnit != 'NONE' ORDER BY createdAt DESC LIMIT 1")
@@ -125,10 +131,10 @@ interface EntryDao {
     suspend fun update(vararg entries: Entry)
 
     @Query("UPDATE entry SET deleted = 1 WHERE uid = :uid")
-    suspend fun delete(uid: Int)
+    suspend fun delete(uid: UUID)
 
     @Query("UPDATE entry SET deleted = 0 WHERE uid = :uid")
-    suspend fun restore(uid: Int)
+    suspend fun restore(uid: UUID)
 
     @Query("UPDATE entry SET deleted = 1")
     suspend fun deleteAll()

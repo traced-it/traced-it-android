@@ -5,10 +5,13 @@ import app.traced_it.data.local.database.Entry
 import app.traced_it.data.local.database.EntryDao
 import app.traced_it.data.local.database.createFullTextQueryExpression
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 import javax.inject.Inject
 
 interface EntryRepository {
     fun count(): Flow<Int>
+
+    suspend fun getByUid(uid: UUID): Entry?
 
     suspend fun getByCreatedAt(createdAt: Long): Entry?
 
@@ -20,9 +23,9 @@ interface EntryRepository {
 
     suspend fun update(vararg entries: Entry)
 
-    suspend fun delete(uid: Int)
+    suspend fun delete(uid: UUID)
 
-    suspend fun restore(uid: Int)
+    suspend fun restore(uid: UUID)
 
     suspend fun deleteAll()
 
@@ -43,6 +46,8 @@ class DefaultEntryRepository @Inject constructor(
             entryDao.getAll()
         }
 
+    override suspend fun getByUid(uid: UUID): Entry? = entryDao.getByUid(uid)
+
     override suspend fun getByCreatedAt(createdAt: Long): Entry? = entryDao.getByCreatedAt(createdAt)
 
     override fun getLatest(): Flow<Entry?> = entryDao.getLatest()
@@ -51,9 +56,9 @@ class DefaultEntryRepository @Inject constructor(
 
     override suspend fun update(vararg entries: Entry) = entryDao.update(*entries)
 
-    override suspend fun delete(uid: Int) = entryDao.delete(uid)
+    override suspend fun delete(uid: UUID) = entryDao.delete(uid)
 
-    override suspend fun restore(uid: Int) = entryDao.restore(uid)
+    override suspend fun restore(uid: UUID) = entryDao.restore(uid)
 
     override suspend fun deleteAll() = entryDao.deleteAll()
 

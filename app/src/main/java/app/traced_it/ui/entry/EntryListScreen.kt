@@ -52,6 +52,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+import java.util.UUID
 
 private class MessageSnackbarVisuals(tracedMessage: Message) : SnackbarVisuals {
     override val message = tracedMessage.text
@@ -114,7 +115,7 @@ private fun EntryListScreen(
     filterQuery: String,
     filterQuerySanitizedForFilename: String,
     filteredEntries: LazyPagingItems<Entry>,
-    highlightedEntryUidFlow: StateFlow<Int?>,
+    highlightedEntryUidFlow: StateFlow<UUID?>,
     initialSelectedEntry: Entry? = null,
     latestEntryUnitFlow: StateFlow<EntryUnit?>,
     message: Message?,

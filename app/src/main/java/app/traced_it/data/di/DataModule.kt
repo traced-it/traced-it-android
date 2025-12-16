@@ -108,6 +108,9 @@ class FakeEntryRepository(
             lastPagingSource = it
         }
 
+    override suspend fun getByUid(uid: UUID): Entry? =
+        _fakeEntries.value.find { it.uid == uid }
+
     override suspend fun getByCreatedAt(createdAt: Long): Entry? =
         _fakeEntries.value.find { it.createdAt == createdAt }
 
@@ -135,7 +138,7 @@ class FakeEntryRepository(
         }
     }
 
-    override suspend fun delete(uid: Int) {
+    override suspend fun delete(uid: UUID) {
         updateEntries(_fakeEntries.value.map {
             if (it.uid == uid) {
                 it.copy(deleted = true)
@@ -145,7 +148,7 @@ class FakeEntryRepository(
         })
     }
 
-    override suspend fun restore(uid: Int) {
+    override suspend fun restore(uid: UUID) {
         updateEntries(_fakeEntries.value.map {
             if (it.uid == uid) {
                 it.copy(deleted = false)
@@ -172,7 +175,6 @@ class FakeEntryRepository(
 
 val demoEntries = listOf(
     Entry(
-        uid = 1,
         amount = 4.0,
         amountUnit = clothingSizeUnit,
         content = "Coffee",
@@ -182,7 +184,6 @@ val demoEntries = listOf(
         },
     ),
     Entry(
-        uid = 2,
         amount = 0.0,
         amountUnit = noneUnit,
         content = "Watered plants",
@@ -192,7 +193,6 @@ val demoEntries = listOf(
         },
     ),
     Entry(
-        uid = 3,
         amount = 25.0,
         amountUnit = noneUnit,
         content = "Woke up",
@@ -205,7 +205,6 @@ val demoEntries = listOf(
         },
     ),
     Entry(
-        uid = 4,
         amount = 0.5,
         amountUnit = fractionUnit,
         content = "Sleeping pill",
@@ -219,7 +218,6 @@ val demoEntries = listOf(
         },
     ),
     Entry(
-        uid = 5,
         amount = 35.0,
         amountUnit = doubleUnit,
         content = "Pull-ups",
@@ -233,7 +231,6 @@ val demoEntries = listOf(
         },
     ),
     Entry(
-        uid = 6,
         amount = 50.0,
         amountUnit = doubleUnit,
         content = "Squats",
@@ -247,7 +244,6 @@ val demoEntries = listOf(
         },
     ),
     Entry(
-        uid = 7,
         amount = 0.0,
         amountUnit = noneUnit,
         content = "Started using traced it",
@@ -265,7 +261,6 @@ val demoEntries = listOf(
 val defaultFakeEntries = listOf(
     *demoEntries.toTypedArray(),
     Entry(
-        uid = 8,
         amount = 0.0,
         amountUnit = clothingSizeUnit,
         content = """
@@ -283,7 +278,6 @@ val defaultFakeEntries = listOf(
         },
     ),
     Entry(
-        uid = 9,
         amount = 0.0,
         amountUnit = noneUnit,
         content = "Future",

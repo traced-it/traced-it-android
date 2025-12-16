@@ -50,6 +50,7 @@ class EntryViewModel @Inject constructor(
         private const val COLUMN_AMOUNT = "amount"
         private const val COLUMN_CONTENT = "content"
         private const val COLUMN_CREATED_AT = "createdAt"
+        private const val COLUMN_UID = "uid"
         private const val FILTER_EXPANDED = "filerExpanded"
         private const val FILTER_QUERY = "filterQuery"
     }
@@ -60,8 +61,8 @@ class EntryViewModel @Inject constructor(
     private val _message = MutableStateFlow<Message?>(null)
     val message: StateFlow<Message?> = _message
 
-    private val _highlightedEntryUid = MutableStateFlow<Int?>(null)
-    val highlightedEntryUid: StateFlow<Int?> = _highlightedEntryUid
+    private val _highlightedEntryUid = MutableStateFlow<UUID?>(null)
+    val highlightedEntryUid: StateFlow<UUID?> = _highlightedEntryUid
 
     val filterExpanded: StateFlow<Boolean> = savedStateHandle.getStateFlow(FILTER_EXPANDED, false)
 
@@ -86,9 +87,8 @@ class EntryViewModel @Inject constructor(
 
     fun insertEntry(resources: Resources, entry: Entry) {
         viewModelScope.launch {
-            val newRowId = entryRepository.insert(entry)
-            val newUid = newRowId.toInt()
-            setHighlightedEntryUid(newUid)
+            entryRepository.insert(entry)
+            setHighlightedEntryUid(entry.uid)
             setMessage(Message(resources.getString(R.string.list_message_added)))
         }
     }
@@ -174,7 +174,7 @@ class EntryViewModel @Inject constructor(
         }
     }
 
-    fun setHighlightedEntryUid(uid: Int?) {
+    fun setHighlightedEntryUid(uid: UUID?) {
         _highlightedEntryUid.value = uid
     }
 
@@ -292,11 +292,31 @@ class EntryViewModel @Inject constructor(
         }
         val createdAt = createdAtDate.time
 
+        val uidRaw = try {
+            record.get(COLUMN_UID)
+        } catch (_: IllegalArgumentException) {
+            null
+        }
+        val uid = if (uidRaw != null) {
+            try {
+                UUID.fromString(uidRaw)
+            } catch (_: IllegalArgumentException) {
+                return ParseResult.Failed(
+                    resources.getString(
+                        R.string.list_import_failed_column_parsing_error, COLUMN_UID, uidRaw
+                    ),
+                )
+            }
+        } else {
+            null
+        }
+
         val entry = Entry(
             amount = amount,
             amountUnit = amountUnit,
             content = content,
             createdAt = createdAt,
+            uid = uid ?: UUID.randomUUID(),
         )
         return ParseResult.Succeeded(entry)
     }
@@ -317,14 +337,21 @@ class EntryViewModel @Inject constructor(
             .setSkipHeaderRecord(true)
             .get()
             .parse(reader)
+        val hasUidColumn = records.headerNames.contains(COLUMN_UID)
         for (record in records) {
             when (val parseResult = parseEntryCsvRecord(resources, record, unitsById, unitsByName)) {
                 is ParseResult.Succeeded -> {
-                    val existingEntry = entryRepository.getByCreatedAt(parseResult.entry.createdAt)
+                    val existingEntry = if (hasUidColumn) {
+                        entryRepository.getByUid(parseResult.entry.uid)
+                    } else {
+                        entryRepository.getByCreatedAt(parseResult.entry.createdAt)
+                    }
                     if (existingEntry == null) {
                         entryRepository.insert(parseResult.entry)
+                        println("import ${parseResult.entry.content}")
                         importedCount++
                     } else {
+                        println("skip ${parseResult.entry.content}")
                         skippedCount++
                     }
                 }
@@ -339,6 +366,7 @@ class EntryViewModel @Inject constructor(
             failedMessage = resources.getString(R.string.list_import_finished_empty)
         }
 
+        println("importedCount=$importedCount, skippedCount=$skippedCount")
         val messageText = listOfNotNull(
             importedCount.takeIf { it != 0 }?.let {
                 resources.getQuantityString(R.plurals.list_import_finished_imported, it, it)
@@ -377,6 +405,7 @@ class EntryViewModel @Inject constructor(
                     COLUMN_AMOUNT_FORMATTED,
                     COLUMN_AMOUNT,
                     COLUMN_AMOUNT_UNIT,
+                    COLUMN_UID,
                 )
                 .get()
                 .print(writer)
@@ -387,6 +416,7 @@ class EntryViewModel @Inject constructor(
                     entry.amountUnit.format(resources, entry.amount),
                     entry.amountUnit.serialize(entry.amount),
                     entry.amountUnit.id,
+                    entry.uid.toString(),
                 )
             }
         }

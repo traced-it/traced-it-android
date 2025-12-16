@@ -14,7 +14,7 @@ class Converters {
 
 @Database(
     entities = [Entry::class, EntryFTS::class],
-    version = 3,
+    version = 4,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(
@@ -22,6 +22,7 @@ class Converters {
             to = 3,
             spec = AppDatabase.AutoMigration2To3::class,
         ),
+        AutoMigration(from = 3, to = 4),
     ],
 )
 @TypeConverters(Converters::class)
