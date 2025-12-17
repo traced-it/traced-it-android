@@ -109,6 +109,11 @@ fun EntryDetailDialog(
     var saveRequested by remember { mutableStateOf(false) }
     var changeInProgress by remember { mutableStateOf(false) }
 
+    // Focus the content text field after opening the detail dialog
+    LaunchedEffect(Unit) {
+        contentFocusRequester.requestFocus()
+    }
+
     // Save the entry when clicking the save button, once the dialog is not in the change-in-progress state
     if (saveRequested && !changeInProgress) {
         val amount = unit.parse(resources, amountRaw)
