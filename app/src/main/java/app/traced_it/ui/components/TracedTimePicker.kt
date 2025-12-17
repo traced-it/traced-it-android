@@ -37,9 +37,7 @@ import app.traced_it.lib.*
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.*
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -258,8 +256,14 @@ private fun <T : Any> TracedTimePickerSegment(
 
     // Perform haptic feedback when scrolling and passing an item
     LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
+        val itemHeightPx = with(density) { itemHeight.toPx() }
+        val noFeedbackRange = (itemHeightPx * 0.1).roundToInt()..(itemHeightPx * 0.9).roundToInt()
+        snapshotFlow { listState.firstVisibleItemScrollOffset }
             .filter { listState.isScrollInProgress }
+            .map { it !in noFeedbackRange }
+            .distinctUntilChanged()
+            .filter { it }
+            .drop(1) // Don't perform feedback when first scrolling from initial value
             .collect {
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
             }
