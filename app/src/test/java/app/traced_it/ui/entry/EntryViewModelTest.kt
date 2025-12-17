@@ -94,7 +94,7 @@ class EntryViewModelTest {
 
             @Suppress("SpellCheckingInspection")
             val csv = """
-                createdAt,content,amountFormatted,amount,amountUnit,uid
+                createdAt,content,amountFormatted,amount,amountUnit,uuid
                 2025-02-01T18:00:22.755+0100,"Red apples",,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
                 2025-02-01T18:00:21.000+0100,"Red apples duplicate",,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
                 2025-02-01T15:18:43.189+0100,"Yellow bananas",2x,2.0,SMALL_NUMBERS_CHOICE,85f2ff1f-1424-40ac-b45e-e8381d84005b
@@ -124,7 +124,7 @@ class EntryViewModelTest {
                         0,
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
-                    uid = UUID.fromString("8be47977-3577-4534-993c-c14f2fccc8ef"),
+                    uuid = UUID.fromString("8be47977-3577-4534-993c-c14f2fccc8ef"),
                 ),
                 Entry(
                     amount = 2.0,
@@ -140,7 +140,7 @@ class EntryViewModelTest {
                         189_000_000,
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
-                    uid = UUID.fromString("85f2ff1f-1424-40ac-b45e-e8381d84005b"),
+                    uuid = UUID.fromString("85f2ff1f-1424-40ac-b45e-e8381d84005b"),
                 ),
                 Entry(
                     amount = 3.0,
@@ -156,7 +156,7 @@ class EntryViewModelTest {
                         985_000_000,
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
-                    uid = UUID.fromString("98fb296e-29f3-4e6e-b7d2-646976cd2e0f"),
+                    uuid = UUID.fromString("98fb296e-29f3-4e6e-b7d2-646976cd2e0f"),
                 ),
                 Entry(
                     amount = 3.14,
@@ -172,7 +172,7 @@ class EntryViewModelTest {
                         0,
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
-                    uid = UUID.fromString("eee93824-8533-455e-8622-0dc2a24ef584"),
+                    uuid = UUID.fromString("eee93824-8533-455e-8622-0dc2a24ef584"),
                 ),
                 Entry(
                     amount = 0.333,
@@ -188,7 +188,7 @@ class EntryViewModelTest {
                         0,
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
-                    uid = UUID.fromString("7fa18ae8-191d-46d1-bd86-748e9014ef33"),
+                    uuid = UUID.fromString("7fa18ae8-191d-46d1-bd86-748e9014ef33"),
                 ),
             )
             val resultEntries = entryRepository.fakeEntries.first()
@@ -276,7 +276,7 @@ class EntryViewModelTest {
             assertEquals(expectedEntries.size, resultEntries.size)
             val testUuid = UUID.randomUUID()
             for ((expectedEntry, fakeEntry) in expectedEntries zip resultEntries) {
-                assertEquals(expectedEntry.copy(uid = testUuid), fakeEntry.copy(uid = testUuid))
+                assertEquals(expectedEntry.copy(uuid = testUuid), fakeEntry.copy(uuid = testUuid))
             }
             assertEquals(
                 Message(
@@ -389,7 +389,7 @@ class EntryViewModelTest {
             assertEquals(expectedEntries.size, resultEntries.size)
             val testUuid = UUID.randomUUID()
             for ((expectedEntry, fakeEntry) in expectedEntries zip resultEntries) {
-                assertEquals(expectedEntry.copy(uid = testUuid), fakeEntry.copy(uid = testUuid))
+                assertEquals(expectedEntry.copy(uuid = testUuid), fakeEntry.copy(uuid = testUuid))
             }
             assertEquals(
                 Message(
@@ -445,7 +445,7 @@ class EntryViewModelTest {
                             755_000_000,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
-                        uid = UUID.fromString("8be47977-3577-4534-993c-c14f2fccc8ef"),
+                        uuid = UUID.fromString("8be47977-3577-4534-993c-c14f2fccc8ef"),
                     ),
                     Entry(
                         amount = 2.0,
@@ -461,7 +461,7 @@ class EntryViewModelTest {
                             189_000_000,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
-                        uid = UUID.fromString("85f2ff1f-1424-40ac-b45e-e8381d84005b"),
+                        uuid = UUID.fromString("85f2ff1f-1424-40ac-b45e-e8381d84005b"),
                     ),
                     Entry(
                         amount = 3.0,
@@ -477,7 +477,7 @@ class EntryViewModelTest {
                             985_000_000,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
-                        uid = UUID.fromString("98fb296e-29f3-4e6e-b7d2-646976cd2e0f"),
+                        uuid = UUID.fromString("98fb296e-29f3-4e6e-b7d2-646976cd2e0f"),
                     ),
                     Entry(
                         amount = 3.14,
@@ -493,7 +493,7 @@ class EntryViewModelTest {
                             0,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
-                        uid = UUID.fromString("eee93824-8533-455e-8622-0dc2a24ef584"),
+                        uuid = UUID.fromString("eee93824-8533-455e-8622-0dc2a24ef584"),
                     ),
                     Entry(
                         amount = 0.333,
@@ -509,7 +509,7 @@ class EntryViewModelTest {
                             0,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
-                        uid = UUID.fromString("7fa18ae8-191d-46d1-bd86-748e9014ef33"),
+                        uuid = UUID.fromString("7fa18ae8-191d-46d1-bd86-748e9014ef33"),
                     ),
                 )
             )
@@ -524,7 +524,7 @@ class EntryViewModelTest {
             assertEquals(
                 @Suppress("SpellCheckingInspection")
                 listOf(
-                    "createdAt,content,amountFormatted,amount,amountUnit,uid",
+                    "createdAt,content,amountFormatted,amount,amountUnit,uuid",
                     "2025-02-01T14:00:22.755-0300,Red apples,,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef",
                     "2025-02-01T11:18:43.189-0300,Yellow bananas,2x,2.0,SMALL_NUMBERS_CHOICE,85f2ff1f-1424-40ac-b45e-e8381d84005b",
                     "2025-02-01T11:16:56.985-0300,Green kiwis,L,3.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f",

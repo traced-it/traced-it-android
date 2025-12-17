@@ -5,13 +5,13 @@ import androidx.paging.PagingSource
 import androidx.room.util.convertByteToUUID
 import app.traced_it.data.local.database.*
 import kotlinx.coroutines.flow.Flow
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 interface EntryRepository {
     fun count(): Flow<Int>
 
-    suspend fun getByUid(uid: UUID): Entry?
+    suspend fun getByUuid(uuid: UUID): Entry?
 
     suspend fun getByCreatedAt(createdAt: Long): Entry?
 
@@ -25,9 +25,9 @@ interface EntryRepository {
 
     suspend fun update(vararg entries: Entry)
 
-    suspend fun delete(uid: UUID)
+    suspend fun delete(uid: Int)
 
-    suspend fun restore(uid: UUID)
+    suspend fun restore(uid: Int)
 
     suspend fun deleteAll()
 
@@ -64,7 +64,7 @@ class DefaultEntryRepository @Inject constructor(
                         content = cursor.getString(2),
                         createdAt = cursor.getLong(3),
                         deleted = cursor.getInt(4) == 1,
-                        uid = convertByteToUUID(cursor.getBlob(5)),
+                        uuid = convertByteToUUID(cursor.getBlob(5)),
                     )
                 )
             }
@@ -72,7 +72,7 @@ class DefaultEntryRepository @Inject constructor(
         cursor.close()
     }
 
-    override suspend fun getByUid(uid: UUID): Entry? = entryDao.getByUid(uid)
+    override suspend fun getByUuid(uuid: UUID): Entry? = entryDao.getByUuid(uuid)
 
     override suspend fun getByCreatedAt(createdAt: Long): Entry? = entryDao.getByCreatedAt(createdAt)
 
@@ -82,9 +82,9 @@ class DefaultEntryRepository @Inject constructor(
 
     override suspend fun update(vararg entries: Entry) = entryDao.update(*entries)
 
-    override suspend fun delete(uid: UUID) = entryDao.delete(uid)
+    override suspend fun delete(uid: Int) = entryDao.delete(uid)
 
-    override suspend fun restore(uid: UUID) = entryDao.restore(uid)
+    override suspend fun restore(uid: Int) = entryDao.restore(uid)
 
     override suspend fun deleteAll() = entryDao.deleteAll()
 

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "d020a68cc7cc3e59424ab05cff07e728",
+    "identityHash": "fc7cc5abcaae5d693a0b7bccbfe72630",
     "entities": [
       {
         "tableName": "Entry",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`amount` REAL NOT NULL, `amountUnit` TEXT NOT NULL, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `deleted` INTEGER NOT NULL DEFAULT 0, `uid` BLOB NOT NULL, PRIMARY KEY(`uid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`amount` REAL NOT NULL, `amountUnit` TEXT NOT NULL, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `deleted` INTEGER NOT NULL DEFAULT 0, `uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` BLOB NOT NULL DEFAULT (RANDOMBLOB(16)))",
         "fields": [
           {
             "fieldPath": "amount",
@@ -42,16 +42,34 @@
           {
             "fieldPath": "uid",
             "columnName": "uid",
-            "affinity": "BLOB",
+            "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "uuid",
+            "columnName": "uuid",
+            "affinity": "BLOB",
+            "notNull": true,
+            "defaultValue": "(RANDOMBLOB(16))"
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
+          "autoGenerate": true,
           "columnNames": [
             "uid"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_Entry_uuid",
+            "unique": false,
+            "columnNames": [
+              "uuid"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Entry_uuid` ON `${TABLE_NAME}` (`uuid`)"
+          }
+        ]
       },
       {
         "tableName": "entry_fts",
@@ -89,7 +107,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd020a68cc7cc3e59424ab05cff07e728')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fc7cc5abcaae5d693a0b7bccbfe72630')"
     ]
   }
 }

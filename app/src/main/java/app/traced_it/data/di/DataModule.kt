@@ -115,8 +115,8 @@ class FakeEntryRepository(
             .reversed()
             .asSequence()
 
-    override suspend fun getByUid(uid: UUID): Entry? =
-        _fakeEntries.value.find { it.uid == uid }
+    override suspend fun getByUuid(uuid: UUID): Entry? =
+        _fakeEntries.value.find { it.uuid == uuid }
 
     override suspend fun getByCreatedAt(createdAt: Long): Entry? =
         _fakeEntries.value.find { it.createdAt == createdAt }
@@ -145,7 +145,7 @@ class FakeEntryRepository(
         }
     }
 
-    override suspend fun delete(uid: UUID) {
+    override suspend fun delete(uid: Int) {
         updateEntries(_fakeEntries.value.map {
             if (it.uid == uid) {
                 it.copy(deleted = true)
@@ -155,7 +155,7 @@ class FakeEntryRepository(
         })
     }
 
-    override suspend fun restore(uid: UUID) {
+    override suspend fun restore(uid: Int) {
         updateEntries(_fakeEntries.value.map {
             if (it.uid == uid) {
                 it.copy(deleted = false)

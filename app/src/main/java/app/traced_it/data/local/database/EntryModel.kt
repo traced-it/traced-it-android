@@ -7,10 +7,11 @@ import androidx.paging.PagingSource
 import androidx.room.*
 import app.traced_it.R
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
+import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.ExperimentalUuidApi
 
+@Suppress("SpellCheckingInspection")
 @OptIn(ExperimentalUuidApi::class)
 @Entity
 data class Entry(
@@ -19,7 +20,8 @@ data class Entry(
     val content: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     @ColumnInfo(defaultValue = "0") var deleted: Boolean = false,
-    @PrimaryKey val uid: UUID = UUID.randomUUID(),
+    @PrimaryKey(autoGenerate = true) val uid: Int = 0, // Use integer primary key instead of UUID, because FTS supports only integers
+    @ColumnInfo(index = true, defaultValue = "(RANDOMBLOB(16))") val uuid: UUID = UUID.randomUUID(),
 ) {
     fun format(context: Context): String {
         val contentWithAmount = buildString {
@@ -105,11 +107,11 @@ interface EntryDao {
     @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
     fun getAll(): PagingSource<Int, Entry>
 
-    @Query("SELECT amount, amountUnit, content, createdAt, uid FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
+    @Query("SELECT amount, amountUnit, content, createdAt, uuid FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
     fun getAllAsCursor(): Cursor
 
-    @Query("SELECT * FROM entry WHERE uid = :uid")
-    suspend fun getByUid(uid: UUID): Entry?
+    @Query("SELECT * FROM entry WHERE uuid = :uuid")
+    suspend fun getByUuid(uuid: UUID): Entry?
 
     @Query("SELECT * FROM entry WHERE createdAt = :createdAt")
     suspend fun getByCreatedAt(createdAt: Long): Entry?
@@ -130,7 +132,7 @@ interface EntryDao {
 
     @Query(
         """
-        SELECT entry.amount, entry.amountUnit, entry.content, entry.createdAt, entry.uid FROM entry
+        SELECT entry.amount, entry.amountUnit, entry.content, entry.createdAt, entry.uuid FROM entry
         JOIN entry_fts ON entry_fts.rowid = entry.uid
         WHERE entry_fts MATCH :fullTextQueryExpression
         AND NOT deleted
@@ -146,10 +148,10 @@ interface EntryDao {
     suspend fun update(vararg entries: Entry)
 
     @Query("UPDATE entry SET deleted = 1 WHERE uid = :uid")
-    suspend fun delete(uid: UUID)
+    suspend fun delete(uid: Int)
 
     @Query("UPDATE entry SET deleted = 0 WHERE uid = :uid")
-    suspend fun restore(uid: UUID)
+    suspend fun restore(uid: Int)
 
     @Query("UPDATE entry SET deleted = 1")
     suspend fun deleteAll()

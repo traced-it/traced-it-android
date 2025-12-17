@@ -50,7 +50,7 @@ class EntryViewModel @Inject constructor(
         private const val COLUMN_AMOUNT = "amount"
         private const val COLUMN_CONTENT = "content"
         private const val COLUMN_CREATED_AT = "createdAt"
-        private const val COLUMN_UID = "uid"
+        private const val COLUMN_UUID = "uuid"
         private const val FILTER_EXPANDED = "filerExpanded"
         private const val FILTER_QUERY = "filterQuery"
     }
@@ -61,8 +61,8 @@ class EntryViewModel @Inject constructor(
     private val _message = MutableStateFlow<Message?>(null)
     val message: StateFlow<Message?> = _message
 
-    private val _highlightedEntryUid = MutableStateFlow<UUID?>(null)
-    val highlightedEntryUid: StateFlow<UUID?> = _highlightedEntryUid
+    private val _highlightedEntryUid = MutableStateFlow<Int?>(null)
+    val highlightedEntryUid: StateFlow<Int?> = _highlightedEntryUid
 
     val filterExpanded: StateFlow<Boolean> = savedStateHandle.getStateFlow(FILTER_EXPANDED, false)
 
@@ -174,7 +174,7 @@ class EntryViewModel @Inject constructor(
         }
     }
 
-    fun setHighlightedEntryUid(uid: UUID?) {
+    fun setHighlightedEntryUid(uid: Int?) {
         _highlightedEntryUid.value = uid
     }
 
@@ -269,18 +269,18 @@ class EntryViewModel @Inject constructor(
         }
         val createdAt = createdAtDate.time
 
-        val uidRaw = try {
-            record.get(COLUMN_UID)
+        val uuidRaw = try {
+            record.get(COLUMN_UUID)
         } catch (_: IllegalArgumentException) {
             null
         }
-        val uid = if (uidRaw != null) {
+        val uuid = if (uuidRaw != null) {
             try {
-                UUID.fromString(uidRaw)
+                UUID.fromString(uuidRaw)
             } catch (_: IllegalArgumentException) {
                 return ParseResult.Failed(
                     resources.getString(
-                        R.string.list_import_failed_column_parsing_error, COLUMN_UID, uidRaw
+                        R.string.list_import_failed_column_parsing_error, COLUMN_UUID, uuidRaw
                     ),
                 )
             }
@@ -293,7 +293,7 @@ class EntryViewModel @Inject constructor(
             amountUnit = amountUnit,
             content = content,
             createdAt = createdAt,
-            uid = uid ?: UUID.randomUUID(),
+            uuid = uuid ?: UUID.randomUUID(),
         )
         return ParseResult.Succeeded(entry)
     }
@@ -324,13 +324,13 @@ class EntryViewModel @Inject constructor(
                             .setSkipHeaderRecord(true)
                             .get()
                             .parse(reader)
-                        val hasUidColumn = records.headerNames.contains(COLUMN_UID)
+                        val hasUuidColumn = records.headerNames.contains(COLUMN_UUID)
                         for (record in records) {
                             when (val parseResult = parseEntryCsvRecord(resources, record, unitsById, unitsByName)) {
                                 is ParseResult.Succeeded -> {
                                     // TODO Speed up import by doing batch import using SQL annotation `@Insert(onConflict = OnConflictStrategy.REPLACE)`
-                                    if (hasUidColumn) {
-                                        val existingEntry = entryRepository.getByUid(parseResult.entry.uid)
+                                    if (hasUuidColumn) {
+                                        val existingEntry = entryRepository.getByUuid(parseResult.entry.uuid)
                                         if (existingEntry == null) {
                                             entryRepository.insert(parseResult.entry)
                                             importedCount++
@@ -427,7 +427,7 @@ class EntryViewModel @Inject constructor(
                                 COLUMN_AMOUNT_FORMATTED,
                                 COLUMN_AMOUNT,
                                 COLUMN_AMOUNT_UNIT,
-                                COLUMN_UID,
+                                COLUMN_UUID,
                             )
                             .get()
                             .print(writer)
@@ -438,7 +438,7 @@ class EntryViewModel @Inject constructor(
                                 entry.amountUnit.format(resources, entry.amount),
                                 entry.amountUnit.serialize(entry.amount),
                                 entry.amountUnit.id,
-                                entry.uid.toString(),
+                                entry.uuid.toString(),
                             )
                             exportedCount++
                         }
