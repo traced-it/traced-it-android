@@ -107,7 +107,7 @@ interface EntryDao {
     @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
     fun getAll(): PagingSource<Int, Entry>
 
-    @Query("SELECT amount, amountUnit, content, createdAt, uuid FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
+    @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
     fun getAllAsCursor(): Cursor
 
     @Query("SELECT * FROM entry WHERE uuid = :uuid")
@@ -132,7 +132,7 @@ interface EntryDao {
 
     @Query(
         """
-        SELECT entry.amount, entry.amountUnit, entry.content, entry.createdAt, entry.uuid FROM entry
+        SELECT * FROM entry
         JOIN entry_fts ON entry_fts.rowid = entry.uid
         WHERE entry_fts MATCH :fullTextQueryExpression
         AND NOT deleted

@@ -59,12 +59,12 @@ class DefaultEntryRepository @Inject constructor(
             while (moveToNext()) {
                 yield(
                     Entry(
-                        amount = cursor.getDouble(0),
-                        amountUnit = convertUnitIdToUnit(cursor.getString(1)) ?: noneUnit,
-                        content = cursor.getString(2),
-                        createdAt = cursor.getLong(3),
-                        deleted = cursor.getInt(4) == 1,
-                        uuid = convertByteToUUID(cursor.getBlob(5)),
+                        amount = cursor.getDouble(getColumnIndexOrThrow("amount")),
+                        amountUnit = convertUnitIdToUnit(cursor.getString(getColumnIndexOrThrow("amountUnit"))) ?: noneUnit,
+                        content = cursor.getString(getColumnIndexOrThrow("content")),
+                        createdAt = cursor.getLong(getColumnIndexOrThrow("createdAt")),
+                        deleted = cursor.getInt(getColumnIndexOrThrow("deleted")) == 1,
+                        uuid = convertByteToUUID(cursor.getBlob(getColumnIndexOrThrow("uuid"))),
                     )
                 )
             }
