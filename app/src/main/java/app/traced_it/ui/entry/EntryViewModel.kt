@@ -330,6 +330,7 @@ class EntryViewModel @Inject constructor(
 
         var importedCount = 0
         var skippedCount = 0
+        var updatedCount = 0
         var failedMessage: String? = null
 
         val records = CSVFormat.DEFAULT.builder()
@@ -341,18 +342,23 @@ class EntryViewModel @Inject constructor(
         for (record in records) {
             when (val parseResult = parseEntryCsvRecord(resources, record, unitsById, unitsByName)) {
                 is ParseResult.Succeeded -> {
-                    val existingEntry = if (hasUidColumn) {
-                        entryRepository.getByUid(parseResult.entry.uid)
+                    if (hasUidColumn) {
+                        val existingEntry = entryRepository.getByUid(parseResult.entry.uid)
+                        if (existingEntry == null) {
+                            entryRepository.insert(parseResult.entry)
+                            importedCount++
+                        } else {
+                            entryRepository.update(parseResult.entry)
+                            updatedCount++
+                        }
                     } else {
-                        entryRepository.getByCreatedAt(parseResult.entry.createdAt)
-                    }
-                    if (existingEntry == null) {
-                        entryRepository.insert(parseResult.entry)
-                        println("import ${parseResult.entry.content}")
-                        importedCount++
-                    } else {
-                        println("skip ${parseResult.entry.content}")
-                        skippedCount++
+                        val existingEntry = entryRepository.getByCreatedAt(parseResult.entry.createdAt)
+                        if (existingEntry == null) {
+                            entryRepository.insert(parseResult.entry)
+                            importedCount++
+                        } else {
+                            skippedCount++
+                        }
                     }
                 }
 
@@ -362,14 +368,16 @@ class EntryViewModel @Inject constructor(
                 }
             }
         }
-        if (importedCount == 0 && skippedCount == 0 && failedMessage == null) {
+        if (importedCount == 0 && skippedCount == 0 && updatedCount == 0 && failedMessage == null) {
             failedMessage = resources.getString(R.string.list_import_finished_empty)
         }
 
-        println("importedCount=$importedCount, skippedCount=$skippedCount")
         val messageText = listOfNotNull(
             importedCount.takeIf { it != 0 }?.let {
                 resources.getQuantityString(R.plurals.list_import_finished_imported, it, it)
+            },
+            updatedCount.takeIf { it != 0 }?.let {
+                resources.getQuantityString(R.plurals.list_import_finished_updated, it, it)
             },
             skippedCount.takeIf { it != 0 }?.let {
                 resources.getQuantityString(R.plurals.list_import_finished_skipped, it, it)

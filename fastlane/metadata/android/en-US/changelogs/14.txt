@@ -1,6 +1,7 @@
-- Added the option to set and edit note time.
-- Changed default note time from the time the new note screen was saved to the time when the screen was open.
-- Removed the confirmation when deleting a single note; you can use the undo button.
+- Added the option to set time when adding or updating a note.
+- Added support for updating notes when importing CSV; each note has a unique id now.
+- Removed confirmation when deleting a single note; you can use the undo button.
+- Changed default note time to the time when the "Add note" screen was open; it was the time when the screen was saved.
 - Improved the add/edit note screen to focus the text field automatically.
 - Improved scrolling to added/edited/restored note.
 - Improved item swiping by resetting it when another item is swiped or selected.

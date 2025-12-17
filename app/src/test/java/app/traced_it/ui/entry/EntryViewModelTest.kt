@@ -62,33 +62,24 @@ class EntryViewModelTest {
             } doReturn "Failed to parse \"createdAt\" value \"INVALID_DATE\""
             on { getString(R.string.list_import_finished_delimiter) } doReturn " "
             on {
-                getQuantityString(
-                    R.plurals.list_import_finished_imported,
-                    5,
-                    5,
-                )
+                getQuantityString(R.plurals.list_import_finished_imported,5,5)
             } doReturn "Imported 5 notes."
             on {
-                getQuantityString(
-                    R.plurals.list_import_finished_imported,
-                    3,
-                    3,
-                )
+                getQuantityString(R.plurals.list_import_finished_imported,3,3)
             } doReturn "Imported 3 notes."
             on {
-                getQuantityString(
-                    R.plurals.list_import_finished_skipped,
-                    1,
-                    1,
-                )
+                getQuantityString(R.plurals.list_import_finished_skipped,1,1)
             } doReturn "Skipped 1 note."
+            on {
+                getQuantityString(R.plurals.list_import_finished_updated,1,1)
+            } doReturn "Updated 1 note."
             on { getString(R.string.list_import_finished_empty) } doReturn "Empty CSV file"
             on { getString(R.string.list_import_finished_delimiter) } doReturn " "
         }
     }
 
     @Test
-    fun `importEntriesCsv inserts valid entries, skips entries with the same uid, and aborts after failing to parse a row`() =
+    fun `importEntriesCsv inserts valid entries, updates entries with the same uid, and aborts after failing to parse a row`() =
         runTest {
             val entryRepository = FakeEntryRepository(emptyList())
             val entryViewModel = EntryViewModel(
@@ -115,15 +106,16 @@ class EntryViewModelTest {
                 Entry(
                     amount = 0.0,
                     amountUnit = noneUnit,
-                    content = "Red apples",
+                    content = "Red apples duplicate",
+
                     createdAt = OffsetDateTime.of(
                         2025,
                         2,
                         1,
                         18,
                         0,
-                        22,
-                        755_000_000,
+                        21,
+                        0,
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
                     uid = UUID.fromString("8be47977-3577-4534-993c-c14f2fccc8ef"),
@@ -200,7 +192,7 @@ class EntryViewModelTest {
             }
             assertEquals(
                 Message(
-                    "Imported ${expectedEntries.size} notes. Skipped 1 note. Failed to parse \"createdAt\" value \"INVALID_DATE\"",
+                    "Imported ${expectedEntries.size} notes. Updated 1 note. Failed to parse \"createdAt\" value \"INVALID_DATE\"",
                     type = Message.Type.ERROR,
                     duration = Message.Duration.LONG,
                 ),
