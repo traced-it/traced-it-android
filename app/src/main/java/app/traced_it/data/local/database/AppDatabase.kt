@@ -7,10 +7,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 class Converters {
     @TypeConverter
-    fun unitIdToUnit(unitId: String): EntryUnit? = units.find { unit -> unit.id == unitId }
+    fun unitIdToUnit(unitId: String): EntryUnit? = convertUnitIdToUnit(unitId)
 
     @TypeConverter
-    fun unitToUnitId(unit: EntryUnit): String = unit.id
+    fun unitToUnitId(unit: EntryUnit): String = convertUnitToUnitId(unit)
 }
 
 @Database(

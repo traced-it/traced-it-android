@@ -6,3 +6,4 @@
 - Improved scrolling to added/edited/restored note.
 - Improved item swiping by resetting it when another item is swiped or selected.
 - Fixed deleting notes when filter is active.
+- Fixed exporting duplicate notes and cancellations during export.

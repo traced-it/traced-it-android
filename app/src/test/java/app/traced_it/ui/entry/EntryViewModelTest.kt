@@ -54,6 +54,10 @@ class EntryViewModelTest {
             on { getString(R.string.entry_unit_none_name) } doReturn "no unit"
             on { getString(R.string.entry_unit_none_choice_empty) } doReturn ""
             on {
+                getQuantityString(R.plurals.list_export_finished, 5, 5)
+            } doReturn "Exported 5 notes"
+            on { getString(R.string.list_export_in_progress) } doReturn "Exporting notes…"
+            on {
                 getString(
                     R.string.list_import_failed_column_parsing_error,
                     "createdAt",
@@ -62,19 +66,20 @@ class EntryViewModelTest {
             } doReturn "Failed to parse \"createdAt\" value \"INVALID_DATE\""
             on { getString(R.string.list_import_finished_delimiter) } doReturn " "
             on {
-                getQuantityString(R.plurals.list_import_finished_imported,5,5)
+                getQuantityString(R.plurals.list_import_finished_imported, 5, 5)
             } doReturn "Imported 5 notes."
             on {
-                getQuantityString(R.plurals.list_import_finished_imported,3,3)
+                getQuantityString(R.plurals.list_import_finished_imported, 3, 3)
             } doReturn "Imported 3 notes."
             on {
-                getQuantityString(R.plurals.list_import_finished_skipped,1,1)
+                getQuantityString(R.plurals.list_import_finished_skipped, 1, 1)
             } doReturn "Skipped 1 note."
             on {
-                getQuantityString(R.plurals.list_import_finished_updated,1,1)
+                getQuantityString(R.plurals.list_import_finished_updated, 1, 1)
             } doReturn "Updated 1 note."
             on { getString(R.string.list_import_finished_empty) } doReturn "Empty CSV file"
             on { getString(R.string.list_import_finished_delimiter) } doReturn " "
+            on { getString(R.string.list_import_in_progress) } doReturn "Importing notes…"
         }
     }
 
@@ -86,6 +91,7 @@ class EntryViewModelTest {
                 entryRepository,
                 SavedStateHandle(),
             )
+
             @Suppress("SpellCheckingInspection")
             val csv = """
                 createdAt,content,amountFormatted,amount,amountUnit,uid
@@ -100,7 +106,7 @@ class EntryViewModelTest {
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
-            entryViewModel.importEntriesCsv(mockResources, inputStream.reader())
+            entryViewModel.importEntriesCsv(mockResources, inputStream).join()
 
             val expectedEntries = listOf(
                 Entry(
@@ -217,7 +223,7 @@ class EntryViewModelTest {
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
-            entryViewModel.importEntriesCsv(mockResources, inputStream.reader())
+            entryViewModel.importEntriesCsv(mockResources, inputStream).join()
 
             val expectedEntries = listOf(
                 Entry(
@@ -300,7 +306,7 @@ class EntryViewModelTest {
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
-            entryViewModel.importEntriesCsv(mockResources, inputStream.reader())
+            entryViewModel.importEntriesCsv(mockResources, inputStream).join()
 
             val expectedEntries = listOf(
                 Entry(
@@ -406,7 +412,7 @@ class EntryViewModelTest {
             val csv = ""
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
-            entryViewModel.importEntriesCsv(mockResources, inputStream.reader())
+            entryViewModel.importEntriesCsv(mockResources, inputStream).join()
 
             val resultEntries = entryRepository.fakeEntries.first()
             assertEquals(0, resultEntries.size)
@@ -512,10 +518,8 @@ class EntryViewModelTest {
                 SavedStateHandle(),
             )
             val outputStream = ByteArrayOutputStream()
-            val writer = outputStream.writer()
 
-            entryViewModel.exportEntriesCsv(mockResources, writer, entryRepository.filter())
-            writer.close()
+            entryViewModel.exportEntriesCsv(mockResources, outputStream, entryRepository.filterAsSequence()).join()
 
             assertEquals(
                 @Suppress("SpellCheckingInspection")
@@ -529,6 +533,14 @@ class EntryViewModelTest {
                     ""
                 ).joinToString("\r\n"),
                 outputStream.toString(),
+            )
+            assertEquals(
+                Message(
+                    "Exported 5 notes",
+                    type = Message.Type.SUCCESS,
+                    duration = Message.Duration.LONG,
+                ),
+                entryViewModel.message.first(),
             )
         }
 

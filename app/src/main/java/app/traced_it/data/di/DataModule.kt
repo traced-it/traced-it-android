@@ -108,6 +108,13 @@ class FakeEntryRepository(
             lastPagingSource = it
         }
 
+    override fun filterAsSequence(unsafeQuery: String): Sequence<Entry> =
+        _fakeEntries.value
+            .filter { entry -> !entry.deleted && unsafeQuery.isEmpty() || unsafeQuery in entry.content }
+            .sortedBy { entry -> entry.createdAt }
+            .reversed()
+            .asSequence()
+
     override suspend fun getByUid(uid: UUID): Entry? =
         _fakeEntries.value.find { it.uid == uid }
 

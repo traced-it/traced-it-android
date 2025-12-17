@@ -50,9 +50,9 @@ import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
-import java.util.UUID
+import java.io.InputStream
+import java.io.OutputStream
+import java.util.*
 
 private class MessageSnackbarVisuals(tracedMessage: Message) : SnackbarVisuals {
     override val message = tracedMessage.text
@@ -94,10 +94,10 @@ fun EntryListScreen(
         onDeleteAllEntries = { viewModel.deleteAllEntries(resources) },
         onDeleteEntry = { entry -> viewModel.deleteEntry(resources, entry) },
         onDismissMessage = { viewModel.dismissMessage() },
-        onExportAllEntriesCsv = { writer -> viewModel.exportAllEntriesCsv(resources, writer) },
-        onExportFilteredEntriesCsv = { writer -> viewModel.exportFilteredEntriesCsv(resources, writer) },
+        onExportAllEntriesCsv = { outputStream -> viewModel.exportAllEntriesCsv(resources, outputStream) },
+        onExportFilteredEntriesCsv = { outputStream -> viewModel.exportFilteredEntriesCsv(resources, outputStream) },
         onFilter = { filterQuery -> viewModel.filter(filterQuery) },
-        onImportEntriesCsv = { reader -> viewModel.importEntriesCsv(resources, reader) },
+        onImportEntriesCsv = { inputStream -> viewModel.importEntriesCsv(resources, inputStream) },
         onInsertEntry = { entry -> viewModel.insertEntry(resources, entry) },
         onNavigateToAboutScreen = onNavigateToAboutScreen,
         onPerformMessageAction = { viewModel.performMessageAction() },
@@ -123,10 +123,10 @@ private fun EntryListScreen(
     onDeleteAllEntries: () -> Unit,
     onDeleteEntry: (entry: Entry) -> Unit,
     onDismissMessage: () -> Unit,
-    onExportAllEntriesCsv: suspend (writer: OutputStreamWriter) -> Unit,
-    onExportFilteredEntriesCsv: suspend (writer: OutputStreamWriter) -> Unit,
+    onExportAllEntriesCsv: (outputStream: OutputStream) -> Unit,
+    onExportFilteredEntriesCsv: (outputStream: OutputStream) -> Unit,
     onFilter: (filterQuery: String) -> Unit,
-    onImportEntriesCsv: suspend (reader: InputStreamReader) -> Unit,
+    onImportEntriesCsv: (inputStream: InputStream) -> Unit,
     onInsertEntry: (entry: Entry) -> Unit,
     onNavigateToAboutScreen: () -> Unit,
     onPerformMessageAction: () -> Unit,
@@ -153,36 +153,25 @@ private fun EntryListScreen(
     val importLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result.data?.data?.takeIf { result.resultCode == Activity.RESULT_OK }?.let { uri ->
-                coroutineScope.launch {
-                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                        inputStream.reader().use { reader ->
-                            onImportEntriesCsv(reader)
-                        }
-                    }
+                context.contentResolver.openInputStream(uri)?.let { inputStream ->
+                    onImportEntriesCsv(inputStream)
                 }
             }
         }
+
     val exportAllLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result.data?.data?.takeIf { result.resultCode == Activity.RESULT_OK }?.let { uri ->
-                coroutineScope.launch {
-                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                        outputStream.writer().use { writer ->
-                            onExportAllEntriesCsv(writer)
-                        }
-                    }
+                context.contentResolver.openOutputStream(uri)?.let { outputStream ->
+                    onExportAllEntriesCsv(outputStream)
                 }
             }
         }
     val exportFilteredLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result.data?.data?.takeIf { result.resultCode == Activity.RESULT_OK }?.let { uri ->
-                coroutineScope.launch {
-                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                        outputStream.writer().use { writer ->
-                            onExportFilteredEntriesCsv(writer)
-                        }
-                    }
+                context.contentResolver.openOutputStream(uri)?.let { outputStream ->
+                    onExportFilteredEntriesCsv(outputStream)
                 }
             }
         }
@@ -204,7 +193,7 @@ private fun EntryListScreen(
         }
     }
 
-    // Scroll to the inserted, updated or restored item if it's above the currently visible lazy column items
+// Scroll to the inserted, updated or restored item if it's above the currently visible lazy column items
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .filter { firstVisibleItemIndex -> firstVisibleItemIndex > 0 }

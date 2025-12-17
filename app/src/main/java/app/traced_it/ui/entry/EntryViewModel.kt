@@ -1,13 +1,13 @@
 package app.traced_it.ui.entry
 
 import android.content.res.Resources
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.PagingSource
 import app.traced_it.R
 import app.traced_it.data.EntryRepository
 import app.traced_it.data.local.database.*
@@ -16,10 +16,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVRecord
-import java.io.InputStreamReader
+import java.io.InputStream
+import java.io.OutputStream
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -186,29 +186,6 @@ class EntryViewModel @Inject constructor(
         savedStateHandle[FILTER_EXPANDED] = filterExpanded
     }
 
-    private suspend fun forEachEntry(
-        pagingSource: PagingSource<Int, Entry>,
-        pageSize: Int = 100,
-        callback: (Entry) -> Unit,
-    ) {
-        var loadResult: PagingSource.LoadResult<Int, Entry>
-        var i = 0
-        var key: Int? = 0
-        while (key != null) {
-            loadResult = pagingSource.load(
-                PagingSource.LoadParams.Refresh(key, pageSize, false)
-            )
-            if (loadResult !is PagingSource.LoadResult.Page<Int, Entry>) {
-                break
-            }
-            for (entry in loadResult) {
-                callback(entry)
-                i++
-            }
-            key = loadResult.nextKey
-        }
-    }
-
     private sealed interface ParseResult {
         data class Succeeded(val entry: Entry) : ParseResult
         data class Failed(val message: String) : ParseResult
@@ -321,117 +298,168 @@ class EntryViewModel @Inject constructor(
         return ParseResult.Succeeded(entry)
     }
 
-    suspend fun importEntriesCsv(
-        resources: Resources,
-        reader: InputStreamReader,
-    ) = withContext(Dispatchers.IO) {
-        val unitsById = units.associateById()
-        val unitsByName = units.associateByName(resources)
+    fun importEntriesCsv(resources: Resources, inputStream: InputStream) =
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val unitsById = units.associateById()
+                val unitsByName = units.associateByName(resources)
 
-        var importedCount = 0
-        var skippedCount = 0
-        var updatedCount = 0
-        var failedMessage: String? = null
+                var importedCount = 0
+                var skippedCount = 0
+                var updatedCount = 0
+                var failedMessage: String? = null
 
-        setMessage(
-            Message(
-                resources.getString(R.string.list_import_started),
-                Message.Type.SUCCESS,
-                duration = Message.Duration.INDEFINITE,
-            )
-        )
-        val records = CSVFormat.DEFAULT.builder()
-            .setHeader()
-            .setSkipHeaderRecord(true)
-            .get()
-            .parse(reader)
-        val hasUidColumn = records.headerNames.contains(COLUMN_UID)
-        for (record in records) {
-            when (val parseResult = parseEntryCsvRecord(resources, record, unitsById, unitsByName)) {
-                is ParseResult.Succeeded -> {
-                    if (hasUidColumn) {
-                        val existingEntry = entryRepository.getByUid(parseResult.entry.uid)
-                        if (existingEntry == null) {
-                            entryRepository.insert(parseResult.entry)
-                            importedCount++
-                        } else {
-                            entryRepository.update(parseResult.entry)
-                            updatedCount++
-                        }
-                    } else {
-                        val existingEntry = entryRepository.getByCreatedAt(parseResult.entry.createdAt)
-                        if (existingEntry == null) {
-                            entryRepository.insert(parseResult.entry)
-                            importedCount++
-                        } else {
-                            skippedCount++
+                setMessage(
+                    Message(
+                        resources.getString(R.string.list_import_in_progress),
+                        Message.Type.SUCCESS,
+                        duration = Message.Duration.INDEFINITE,
+                    )
+                )
+
+                inputStream.use { inputStream ->
+                    inputStream.reader().use { reader ->
+                        val records = CSVFormat.DEFAULT.builder()
+                            .setHeader()
+                            .setSkipHeaderRecord(true)
+                            .get()
+                            .parse(reader)
+                        val hasUidColumn = records.headerNames.contains(COLUMN_UID)
+                        for (record in records) {
+                            when (val parseResult = parseEntryCsvRecord(resources, record, unitsById, unitsByName)) {
+                                is ParseResult.Succeeded -> {
+                                    // TODO Speed up import by doing batch import using SQL annotation `@Insert(onConflict = OnConflictStrategy.REPLACE)`
+                                    if (hasUidColumn) {
+                                        val existingEntry = entryRepository.getByUid(parseResult.entry.uid)
+                                        if (existingEntry == null) {
+                                            entryRepository.insert(parseResult.entry)
+                                            importedCount++
+                                        } else {
+                                            entryRepository.update(parseResult.entry)
+                                            updatedCount++
+                                        }
+                                    } else {
+                                        val existingEntry = entryRepository.getByCreatedAt(parseResult.entry.createdAt)
+                                        if (existingEntry == null) {
+                                            entryRepository.insert(parseResult.entry)
+                                            importedCount++
+                                        } else {
+                                            skippedCount++
+                                        }
+                                    }
+                                }
+
+                                is ParseResult.Failed -> {
+                                    failedMessage = parseResult.message
+                                    break
+                                }
+                            }
                         }
                     }
                 }
 
-                is ParseResult.Failed -> {
-                    failedMessage = parseResult.message
-                    break
+                if (importedCount == 0 && skippedCount == 0 && updatedCount == 0 && failedMessage == null) {
+                    failedMessage = resources.getString(R.string.list_import_finished_empty)
                 }
+
+                val messageText = listOfNotNull(
+                    importedCount.takeIf { it != 0 }?.let {
+                        resources.getQuantityString(R.plurals.list_import_finished_imported, it, it)
+                    },
+                    updatedCount.takeIf { it != 0 }?.let {
+                        resources.getQuantityString(R.plurals.list_import_finished_updated, it, it)
+                    },
+                    skippedCount.takeIf { it != 0 }?.let {
+                        resources.getQuantityString(R.plurals.list_import_finished_skipped, it, it)
+                    },
+                    failedMessage,
+                ).joinToString(resources.getString(R.string.list_import_finished_delimiter))
+
+                setMessage(
+                    Message(
+                        messageText,
+                        type = if (failedMessage == null) {
+                            Message.Type.SUCCESS
+                        } else {
+                            Message.Type.ERROR
+                        },
+                        duration = Message.Duration.LONG,
+                    )
+                )
+            } catch (e: Exception) {
+                Log.e(null, "Unknown error when importing entries", e)
+                setMessage(
+                    Message(
+                        resources.getString(R.string.list_import_failed_unknown),
+                        Message.Type.ERROR,
+                        duration = Message.Duration.LONG,
+                    )
+                )
             }
         }
-        if (importedCount == 0 && skippedCount == 0 && updatedCount == 0 && failedMessage == null) {
-            failedMessage = resources.getString(R.string.list_import_finished_empty)
-        }
 
-        val messageText = listOfNotNull(
-            importedCount.takeIf { it != 0 }?.let {
-                resources.getQuantityString(R.plurals.list_import_finished_imported, it, it)
-            },
-            updatedCount.takeIf { it != 0 }?.let {
-                resources.getQuantityString(R.plurals.list_import_finished_updated, it, it)
-            },
-            skippedCount.takeIf { it != 0 }?.let {
-                resources.getQuantityString(R.plurals.list_import_finished_skipped, it, it)
-            },
-            failedMessage,
-        ).joinToString(resources.getString(R.string.list_import_finished_delimiter))
-        setMessage(
-            Message(
-                messageText,
-                type = if (failedMessage == null) {
-                    Message.Type.SUCCESS
-                } else {
-                    Message.Type.ERROR
-                },
-                duration = Message.Duration.LONG,
-            )
-        )
-    }
+    fun exportAllEntriesCsv(resources: Resources, outputStream: OutputStream) =
+        exportEntriesCsv(resources, outputStream, entryRepository.filterAsSequence())
 
-    suspend fun exportAllEntriesCsv(resources: Resources, writer: Appendable) =
-        exportEntriesCsv(resources, writer, entryRepository.filter())
+    fun exportFilteredEntriesCsv(resources: Resources, outputStream: OutputStream) =
+        exportEntriesCsv(resources, outputStream, entryRepository.filterAsSequence(filterQuery.value))
 
-    suspend fun exportFilteredEntriesCsv(resources: Resources, writer: Appendable) =
-        exportEntriesCsv(resources, writer, entryRepository.filter(filterQuery.value))
+    fun exportEntriesCsv(resources: Resources, outputStream: OutputStream, entries: Sequence<Entry>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                var exportedCount = 0
 
-    suspend fun exportEntriesCsv(resources: Resources, writer: Appendable, pagingSource: PagingSource<Int, Entry>) =
-        withContext(Dispatchers.IO) {
-            val printer = CSVFormat.DEFAULT
-                .builder()
-                .setHeader(
-                    COLUMN_CREATED_AT,
-                    COLUMN_CONTENT,
-                    COLUMN_AMOUNT_FORMATTED,
-                    COLUMN_AMOUNT,
-                    COLUMN_AMOUNT_UNIT,
-                    COLUMN_UID,
+                setMessage(
+                    Message(
+                        resources.getString(R.string.list_export_in_progress),
+                        Message.Type.SUCCESS,
+                        duration = Message.Duration.INDEFINITE,
+                    )
                 )
-                .get()
-                .print(writer)
-            forEachEntry(pagingSource) { entry ->
-                printer.printRecord(
-                    csvDateFormat.format(entry.createdAt),
-                    entry.content,
-                    entry.amountUnit.format(resources, entry.amount),
-                    entry.amountUnit.serialize(entry.amount),
-                    entry.amountUnit.id,
-                    entry.uid.toString(),
+
+                outputStream.use { outputStream ->
+                    outputStream.writer().use { writer ->
+                        val printer = CSVFormat.DEFAULT
+                            .builder()
+                            .setHeader(
+                                COLUMN_CREATED_AT,
+                                COLUMN_CONTENT,
+                                COLUMN_AMOUNT_FORMATTED,
+                                COLUMN_AMOUNT,
+                                COLUMN_AMOUNT_UNIT,
+                                COLUMN_UID,
+                            )
+                            .get()
+                            .print(writer)
+                        for (entry in entries) {
+                            printer.printRecord(
+                                csvDateFormat.format(entry.createdAt),
+                                entry.content,
+                                entry.amountUnit.format(resources, entry.amount),
+                                entry.amountUnit.serialize(entry.amount),
+                                entry.amountUnit.id,
+                                entry.uid.toString(),
+                            )
+                            exportedCount++
+                        }
+                    }
+                }
+
+                setMessage(
+                    Message(
+                        resources.getQuantityString(R.plurals.list_export_finished, exportedCount, exportedCount),
+                        Message.Type.SUCCESS,
+                        duration = Message.Duration.LONG,
+                    )
+                )
+            } catch (e: Exception) {
+                Log.e(null, "Unknown error when exporting entries", e)
+                setMessage(
+                    Message(
+                        resources.getString(R.string.list_export_failed_unknown),
+                        Message.Type.ERROR,
+                        duration = Message.Duration.LONG,
+                    )
                 )
             }
         }

@@ -1,6 +1,7 @@
 package app.traced_it.data.local.database
 
 import android.content.Context
+import android.database.Cursor
 import android.text.format.DateUtils
 import androidx.paging.PagingSource
 import androidx.room.*
@@ -104,6 +105,9 @@ interface EntryDao {
     @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
     fun getAll(): PagingSource<Int, Entry>
 
+    @Query("SELECT amount, amountUnit, content, createdAt, uid FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
+    fun getAllAsCursor(): Cursor
+
     @Query("SELECT * FROM entry WHERE uid = :uid")
     suspend fun getByUid(uid: UUID): Entry?
 
@@ -123,6 +127,17 @@ interface EntryDao {
     """
     )
     fun search(fullTextQueryExpression: String): PagingSource<Int, Entry>
+
+    @Query(
+        """
+        SELECT entry.amount, entry.amountUnit, entry.content, entry.createdAt, entry.uid FROM entry
+        JOIN entry_fts ON entry_fts.rowid = entry.uid
+        WHERE entry_fts MATCH :fullTextQueryExpression
+        AND NOT deleted
+        ORDER BY createdAt DESC
+    """
+    )
+    fun searchAsCursor(fullTextQueryExpression: String): Cursor
 
     @Insert
     suspend fun insert(entry: Entry): Long

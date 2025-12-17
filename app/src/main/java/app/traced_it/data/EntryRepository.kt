@@ -1,11 +1,11 @@
 package app.traced_it.data
 
+import android.annotation.SuppressLint
 import androidx.paging.PagingSource
-import app.traced_it.data.local.database.Entry
-import app.traced_it.data.local.database.EntryDao
-import app.traced_it.data.local.database.createFullTextQueryExpression
+import androidx.room.util.convertByteToUUID
+import app.traced_it.data.local.database.*
 import kotlinx.coroutines.flow.Flow
-import java.util.UUID
+import java.util.*
 import javax.inject.Inject
 
 interface EntryRepository {
@@ -18,6 +18,8 @@ interface EntryRepository {
     fun getLatest(): Flow<Entry?>
 
     fun filter(unsafeQuery: String = ""): PagingSource<Int, Entry>
+
+    fun filterAsSequence(unsafeQuery: String = ""): Sequence<Entry>
 
     suspend fun insert(entry: Entry): Long
 
@@ -45,6 +47,30 @@ class DefaultEntryRepository @Inject constructor(
         } else {
             entryDao.getAll()
         }
+
+    @SuppressLint("RestrictedApi")
+    override fun filterAsSequence(unsafeQuery: String): Sequence<Entry> = sequence {
+        val cursor = if (unsafeQuery.isNotEmpty()) {
+            entryDao.searchAsCursor(createFullTextQueryExpression(unsafeQuery))
+        } else {
+            entryDao.getAllAsCursor()
+        }
+        with(cursor) {
+            while (moveToNext()) {
+                yield(
+                    Entry(
+                        amount = cursor.getDouble(0),
+                        amountUnit = convertUnitIdToUnit(cursor.getString(1)) ?: noneUnit,
+                        content = cursor.getString(2),
+                        createdAt = cursor.getLong(3),
+                        deleted = cursor.getInt(4) == 1,
+                        uid = convertByteToUUID(cursor.getBlob(5)),
+                    )
+                )
+            }
+        }
+        cursor.close()
+    }
 
     override suspend fun getByUid(uid: UUID): Entry? = entryDao.getByUid(uid)
 
