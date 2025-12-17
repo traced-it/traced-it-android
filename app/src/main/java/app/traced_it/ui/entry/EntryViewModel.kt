@@ -313,6 +313,7 @@ class EntryViewModel @Inject constructor(
                     Message(
                         resources.getString(R.string.list_import_in_progress),
                         Message.Type.SUCCESS,
+                        withDismissAction = false,
                         duration = Message.Duration.INDEFINITE,
                     )
                 )
@@ -335,7 +336,13 @@ class EntryViewModel @Inject constructor(
                                             entryRepository.insert(parseResult.entry)
                                             importedCount++
                                         } else {
-                                            entryRepository.update(parseResult.entry)
+                                            entryRepository.update(existingEntry.copy(
+                                                amount = parseResult.entry.amount,
+                                                amountUnit = parseResult.entry.amountUnit,
+                                                content = parseResult.entry.content,
+                                                createdAt = parseResult.entry.createdAt,
+                                                deleted = false,
+                                            ))
                                             updatedCount++
                                         }
                                     } else {
@@ -344,6 +351,7 @@ class EntryViewModel @Inject constructor(
                                             entryRepository.insert(parseResult.entry)
                                             importedCount++
                                         } else {
+                                            entryRepository.update(existingEntry.copy(deleted = false))
                                             skippedCount++
                                         }
                                     }
@@ -413,6 +421,7 @@ class EntryViewModel @Inject constructor(
                     Message(
                         resources.getString(R.string.list_export_in_progress),
                         Message.Type.SUCCESS,
+                        withDismissAction = false,
                         duration = Message.Duration.INDEFINITE,
                     )
                 )

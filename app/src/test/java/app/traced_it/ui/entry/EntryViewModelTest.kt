@@ -77,6 +77,9 @@ class EntryViewModelTest {
             on {
                 getQuantityString(R.plurals.list_import_finished_updated, 1, 1)
             } doReturn "Updated 1 note."
+            on {
+                getQuantityString(R.plurals.list_import_finished_updated, 2, 2)
+            } doReturn "Updated 2 notes."
             on { getString(R.string.list_import_finished_empty) } doReturn "Empty CSV file"
             on { getString(R.string.list_import_finished_delimiter) } doReturn " "
             on { getString(R.string.list_import_in_progress) } doReturn "Importing notes…"
@@ -84,7 +87,7 @@ class EntryViewModelTest {
     }
 
     @Test
-    fun `importEntriesCsv inserts valid entries, updates entries with the same uid, and aborts after failing to parse a row`() =
+    fun `importEntriesCsv inserts valid entries, updates entries with the same uuid, and aborts after failing to parse a row`() =
         runTest {
             val entryRepository = FakeEntryRepository(emptyList())
             val entryViewModel = EntryViewModel(
@@ -113,7 +116,6 @@ class EntryViewModelTest {
                     amount = 0.0,
                     amountUnit = noneUnit,
                     content = "Red apples duplicate",
-
                     createdAt = OffsetDateTime.of(
                         2025,
                         2,
@@ -207,7 +209,118 @@ class EntryViewModelTest {
         }
 
     @Test
-    fun `importEntriesCsv skips entries with the same createdAt, when there is no uid column`() =
+    fun `importEntriesCsv updates and undeletes existing entries`() =
+        runTest {
+            val entryRepository = FakeEntryRepository(
+                listOf(
+                    Entry(
+                        amount = 0.0,
+                        amountUnit = noneUnit,
+                        content = "Red apples",
+                        createdAt = OffsetDateTime.of(
+                            2025,
+                            2,
+                            1,
+                            18,
+                            0,
+                            22,
+                            755_000_000,
+                            ZoneOffset.of("+01:00")
+                        ).toInstant().toEpochMilli(),
+                        uid = 1,
+                        uuid = UUID.fromString("8be47977-3577-4534-993c-c14f2fccc8ef"),
+                        deleted = false,
+                    ),
+                    Entry(
+                        amount = 3.0,
+                        amountUnit = clothingSizeUnit,
+                        content = "Green kiwis",
+                        createdAt = OffsetDateTime.of(
+                            2025,
+                            2,
+                            1,
+                            15,
+                            16,
+                            56,
+                            985_000_000,
+                            ZoneOffset.of("+01:00")
+                        ).toInstant().toEpochMilli(),
+                        uid = 2,
+                        uuid = UUID.fromString("98fb296e-29f3-4e6e-b7d2-646976cd2e0f"),
+                        deleted = true,
+                    ),
+                )
+            )
+            val entryViewModel = EntryViewModel(
+                entryRepository,
+                SavedStateHandle(),
+            )
+
+            @Suppress("SpellCheckingInspection")
+            val csv = """
+                createdAt,content,amountFormatted,amount,amountUnit,uuid
+                2025-02-01T18:00:55.755+0100,"Red apples updated",,5.9,DOUBLE,8be47977-3577-4534-993c-c14f2fccc8ef
+                2025-02-01T15:16:33.985+0100,"Green kiwis updated",XL,4.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f
+            """.trimIndent()
+            val inputStream = ByteArrayInputStream(csv.toByteArray())
+
+            entryViewModel.importEntriesCsv(mockResources, inputStream).join()
+
+            val expectedEntries = listOf(
+                Entry(
+                    amount = 5.9,
+                    amountUnit = doubleUnit,
+                    content = "Red apples updated",
+                    createdAt = OffsetDateTime.of(
+                        2025,
+                        2,
+                        1,
+                        18,
+                        0,
+                        55,
+                        755_000_000,
+                        ZoneOffset.of("+01:00")
+                    ).toInstant().toEpochMilli(),
+                    uid = 1,
+                    uuid = UUID.fromString("8be47977-3577-4534-993c-c14f2fccc8ef"),
+                    deleted = false,
+                ),
+                Entry(
+                    amount = 4.0,
+                    amountUnit = clothingSizeUnit,
+                    content = "Green kiwis updated",
+                    createdAt = OffsetDateTime.of(
+                        2025,
+                        2,
+                        1,
+                        15,
+                        16,
+                        33,
+                        985_000_000,
+                        ZoneOffset.of("+01:00")
+                    ).toInstant().toEpochMilli(),
+                    uid = 2,
+                    uuid = UUID.fromString("98fb296e-29f3-4e6e-b7d2-646976cd2e0f"),
+                    deleted = false,
+                ),
+            )
+            val resultEntries = entryRepository.fakeEntries.first()
+            assertEquals(expectedEntries.size, resultEntries.size)
+            for ((expectedEntry, fakeEntry) in expectedEntries zip resultEntries) {
+                assertEquals(expectedEntry, fakeEntry)
+            }
+            assertEquals(
+                Message(
+                    "Updated 2 notes.",
+                    type = Message.Type.SUCCESS,
+                    duration = Message.Duration.LONG,
+                ),
+                entryViewModel.message.first(),
+            )
+        }
+
+    @Test
+    fun `importEntriesCsv skips entries with the same createdAt, when there is no uuid column`() =
         runTest {
             val entryRepository = FakeEntryRepository(emptyList())
             val entryViewModel = EntryViewModel(
@@ -445,6 +558,7 @@ class EntryViewModelTest {
                             755_000_000,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
+                        uid = 1,
                         uuid = UUID.fromString("8be47977-3577-4534-993c-c14f2fccc8ef"),
                     ),
                     Entry(
@@ -461,6 +575,7 @@ class EntryViewModelTest {
                             189_000_000,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
+                        uid = 2,
                         uuid = UUID.fromString("85f2ff1f-1424-40ac-b45e-e8381d84005b"),
                     ),
                     Entry(
@@ -477,6 +592,7 @@ class EntryViewModelTest {
                             985_000_000,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
+                        uid = 3,
                         uuid = UUID.fromString("98fb296e-29f3-4e6e-b7d2-646976cd2e0f"),
                     ),
                     Entry(
@@ -493,6 +609,7 @@ class EntryViewModelTest {
                             0,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
+                        uid = 4,
                         uuid = UUID.fromString("eee93824-8533-455e-8622-0dc2a24ef584"),
                     ),
                     Entry(
@@ -509,6 +626,7 @@ class EntryViewModelTest {
                             0,
                             ZoneOffset.of("+01:00")
                         ).toInstant().toEpochMilli(),
+                        uid = 5,
                         uuid = UUID.fromString("7fa18ae8-191d-46d1-bd86-748e9014ef33"),
                     ),
                 )
