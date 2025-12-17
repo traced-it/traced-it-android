@@ -38,7 +38,8 @@ abstract class AppDatabase : RoomDatabase() {
         override fun onPostMigrate(db: SupportSQLiteDatabase) {
             super.onPostMigrate(db)
             @Suppress("SpellCheckingInspection")
-            db.execSQL("UPDATE Entry SET uid = RANDOMBLOB(16)")
+            db.execSQL("UPDATE entry SET uid = RANDOMBLOB(16)")
+            db.execSQL("INSERT INTO entry_fts(entry_fts) VALUES ('rebuild')")
         }
     }
 }
