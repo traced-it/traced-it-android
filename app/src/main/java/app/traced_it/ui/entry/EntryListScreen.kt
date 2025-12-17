@@ -61,6 +61,7 @@ private class MessageSnackbarVisuals(tracedMessage: Message) : SnackbarVisuals {
     override val duration = when (tracedMessage.duration) {
         Message.Duration.SHORT -> SnackbarDuration.Short
         Message.Duration.LONG -> SnackbarDuration.Long
+        Message.Duration.INDEFINITE -> SnackbarDuration.Indefinite
     }
     val isError = tracedMessage.type == Message.Type.ERROR
 }

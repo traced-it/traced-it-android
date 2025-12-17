@@ -35,7 +35,7 @@ data class Message(
     val onDismiss: () -> Unit = {},
 ) {
     enum class Type { SUCCESS, ERROR }
-    enum class Duration { SHORT, LONG }
+    enum class Duration { SHORT, LONG, INDEFINITE }
 }
 
 @HiltViewModel
@@ -333,6 +333,13 @@ class EntryViewModel @Inject constructor(
         var updatedCount = 0
         var failedMessage: String? = null
 
+        setMessage(
+            Message(
+                resources.getString(R.string.list_import_started),
+                Message.Type.SUCCESS,
+                duration = Message.Duration.INDEFINITE,
+            )
+        )
         val records = CSVFormat.DEFAULT.builder()
             .setHeader()
             .setSkipHeaderRecord(true)
