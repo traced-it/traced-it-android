@@ -3,9 +3,7 @@ package app.traced_it.data.local.database
 import android.annotation.SuppressLint
 import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
-import androidx.room.util.convertUUIDToByte
 import androidx.sqlite.db.SupportSQLiteDatabase
-import java.util.*
 
 class Converters {
     @TypeConverter
@@ -39,20 +37,8 @@ abstract class AppDatabase : RoomDatabase() {
         @SuppressLint("RestrictedApi")
         override fun onPostMigrate(db: SupportSQLiteDatabase) {
             super.onPostMigrate(db)
-            val uids = mutableListOf<ByteArray>()
-            val cursor = db.query("SELECT uid FROM Entry")
-            with(cursor) {
-                while (moveToNext()) {
-                    uids.add(getBlob(0))
-                }
-            }
-            cursor.close()
-            val statement = db.compileStatement("UPDATE Entry SET uid = ? WHERE uid = ?")
-            for (uid in uids) {
-                statement.bindBlob(1, convertUUIDToByte(UUID.randomUUID()))
-                statement.bindBlob(2, uid)
-                statement.execute()
-            }
+            @Suppress("SpellCheckingInspection")
+            db.execSQL("UPDATE Entry SET uid = RANDOMBLOB(16)")
         }
     }
 }
