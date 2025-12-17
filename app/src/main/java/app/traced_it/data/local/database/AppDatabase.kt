@@ -38,7 +38,9 @@ abstract class AppDatabase : RoomDatabase() {
         override fun onPostMigrate(db: SupportSQLiteDatabase) {
             super.onPostMigrate(db)
             @Suppress("SpellCheckingInspection")
-            db.execSQL("UPDATE entry SET uid = RANDOMBLOB(16)")
+            db.execSQL("UPDATE Entry SET uid = RANDOMBLOB(16)")
+            db.execSQL("DROP TABLE IF EXISTS entry_fts")
+            db.execSQL("CREATE VIRTUAL TABLE IF NOT EXISTS entry_fts USING FTS4(content TEXT NOT NULL, content=`Entry`)")
             db.execSQL("INSERT INTO entry_fts(entry_fts) VALUES ('rebuild')")
         }
     }
