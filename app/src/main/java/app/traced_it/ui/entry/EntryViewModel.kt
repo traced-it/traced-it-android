@@ -87,8 +87,9 @@ class EntryViewModel @Inject constructor(
 
     fun insertEntry(resources: Resources, entry: Entry) {
         viewModelScope.launch {
-            entryRepository.insert(entry)
-            setHighlightedEntryUid(entry.uid)
+            val newRowId = entryRepository.insert(entry)
+            val newUid = newRowId.toInt()
+            setHighlightedEntryUid(newUid)
             setMessage(Message(resources.getString(R.string.list_message_added)))
         }
     }

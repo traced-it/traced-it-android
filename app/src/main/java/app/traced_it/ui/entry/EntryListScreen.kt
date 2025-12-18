@@ -192,14 +192,14 @@ private fun EntryListScreen(
         }
     }
 
-// Scroll to the inserted, updated or restored item if it's above the currently visible lazy column items
+    // Scroll to the inserted, updated or restored item if it's above the currently visible lazy column items
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .filter { firstVisibleItemIndex -> firstVisibleItemIndex > 0 }
             .combine(highlightedEntryUidFlow) { firstVisibleItemIndex, highlightedEntryUid ->
                 // To start scrolling only after the list has finished refreshing and the highlighted entry has been
-                // set, we combine firstVisibleItemIndex (emitted when finished refreshing) and highlightedEntryUidFlow
-                // (emitted when highlighted entry set).
+                // set, we combine firstVisibleItemIndex (emitted when the list finishes refreshing) and
+                // highlightedEntryUidFlow (emitted when the highlighted entry is set).
                 if (highlightedEntryUid != null) {
                     val highlightedItemIndex = filteredEntries.itemSnapshotList
                         .indexOfFirst { entry -> entry?.uid == highlightedEntryUid }
@@ -213,10 +213,9 @@ private fun EntryListScreen(
                 }
             }
             .filterNotNull()
+            .filterNot { listState.isScrollInProgress }
             .collect { highlightedItemIndex ->
-                if (!listState.isScrollInProgress) {
-                    listState.animateScrollToItem(highlightedItemIndex)
-                }
+                listState.animateScrollToItem(highlightedItemIndex)
             }
     }
 
