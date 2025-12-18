@@ -189,6 +189,7 @@ val demoEntries = listOf(
             add(Calendar.SECOND, -30)
             time.time
         },
+        uid = 1,
     ),
     Entry(
         amount = 0.0,
@@ -198,6 +199,7 @@ val demoEntries = listOf(
             add(Calendar.MINUTE, -9)
             time.time
         },
+        uid = 2,
     ),
     Entry(
         amount = 25.0,
@@ -210,6 +212,7 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 3,
     ),
     Entry(
         amount = 0.5,
@@ -223,6 +226,7 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 4,
     ),
     Entry(
         amount = 35.0,
@@ -236,6 +240,7 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 5,
     ),
     Entry(
         amount = 50.0,
@@ -249,6 +254,7 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 6,
     ),
     Entry(
         amount = 0.0,
@@ -262,6 +268,7 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 7,
     ),
 )
 
@@ -283,6 +290,7 @@ val defaultFakeEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 8,
     ),
     Entry(
         amount = 0.0,
@@ -292,5 +300,6 @@ val defaultFakeEntries = listOf(
             add(Calendar.DAY_OF_MONTH, 1)
             time.time
         },
+        uid = 9,
     ),
 )
