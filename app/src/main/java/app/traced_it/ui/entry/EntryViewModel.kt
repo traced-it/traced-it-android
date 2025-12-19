@@ -324,7 +324,7 @@ class EntryViewModel @Inject constructor(
                         val records = CSVFormat.DEFAULT.builder()
                             .setHeader()
                             .setSkipHeaderRecord(true)
-                            .get()
+                            .build()
                             .parse(reader)
                         val hasUuidColumn = records.headerNames.contains(COLUMN_UUID)
                         for (record in records) {
@@ -439,7 +439,7 @@ class EntryViewModel @Inject constructor(
                                 COLUMN_AMOUNT_UNIT,
                                 COLUMN_UUID,
                             )
-                            .get()
+                            .build()
                             .print(writer)
                         for (entry in entries) {
                             printer.printRecord(
