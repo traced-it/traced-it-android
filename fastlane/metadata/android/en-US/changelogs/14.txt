@@ -1,5 +1,8 @@
-- Removed the confirmation when deleting a single note; you can use the undo button.
-- Improved the add/edit note screen to focus the text field automatically.
-- Improved scrolling to added/edited/restored note.
-- Improved item swiping by resetting it when another item is swiped or selected.
+- Added the option to set note time.
+- Added unique id to notes to allow updating them when importing CSV.
+- Removed confirmation when deleting a single note; you can use the undo button.
+- Changed default note time to the time when the add/edit screen was open; it was the time when the screen was saved.
+- Improved the add/edit note screen by focusing the text field automatically.
+- Improved the note list screen by improving scrolling and swiping behavior.
 - Fixed deleting notes when filter is active.
+- Fixed duplicate notes in CSV export and cancelling the export.

@@ -1,13 +1,18 @@
 package app.traced_it.data.local.database
 
 import android.content.Context
+import android.database.Cursor
 import android.text.format.DateUtils
 import androidx.paging.PagingSource
 import androidx.room.*
 import app.traced_it.R
 import kotlinx.coroutines.flow.Flow
+import java.util.*
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.uuid.ExperimentalUuidApi
 
+@Suppress("SpellCheckingInspection")
+@OptIn(ExperimentalUuidApi::class)
 @Entity
 data class Entry(
     val amount: Double = 0.0,
@@ -15,7 +20,8 @@ data class Entry(
     val content: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     @ColumnInfo(defaultValue = "0") var deleted: Boolean = false,
-    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
+    @PrimaryKey(autoGenerate = true) val uid: Int = 0, // Use integer primary key instead of UUID, because FTS supports only integers
+    @ColumnInfo(index = true, defaultValue = "(RANDOMBLOB(16))") val uuid: UUID = UUID.randomUUID(),
 ) {
     fun format(context: Context): String {
         val contentWithAmount = buildString {
@@ -101,7 +107,13 @@ interface EntryDao {
     @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
     fun getAll(): PagingSource<Int, Entry>
 
-    @Query("SELECT * FROM entry WHERE createdAt = :createdAt AND NOT deleted")
+    @Query("SELECT * FROM entry WHERE NOT deleted ORDER BY createdAt DESC")
+    fun getAllAsCursor(): Cursor
+
+    @Query("SELECT * FROM entry WHERE uuid = :uuid")
+    suspend fun getByUuid(uuid: UUID): Entry?
+
+    @Query("SELECT * FROM entry WHERE createdAt = :createdAt")
     suspend fun getByCreatedAt(createdAt: Long): Entry?
 
     @Query("SELECT * FROM entry WHERE NOT deleted AND amountUnit != 'NONE' ORDER BY createdAt DESC LIMIT 1")
@@ -117,6 +129,17 @@ interface EntryDao {
     """
     )
     fun search(fullTextQueryExpression: String): PagingSource<Int, Entry>
+
+    @Query(
+        """
+        SELECT * FROM entry
+        JOIN entry_fts ON entry_fts.rowid = entry.uid
+        WHERE entry_fts MATCH :fullTextQueryExpression
+        AND NOT deleted
+        ORDER BY createdAt DESC
+    """
+    )
+    fun searchAsCursor(fullTextQueryExpression: String): Cursor
 
     @Insert
     suspend fun insert(entry: Entry): Long

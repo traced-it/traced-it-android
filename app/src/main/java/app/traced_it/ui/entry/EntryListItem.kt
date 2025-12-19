@@ -284,60 +284,62 @@ fun LazyItemScope.EntryListItem(
 @Composable
 private fun DefaultPreview() {
     AppTheme {
-        LazyColumn(Modifier.background(MaterialTheme.colorScheme.surface)) {
-            item {
-                EntryListItem(
-                    entry = defaultFakeEntries[0],
-                    animationsEnabled = false,
-                    onAddWithSameText = {},
-                    onDelete = {},
-                    onUnsetHighlightedEntry = {},
-                    onFocus = {},
-                    onToggle = {},
-                    onUpdate = {},
-                )
-            }
-            item {
-                EntryListItem(
-                    entry = defaultFakeEntries[1],
-                    prevEntry = defaultFakeEntries[0],
-                    highlighted = true,
-                    animationsEnabled = false,
-                    onAddWithSameText = {},
-                    onDelete = {},
-                    onUnsetHighlightedEntry = {},
-                    onFocus = {},
-                    onToggle = {},
-                    onUpdate = {},
-                )
-            }
-            item {
-                EntryListItem(
-                    entry = defaultFakeEntries[2],
-                    prevEntry = defaultFakeEntries[1],
-                    odd = true,
-                    animationsEnabled = false,
-                    onAddWithSameText = {},
-                    onDelete = {},
-                    onUnsetHighlightedEntry = {},
-                    onFocus = {},
-                    onToggle = {},
-                    onUpdate = {},
-                )
-            }
-            item {
-                EntryListItem(
-                    entry = defaultFakeEntries[3],
-                    prevEntry = defaultFakeEntries[2],
-                    selected = true,
-                    animationsEnabled = false,
-                    onAddWithSameText = {},
-                    onDelete = {},
-                    onUnsetHighlightedEntry = {},
-                    onFocus = {},
-                    onToggle = {},
-                    onUpdate = {},
-                )
+        Surface {
+            LazyColumn {
+                item {
+                    EntryListItem(
+                        entry = defaultFakeEntries[0],
+                        animationsEnabled = false,
+                        onAddWithSameText = {},
+                        onDelete = {},
+                        onUnsetHighlightedEntry = {},
+                        onFocus = {},
+                        onToggle = {},
+                        onUpdate = {},
+                    )
+                }
+                item {
+                    EntryListItem(
+                        entry = defaultFakeEntries[1],
+                        prevEntry = defaultFakeEntries[0],
+                        highlighted = true,
+                        animationsEnabled = false,
+                        onAddWithSameText = {},
+                        onDelete = {},
+                        onUnsetHighlightedEntry = {},
+                        onFocus = {},
+                        onToggle = {},
+                        onUpdate = {},
+                    )
+                }
+                item {
+                    EntryListItem(
+                        entry = defaultFakeEntries[2],
+                        prevEntry = defaultFakeEntries[1],
+                        odd = true,
+                        animationsEnabled = false,
+                        onAddWithSameText = {},
+                        onDelete = {},
+                        onUnsetHighlightedEntry = {},
+                        onFocus = {},
+                        onToggle = {},
+                        onUpdate = {},
+                    )
+                }
+                item {
+                    EntryListItem(
+                        entry = defaultFakeEntries[3],
+                        prevEntry = defaultFakeEntries[2],
+                        selected = true,
+                        animationsEnabled = false,
+                        onAddWithSameText = {},
+                        onDelete = {},
+                        onUnsetHighlightedEntry = {},
+                        onFocus = {},
+                        onToggle = {},
+                        onUpdate = {},
+                    )
+                }
             }
         }
     }

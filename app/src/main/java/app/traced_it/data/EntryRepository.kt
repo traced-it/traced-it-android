@@ -1,20 +1,25 @@
 package app.traced_it.data
 
+import android.annotation.SuppressLint
 import androidx.paging.PagingSource
-import app.traced_it.data.local.database.Entry
-import app.traced_it.data.local.database.EntryDao
-import app.traced_it.data.local.database.createFullTextQueryExpression
+import androidx.room.util.convertByteToUUID
+import app.traced_it.data.local.database.*
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 import javax.inject.Inject
 
 interface EntryRepository {
     fun count(): Flow<Int>
+
+    suspend fun getByUuid(uuid: UUID): Entry?
 
     suspend fun getByCreatedAt(createdAt: Long): Entry?
 
     fun getLatest(): Flow<Entry?>
 
     fun filter(unsafeQuery: String = ""): PagingSource<Int, Entry>
+
+    fun filterAsSequence(unsafeQuery: String = ""): Sequence<Entry>
 
     suspend fun insert(entry: Entry): Long
 
@@ -42,6 +47,32 @@ class DefaultEntryRepository @Inject constructor(
         } else {
             entryDao.getAll()
         }
+
+    @SuppressLint("RestrictedApi")
+    override fun filterAsSequence(unsafeQuery: String): Sequence<Entry> = sequence {
+        val cursor = if (unsafeQuery.isNotEmpty()) {
+            entryDao.searchAsCursor(createFullTextQueryExpression(unsafeQuery))
+        } else {
+            entryDao.getAllAsCursor()
+        }
+        with(cursor) {
+            while (moveToNext()) {
+                yield(
+                    Entry(
+                        amount = cursor.getDouble(getColumnIndexOrThrow("amount")),
+                        amountUnit = convertUnitIdToUnit(cursor.getString(getColumnIndexOrThrow("amountUnit"))) ?: noneUnit,
+                        content = cursor.getString(getColumnIndexOrThrow("content")),
+                        createdAt = cursor.getLong(getColumnIndexOrThrow("createdAt")),
+                        deleted = cursor.getInt(getColumnIndexOrThrow("deleted")) == 1,
+                        uuid = convertByteToUUID(cursor.getBlob(getColumnIndexOrThrow("uuid"))),
+                    )
+                )
+            }
+        }
+        cursor.close()
+    }
+
+    override suspend fun getByUuid(uuid: UUID): Entry? = entryDao.getByUuid(uuid)
 
     override suspend fun getByCreatedAt(createdAt: Long): Entry? = entryDao.getByCreatedAt(createdAt)
 

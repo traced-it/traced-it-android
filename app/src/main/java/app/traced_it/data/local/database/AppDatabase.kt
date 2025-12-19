@@ -6,22 +6,19 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 class Converters {
     @TypeConverter
-    fun unitIdToUnit(unitId: String): EntryUnit? = units.find { unit -> unit.id == unitId }
+    fun unitIdToUnit(unitId: String): EntryUnit? = convertUnitIdToUnit(unitId)
 
     @TypeConverter
-    fun unitToUnitId(unit: EntryUnit): String = unit.id
+    fun unitToUnitId(unit: EntryUnit): String = convertUnitToUnitId(unit)
 }
 
 @Database(
     entities = [Entry::class, EntryFTS::class],
-    version = 3,
+    version = 4,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
-        AutoMigration(
-            from = 2,
-            to = 3,
-            spec = AppDatabase.AutoMigration2To3::class,
-        ),
+        AutoMigration(from = 2, to = 3, spec = AppDatabase.AutoMigration2To3::class),
+        AutoMigration(from = 3, to = 4),
     ],
 )
 @TypeConverters(Converters::class)
@@ -31,9 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
     class AutoMigration2To3 : AutoMigrationSpec {
         override fun onPostMigrate(db: SupportSQLiteDatabase) {
             super.onPostMigrate(db)
-            db.execSQL(
-                "INSERT INTO entry_fts(entry_fts) VALUES ('rebuild')"
-            )
+            db.execSQL("INSERT INTO entry_fts(entry_fts) VALUES ('rebuild')")
         }
     }
 }

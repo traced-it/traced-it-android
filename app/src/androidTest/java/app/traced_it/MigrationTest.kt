@@ -25,6 +25,7 @@ class MigrationTest {
     fun migrateAll() {
         // Create the earliest version of the database.
         helper.createDatabase(testDb, 1).apply {
+            execSQL("INSERT INTO Entry (amount, amountUnit, content, createdAt, uid) VALUES (3.14, 'SMALL_NUMBERS_CHOICE', 'Yellow bananas', ${System.currentTimeMillis()}, 1)")
             close()
         }
 

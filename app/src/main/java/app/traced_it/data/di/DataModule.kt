@@ -108,6 +108,16 @@ class FakeEntryRepository(
             lastPagingSource = it
         }
 
+    override fun filterAsSequence(unsafeQuery: String): Sequence<Entry> =
+        _fakeEntries.value
+            .filter { entry -> !entry.deleted && unsafeQuery.isEmpty() || unsafeQuery in entry.content }
+            .sortedBy { entry -> entry.createdAt }
+            .reversed()
+            .asSequence()
+
+    override suspend fun getByUuid(uuid: UUID): Entry? =
+        _fakeEntries.value.find { it.uuid == uuid }
+
     override suspend fun getByCreatedAt(createdAt: Long): Entry? =
         _fakeEntries.value.find { it.createdAt == createdAt }
 
@@ -172,7 +182,6 @@ class FakeEntryRepository(
 
 val demoEntries = listOf(
     Entry(
-        uid = 1,
         amount = 4.0,
         amountUnit = clothingSizeUnit,
         content = "Coffee",
@@ -180,9 +189,9 @@ val demoEntries = listOf(
             add(Calendar.SECOND, -30)
             time.time
         },
+        uid = 1,
     ),
     Entry(
-        uid = 2,
         amount = 0.0,
         amountUnit = noneUnit,
         content = "Watered plants",
@@ -190,9 +199,9 @@ val demoEntries = listOf(
             add(Calendar.MINUTE, -9)
             time.time
         },
+        uid = 2,
     ),
     Entry(
-        uid = 3,
         amount = 25.0,
         amountUnit = noneUnit,
         content = "Woke up",
@@ -203,9 +212,9 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 3,
     ),
     Entry(
-        uid = 4,
         amount = 0.5,
         amountUnit = fractionUnit,
         content = "Sleeping pill",
@@ -217,9 +226,9 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 4,
     ),
     Entry(
-        uid = 5,
         amount = 35.0,
         amountUnit = doubleUnit,
         content = "Pull-ups",
@@ -231,9 +240,9 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 5,
     ),
     Entry(
-        uid = 6,
         amount = 50.0,
         amountUnit = doubleUnit,
         content = "Squats",
@@ -245,9 +254,9 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 6,
     ),
     Entry(
-        uid = 7,
         amount = 0.0,
         amountUnit = noneUnit,
         content = "Started using traced it",
@@ -259,13 +268,13 @@ val demoEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 7,
     ),
 )
 
 val defaultFakeEntries = listOf(
     *demoEntries.toTypedArray(),
     Entry(
-        uid = 8,
         amount = 0.0,
         amountUnit = clothingSizeUnit,
         content = """
@@ -281,9 +290,9 @@ val defaultFakeEntries = listOf(
             set(Calendar.MILLISECOND, 0)
             time.time
         },
+        uid = 8,
     ),
     Entry(
-        uid = 9,
         amount = 0.0,
         amountUnit = noneUnit,
         content = "Future",
@@ -291,5 +300,6 @@ val defaultFakeEntries = listOf(
             add(Calendar.DAY_OF_MONTH, 1)
             time.time
         },
+        uid = 9,
     ),
 )
