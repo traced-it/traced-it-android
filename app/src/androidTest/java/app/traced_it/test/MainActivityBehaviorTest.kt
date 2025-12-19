@@ -6,7 +6,6 @@ import androidx.test.uiautomator.onElement
 import androidx.test.uiautomator.textAsString
 import androidx.test.uiautomator.uiAutomator
 import app.traced_it.data.local.database.fractionUnit
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
@@ -38,6 +37,7 @@ open class MainActivityBehaviorTest {
 
         // Set content
         onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Test entry 1")
+        pressBack() // Close IME
 
         // Set unit
         onElement { viewIdResourceName == "unitSelectButton" }.click()
@@ -57,6 +57,7 @@ open class MainActivityBehaviorTest {
         // Create entry
         onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
         onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Test entry 3")
+        pressBack() // Close IME
         onElement { viewIdResourceName == "unitSelectButton" }.click()
         onElement { viewIdResourceName == "unitSelectDropdownMenuItem_${fractionUnit.id}" }.click()
         onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "⅓" }.click()
@@ -68,10 +69,8 @@ open class MainActivityBehaviorTest {
             .click()
 
         // Check content
-        assertEquals(
-            "Test entry 3",
-            onElement { viewIdResourceName == "entryDetailContentTextField" }.text,
-        )
+        onElement { viewIdResourceName == "entryDetailContentTextField" && textAsString() == "Test entry 3" }
+        pressBack() // Close IME
 
         // Set unit
         onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "¾" }.click()
@@ -90,6 +89,7 @@ open class MainActivityBehaviorTest {
         // Create entry
         onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
         onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Test entry 2")
+        pressBack() // Close IME
         onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "L" }.click()
         onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
@@ -100,6 +100,7 @@ open class MainActivityBehaviorTest {
 
         // Set content
         onElement { viewIdResourceName == "entryDetailContentTextField" }.apply { setText("$text edited") }
+        pressBack() // Close IME
 
         // Set unit
         onElement { viewIdResourceName == "unitSelectChoiceText" && textAsString() == "M" }.click()
@@ -125,6 +126,7 @@ open class MainActivityBehaviorTest {
         // Create entry
         onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
         onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Test entry 4")
+        pressBack() // Close IME
         onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Delete entry
@@ -142,19 +144,21 @@ open class MainActivityBehaviorTest {
         // Create first entry
         onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
         onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Apples Oranges")
+        pressBack() // Close IME
         onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Create second entry
         onElement { viewIdResourceName == "entryListNewEntryButton" }.click()
         onElement { viewIdResourceName == "entryDetailContentTextField" }.setText("Oranges Bananas")
+        pressBack() // Close IME
         onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
 
         // Expand filter
         onElement { viewIdResourceName == "entryListFilterExpandButton" }.click()
 
         // Filter by a term that only the first entry contains
-        onElement { viewIdResourceName == "entryListFilterQueryTextField" }
-            .setText("apple")
+        onElement { viewIdResourceName == "entryListFilterQueryTextField" }.setText("apple")
+        pressBack() // Close IME
 
         // Check that only the first entry is displayed
         onElement { textAsString() == "1 note out of 2" }
