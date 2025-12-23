@@ -1,4 +1,4 @@
-Um aplicativo simples para anotações curtas de texto com um registro proeminente de data e hora para cada item. Adicione quantidades a suas anotações usando formatos pré-definidos (P, M, XG, 1/4, 1/2, 3/4) ou números personalizados.
+Um aplicativo simples para notas de texto curtas, com um registro proeminente de data e hora para cada entrada. Adicione quantidades às suas notas usando formatos pré-definidos (P, M, XG, 1/4, 1/2, 3/4) ou números personalizados.
 
 A interface descomplicada torna o aplicativo fácil de usar mesmo quando você está ocupado ou distraído.
 
@@ -14,14 +14,15 @@ PERFEITO PARA
 FUNCIONALIDADES
 
 - Adicione notas de texto com um valor opcional (P, M, XG, 1/4, 1/2, 3/4, 5.813…).
-- Veja todas as suas anotações com o tempo decorrido desde que você escreveu cada uma.
-- Toque o botão + para adicionar uma nova anotação com o mesmo texto que uma anotação existente.
-- Edite uma anotação, remova-a, remova todas as anotações.
-- Salve todas as anotações como uma planilha (formato CSV) e importe-as.
+- Veja todas as suas notas com o tempo decorrido desde que você escreveu cada uma.
+- Toque o botão + para adicionar uma nova nota com o mesmo texto que uma anotação existente.
+- Edite uma nota, copie-a para a área de transferência, remova-a, ou remova todas as notas.
+- Salve todas as notas como um arquivo de planilha (formato CSV) e importe-as.
+- Filtre notas e exporte as notas filtradas.
 
 PRIVACIDADE & SEGURANÇA
 
-- O aplicativo não usa a internet em nenhum momento – suas anotações são armazenadas em seu celular somente.
+- O aplicativo não usa a internet em nenhum momento – suas notas são armazenadas somente em seu celular.
 - O aplicativo não acessa nenhuma informação sobre você e não coleta dados de uso.
 - Sem anúncios
-- Grátis e open-source
+- Gratuito e open-source
