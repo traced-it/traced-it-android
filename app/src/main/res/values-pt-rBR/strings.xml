@@ -2,28 +2,28 @@
 <resources>
     <string name="about_app_icon_content_description">Ícone do aplicativo</string>
     <string name="about_title">Sobre</string>
-    <string name="nav_back">Voltar para a lista de anotações</string>
+    <string name="nav_back">Voltar para a lista de notas</string>
     <string name="detail_cancel">Cancelar</string>
     <string name="detail_update_save">Atualizar</string>
     <string name="detail_add_save">Salvar</string>
-    <string name="detail_content_label">Escreva sua anotação</string>
+    <string name="detail_content_label">Escreva sua nota</string>
     <string name="list_item_update">Atualizar</string>
     <string name="list_item_delete">Remover</string>
     <string name="list_menu">Menu</string>
     <string name="list_menu_import">Importar de CSV</string>
     <string name="list_menu_export_all">Salvar como CSV</string>
     <string name="list_menu_delete_all">Remover tudo</string>
-    <string name="list_title">Suas anotações (%1$d)</string>
-    <string name="list_add">Adicionar anotação</string>
-    <string name="list_item_add">Adicionar nova anotação com o mesmo texto</string>
-    <string name="list_delete_all_dialog_title">Remover todas as anotações?</string>
-    <string name="list_delete_all_dialog_text">Você está prestes a remover todas as anotações</string>
+    <string name="list_title">Suas notas (%1$d)</string>
+    <string name="list_add">Adicionar nota</string>
+    <string name="list_item_add">Adicionar nota com mesmo texto</string>
+    <string name="list_delete_all_dialog_title">Remover todas as notas?</string>
+    <string name="list_delete_all_dialog_text">Você está prestes a remover todas as notas</string>
     <string name="list_delete_all_dialog_confirm">Remover tudo</string>
-    <string name="list_message_added">Anotação adicionada</string>
-    <string name="list_message_updated">Anotação atualizada</string>
-    <string name="list_message_deleted">Anotação removida</string>
+    <string name="list_message_added">Nota adicionada</string>
+    <string name="list_message_updated">Nota atualizada</string>
+    <string name="list_message_deleted">Nota removida</string>
     <string name="list_message_deleted_action">Desfazer</string>
-    <string name="list_message_all_deleted">Todas as anotações removidas</string>
+    <string name="list_message_all_deleted">Todas as notas removidas</string>
     <string name="list_message_all_deleted_action">Desfazer</string>
     <string name="list_item_time_at">em %1$s</string>
     <string name="list_item_time_ago_seconds">%1$d s atrás</string>
@@ -33,9 +33,9 @@
     <string name="list_import_failed_column_empty">Valor vazio na coluna “%1$s”</string>
     <string name="list_import_failed_column_choice_unknown">Valor “%3$s” da coluna “%1$s” precisa ser um de %2$s</string>
     <plurals name="list_import_finished_imported">
-        <item quantity="one">%1$d anotação importada.</item>
-        <item quantity="many">%1$d anotações importadas.</item>
-        <item quantity="other">%1$d anotações importadas.</item>
+        <item quantity="one">%1$d nota adicionada.</item>
+        <item quantity="many">%1$d notas adicionadas.</item>
+        <item quantity="other">%1$d notas adicionadas.</item>
     </plurals>
     <string name="list_import_finished_empty">Arquivo CSV vazio</string>
     <string name="detail_unit_label">Escolha um valor, se quiser</string>
@@ -61,16 +61,50 @@
     <string name="entry_unit_fraction_choice_whole">1</string>
     <string name="entry_unit_fraction_choice_whole_html">1</string>
     <string name="entry_unit_double_name">número</string>
-    <string name="detail_update_title">Atualizar anotação</string>
-    <string name="detail_add_title">Adicionar anotação</string>
-    <string name="list_message_restored">Anotação restaurada</string>
-    <string name="list_message_all_restored">Todas as anotações restauradas</string>
-    <string name="list_export_all_filename">%1$s anotações %2$s.csv</string>
+    <string name="detail_update_title">Atualizar nota</string>
+    <string name="detail_add_title">Adicionar nota</string>
+    <string name="list_message_restored">Nota restaurada</string>
+    <string name="list_message_all_restored">Todas as notas restauradas</string>
+    <string name="list_export_all_filename">%1$s notas %2$s.csv</string>
     <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> é um aplicativo não-comercial feito por três amigos por diversão.</p><br><p>Gostaria de compartilhar como você usa o aplicativo? Escreva um <a href="mailto:android@traced-it.app">email</a> para nós.</p><br><p>Alguma coisa não funciona para você ou você tem ideias para melhoria? Crie uma <a href="https://github.com/traced-it/traced-it-android/issues">issue</a>.</p><br><p>Distribuído sob a <a href="https://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License 3.0</a> ou superior. Você pode encontrar o código e participar no <a href="https://github.com/traced-it/traced-it-android">GitHub</a>.</p>]]></string>
     <string name="list_import_failed_column_parsing_error">Não foi possível converter valor “%2$s” da coluna “%1$s”</string>
     <plurals name="list_import_finished_skipped">
-        <item quantity="one">%1$d anotação ignorada, porque uma anotação com a mesma data e hora já existe.</item>
-        <item quantity="many">%1$d anotações ignoradas, porque anotações com a mesma data e hora já existem.</item>
-        <item quantity="other">%1$d anotações ignoradas, porque anotações com a mesma data e hora já existem.</item>
+        <item quantity="one">%1$d nota ignorada, porque uma nota com a mesma data e hora já existe.</item>
+        <item quantity="many">%1$d notas ignoradas, porque notas com a mesma data e hora já existem.</item>
+        <item quantity="other">%1$d notas ignoradas, porque notas com a mesma data e hora já existem.</item>
     </plurals>
+    <string name="detail_created_at_label">Hora</string>
+    <string name="detail_created_at_reset">redefinir</string>
+    <string name="detail_created_at_today">hoje</string>
+    <string name="list_export_failed_unknown">Erro desconhecido ao salvar notas como CSV</string>
+    <string name="list_export_in_progress">Salvando notas como CSV…</string>
+    <plurals name="list_export_finished">
+        <item quantity="one">%1$d nota salva como CSV</item>
+        <item quantity="many">%1$d notas salvas como CSV</item>
+        <item quantity="other">%1$d notas salvas como CSV</item>
+    </plurals>
+    <string name="list_import_failed_unknown">Erro desconhecido ao importar notas</string>
+    <plurals name="list_import_finished_updated">
+        <item quantity="one">%1$d nota atualizada.</item>
+        <item quantity="many">%1$d notas atualizadas.</item>
+        <item quantity="other">%1$d notas atualizadas.</item>
+    </plurals>
+    <string name="list_import_in_progress">Importando notas…</string>
+    <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
+    <string name="list_export_filtered_filename">%1$s notas %2$s filtro %3$s.csv</string>
+    <string name="list_filter_input_placeholder">Filtre suas notas</string>
+    <string name="list_filter_input_clear_content_description">Limpar entrada</string>
+    <string name="list_filter_submit">Filtrar</string>
+    <string name="list_filter_close_content_description">Fechar filtro</string>
+    <plurals name="list_filter_status">
+        <item quantity="one">%1$d de %2$d nota</item>
+        <item quantity="many">%1$d de %2$d notas</item>
+        <item quantity="other">%1$d de %2$d notas</item>
+    </plurals>
+    <string name="list_filter_export">Salvar</string>
+    <string name="list_item_find_with_similar_content">Filtrar notas similares</string>
+    <string name="list_item_copy_to_clipboard">Copiar para área de transferência</string>
+    <string name="list_item_copied_to_clipboard">Copiado</string>
+    <string name="list_selected_back">Desfazer seleção da nota</string>
+    <string name="list_selected_title">Nota selecionada</string>
 </resources>
