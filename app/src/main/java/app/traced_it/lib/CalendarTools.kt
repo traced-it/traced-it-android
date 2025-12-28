@@ -1,7 +1,9 @@
 package app.traced_it.lib
 
+import androidx.compose.runtime.Immutable
 import java.util.*
 
+@Immutable
 data class Day(val year: Int, val month: Int, val date: Int)
 
 fun gregorianCalendar(

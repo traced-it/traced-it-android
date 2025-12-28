@@ -8,7 +8,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -39,8 +43,8 @@ fun UnitControl(
     onVisibleUnitChange: () -> Unit,
 ) {
     val latestEntryUnit by latestEntryUnitFlow.collectAsStateWithLifecycle()
-    var expanded by remember { mutableStateOf(false) }
-    var visibleUnit by remember {
+    var expanded by retain { mutableStateOf(false) }
+    var visibleUnit by retain {
         mutableStateOf(
             selectedUnit.takeIf { it in visibleUnits }
                 ?: latestEntryUnit.takeIf { it in visibleUnits }

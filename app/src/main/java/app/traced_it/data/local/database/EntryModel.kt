@@ -78,7 +78,7 @@ data class Entry(
     fun formatExactTime(context: Context): String =
         context.resources.getString(
             R.string.list_item_time_at,
-            DateUtils.formatDateTime(context,createdAt,DateUtils.FORMAT_SHOW_TIME),
+            DateUtils.formatDateTime(context, createdAt, DateUtils.FORMAT_SHOW_TIME),
         )
 
     fun getHeader(context: Context, prevEntry: Entry?): String? =

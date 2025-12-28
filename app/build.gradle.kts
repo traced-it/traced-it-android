@@ -123,6 +123,7 @@ dependencies {
     implementation(libs.androidx.room.testing)
     implementation(libs.commons.csv)
     implementation(libs.hilt.android)
+    implementation(libs.kotlinx.collections.immutable)
     ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.compiler)
 

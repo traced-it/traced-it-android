@@ -4,7 +4,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import app.traced_it.R
@@ -16,7 +20,7 @@ fun SelectedEntryMenu(
     onCopy: () -> Unit = {},
     onFilterWithSimilarContent: () -> Unit = {},
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by retain { mutableStateOf(false) }
 
     Box {
         IconButton({ expanded = true }, modifier) {

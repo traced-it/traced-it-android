@@ -19,6 +19,7 @@ commonsCsv = "1.12.0"
 hilt = "2.57.2"
 junit = "4.13.2"
 kotlin = "2.2.21"
+kotlinxCollectionsImmutable = "0.4.0"
 kotlinxCoroutinesTest = "1.10.2"
 ksp = "2.2.21-2.0.4"
 mockitoKotlin = "6.1.0"
@@ -50,6 +51,7 @@ commons-csv = { group = "org.apache.commons", name = "commons-csv", version.ref 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 junit = { module = "junit:junit", version.ref = "junit" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
 
