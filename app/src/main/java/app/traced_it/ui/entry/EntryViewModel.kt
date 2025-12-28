@@ -58,6 +58,9 @@ class EntryViewModel @Inject constructor(
     @Suppress("SpellCheckingInspection")
     private val csvDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US)
 
+    @Suppress("SpellCheckingInspection")
+    private val oldCsvDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US)
+
     private val _message = MutableStateFlow<Message?>(null)
     val message: StateFlow<Message?> = _message
 
@@ -258,6 +261,10 @@ class EntryViewModel @Inject constructor(
         }
         val createdAtDate = try {
             csvDateFormat.parse(createdAtRaw)
+        } catch (_: ParseException) {
+            null
+        } ?: try {
+            oldCsvDateFormat.parse(createdAtRaw)
         } catch (_: ParseException) {
             null
         }
