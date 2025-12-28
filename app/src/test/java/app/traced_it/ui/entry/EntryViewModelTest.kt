@@ -72,6 +72,9 @@ class EntryViewModelTest {
                 getQuantityString(R.plurals.list_import_finished_imported, 3, 3)
             } doReturn "Imported 3 notes."
             on {
+                getQuantityString(R.plurals.list_import_finished_imported, 2, 2)
+            } doReturn "Imported 2 notes."
+            on {
                 getQuantityString(R.plurals.list_import_finished_skipped, 1, 1)
             } doReturn "Skipped 1 note."
             on {
@@ -98,14 +101,14 @@ class EntryViewModelTest {
             @Suppress("SpellCheckingInspection")
             val csv = """
                 createdAt,content,amountFormatted,amount,amountUnit,uuid
-                2025-02-01T18:00:22.755+0100,"Red apples",,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
-                2025-02-01T18:00:21.000+0100,"Red apples duplicate",,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
-                2025-02-01T15:18:43.189+0100,"Yellow bananas",2x,2.0,SMALL_NUMBERS_CHOICE,85f2ff1f-1424-40ac-b45e-e8381d84005b
-                2025-02-01T15:16:56.985+0100,"Green kiwis",L,3.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f
-                2025-02-01T15:00:00.000+0100,"Purple grapes",3.14,3.14,DOUBLE,eee93824-8533-455e-8622-0dc2a24ef584
-                2025-02-01T07:00:00.000+0100,"Pineapple",1/3,0.333,FRACTION,7fa18ae8-191d-46d1-bd86-748e9014ef33
+                2025-02-01T18:00:22.755+01:00,"Red apples",,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
+                2025-02-01T18:00:21.000+01:00,"Red apples duplicate",,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
+                2025-02-01T15:18:43.189+01:00,"Yellow bananas",2x,2.0,SMALL_NUMBERS_CHOICE,85f2ff1f-1424-40ac-b45e-e8381d84005b
+                2025-02-01T15:16:56.985+01:00,"Green kiwis",L,3.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f
+                2025-02-01T15:00:00.000+01:00,"Purple grapes",3.14,3.14,DOUBLE,eee93824-8533-455e-8622-0dc2a24ef584
+                2025-02-01T07:00:00.000+01:00,"Pineapple",1/3,0.333,FRACTION,7fa18ae8-191d-46d1-bd86-748e9014ef33
                 INVALID_DATE,"Green kiwis invalid",,0.0,NONE,d05d1809-8574-457f-a273-fd2509f1d034
-                2025-02-01T01:59:38.771+0100,"Green kiwis not processed",,0.0,NONE,5a38ff2d-39f5-43b6-a3e4-f84814693f35
+                2025-02-01T01:59:38.771+01:00,"Green kiwis not processed",,0.0,NONE,5a38ff2d-39f5-43b6-a3e4-f84814693f35
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
@@ -259,8 +262,8 @@ class EntryViewModelTest {
             @Suppress("SpellCheckingInspection")
             val csv = """
                 createdAt,content,amountFormatted,amount,amountUnit,uuid
-                2025-02-01T18:00:55.755+0100,"Red apples updated",,5.9,DOUBLE,8be47977-3577-4534-993c-c14f2fccc8ef
-                2025-02-01T15:16:33.985+0100,"Green kiwis updated",XL,4.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f
+                2025-02-01T18:00:55.755+01:00,"Red apples updated",,5.9,DOUBLE,8be47977-3577-4534-993c-c14f2fccc8ef
+                2025-02-01T15:16:33.985+01:00,"Green kiwis updated",XL,4.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
@@ -329,10 +332,10 @@ class EntryViewModelTest {
             )
             val csv = """
                 createdAt,content,amountFormatted,amount,amountUnit
-                2025-02-01T18:00:22.755+0100,"Red apples",,0.0,NONE
-                2025-02-01T18:00:22.755+0100,"Red apples duplicate",,0.0,NONE
-                2025-02-01T15:18:43.189+0100,"Yellow bananas",2x,2.0,SMALL_NUMBERS_CHOICE
-                2025-02-01T15:16:56.985+0100,"Green kiwis",L,3.0,CLOTHING_SIZE
+                2025-02-01T18:00:22.755+01:00,"Red apples",,0.0,NONE
+                2025-02-01T18:00:22.755+01:00,"Red apples duplicate",,0.0,NONE
+                2025-02-01T15:18:43.189+01:00,"Yellow bananas",2x,2.0,SMALL_NUMBERS_CHOICE
+                2025-02-01T15:16:56.985+01:00,"Green kiwis",L,3.0,CLOTHING_SIZE
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
@@ -411,11 +414,11 @@ class EntryViewModelTest {
             )
             val csv = """
                 createdAt,content,amount,amountUnit
-                2025-02-01T18:00:22.755+0100,"Red apples",0.0,no unit
-                2025-02-01T15:18:43.189+0100,"Yellow bananas",2.0,portion
-                2025-02-01T15:16:56.985+0100,"Green kiwis",3.0,clothing
-                2025-02-01T15:00:00.000+0100,"Purple grapes",3.14,number
-                2025-02-01T07:00:00.000+0100,"Pineapple",0.333,fraction
+                2025-02-01T18:00:22.755+01:00,"Red apples",0.0,no unit
+                2025-02-01T15:18:43.189+01:00,"Yellow bananas",2.0,portion
+                2025-02-01T15:16:56.985+01:00,"Green kiwis",3.0,clothing
+                2025-02-01T15:00:00.000+01:00,"Purple grapes",3.14,number
+                2025-02-01T07:00:00.000+01:00,"Pineapple",0.333,fraction
             """.trimIndent()
             val inputStream = ByteArrayInputStream(csv.toByteArray())
 
@@ -496,6 +499,74 @@ class EntryViewModelTest {
                         0,
                         ZoneOffset.of("+01:00")
                     ).toInstant().toEpochMilli(),
+                ),
+            )
+            val resultEntries = entryRepository.fakeEntries.first()
+            assertEquals(expectedEntries.size, resultEntries.size)
+            val testUuid = UUID.randomUUID()
+            for ((expectedEntry, fakeEntry) in expectedEntries zip resultEntries) {
+                assertEquals(expectedEntry.copy(uuid = testUuid), fakeEntry.copy(uuid = testUuid))
+            }
+            assertEquals(
+                Message(
+                    "Imported ${expectedEntries.size} notes.",
+                    type = Message.Type.SUCCESS,
+                    duration = Message.Duration.LONG,
+                ),
+                entryViewModel.message.first(),
+            )
+        }
+
+    @Test
+    fun `importEntriesCsv inserts entries from a CSV that has time zone string without the colon sign`() =
+        runTest {
+            val entryRepository = FakeEntryRepository(emptyList())
+            val entryViewModel = EntryViewModel(
+                entryRepository,
+                SavedStateHandle(),
+            )
+            @Suppress("SpellCheckingInspection")
+            val csv = """
+                createdAt,content,amountFormatted,amount,amountUnit,uuid
+                2025-02-01T18:00:22.755+0100,"Red apples",,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
+                2025-02-01T15:16:56.985-0300,"Green kiwis",L,3.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f
+            """.trimIndent()
+            val inputStream = ByteArrayInputStream(csv.toByteArray())
+
+            entryViewModel.importEntriesCsv(mockResources, inputStream).join()
+
+            val expectedEntries = listOf(
+                Entry(
+                    amount = 3.0,
+                    amountUnit = clothingSizeUnit,
+                    content = "Green kiwis",
+                    createdAt = OffsetDateTime.of(
+                        2025,
+                        2,
+                        1,
+                        15,
+                        16,
+                        56,
+                        985_000_000,
+                        ZoneOffset.of("-03:00")
+                    ).toInstant().toEpochMilli(),
+                    uuid = UUID.fromString("98fb296e-29f3-4e6e-b7d2-646976cd2e0f"),
+                ),
+                Entry(
+                    amount = 0.0,
+                    amountUnit = noneUnit,
+                    content = "Red apples",
+                    createdAt = OffsetDateTime.of(
+                        2025,
+                        2,
+                        1,
+                        18,
+                        0,
+                        22,
+                        755_000_000,
+                        ZoneOffset.of("+01:00")
+                    ).toInstant().toEpochMilli(),
+                    uuid = UUID.fromString("8be47977-3577-4534-993c-c14f2fccc8ef"),
                 ),
             )
             val resultEntries = entryRepository.fakeEntries.first()
@@ -643,11 +714,11 @@ class EntryViewModelTest {
                 @Suppress("SpellCheckingInspection")
                 listOf(
                     "createdAt,content,amountFormatted,amount,amountUnit,uuid",
-                    "2025-02-01T14:00:22.755-0300,Red apples,,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef",
-                    "2025-02-01T11:18:43.189-0300,Yellow bananas,2x,2.0,SMALL_NUMBERS_CHOICE,85f2ff1f-1424-40ac-b45e-e8381d84005b",
-                    "2025-02-01T11:16:56.985-0300,Green kiwis,L,3.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f",
-                    "2025-02-01T11:00:00.000-0300,Purple grapes,3.14,3.14,DOUBLE,eee93824-8533-455e-8622-0dc2a24ef584",
-                    "2025-02-01T03:00:00.000-0300,Pineapple,1/3,0.333,FRACTION,7fa18ae8-191d-46d1-bd86-748e9014ef33",
+                    "2025-02-01T14:00:22.755-03:00,Red apples,,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef",
+                    "2025-02-01T11:18:43.189-03:00,Yellow bananas,2x,2.0,SMALL_NUMBERS_CHOICE,85f2ff1f-1424-40ac-b45e-e8381d84005b",
+                    "2025-02-01T11:16:56.985-03:00,Green kiwis,L,3.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f",
+                    "2025-02-01T11:00:00.000-03:00,Purple grapes,3.14,3.14,DOUBLE,eee93824-8533-455e-8622-0dc2a24ef584",
+                    "2025-02-01T03:00:00.000-03:00,Pineapple,1/3,0.333,FRACTION,7fa18ae8-191d-46d1-bd86-748e9014ef33",
                     ""
                 ).joinToString("\r\n"),
                 outputStream.toString(),
