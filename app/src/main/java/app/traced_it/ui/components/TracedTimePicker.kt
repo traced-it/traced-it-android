@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.*
 import java.util.*
 import kotlin.math.roundToInt
 
+@Immutable
 data class TracedTimePickerItem<T>(val value: T, val index: Int)
 
 class DayPagingSource(

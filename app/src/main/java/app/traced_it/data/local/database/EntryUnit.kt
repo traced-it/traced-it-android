@@ -2,12 +2,17 @@ package app.traced_it.data.local.database
 
 import android.content.res.Resources
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import app.traced_it.R
+import kotlinx.serialization.Serializable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import java.text.NumberFormat
 import java.text.ParseException
 
+@Immutable
 data class EntryUnitChoice(
     val value: Double,
     @param:StringRes val nameResId: Int,
@@ -19,11 +24,12 @@ data class EntryUnitChoice(
         htmlResId?.let { AnnotatedString.fromHtml(resources.getString(it)) }
 }
 
+@Immutable
 data class EntryUnit(
     val id: String,
     @param:StringRes val nameResId: Int,
     val defaultValue: Double = 0.0,
-    val choices: List<EntryUnitChoice> = listOf(),
+    val choices: ImmutableList<EntryUnitChoice> = persistentListOf(),
 ) {
     private val numberFormat = NumberFormat.getNumberInstance()
     private val placeholderNumberFormat = NumberFormat.getNumberInstance()
@@ -61,14 +67,14 @@ fun List<EntryUnit>.associateByName(resources: Resources): Map<String, EntryUnit
 val noneUnit = EntryUnit(
     id = "NONE",
     nameResId = R.string.entry_unit_none_name,
-    choices = listOf(
+    choices = persistentListOf(
         EntryUnitChoice(0.0, R.string.entry_unit_none_choice_empty),
     ),
 )
 val clothingSizeUnit = EntryUnit(
     id = "CLOTHING_SIZE",
     nameResId = R.string.entry_unit_clothing_name,
-    choices = listOf(
+    choices = persistentListOf(
         EntryUnitChoice(0.0, R.string.entry_unit_clothing_choice_xs),
         EntryUnitChoice(1.0, R.string.entry_unit_clothing_choice_s),
         EntryUnitChoice(2.0, R.string.entry_unit_clothing_choice_m),
@@ -79,7 +85,7 @@ val clothingSizeUnit = EntryUnit(
 val fractionUnit = EntryUnit(
     id = "FRACTION",
     nameResId = R.string.entry_unit_fraction_name,
-    choices = listOf(
+    choices = persistentListOf(
         EntryUnitChoice(
             0.25,
             R.string.entry_unit_fraction_choice_one_quarter,
@@ -110,7 +116,7 @@ val fractionUnit = EntryUnit(
 val smallNumbersChoiceUnit = EntryUnit(
     id = "SMALL_NUMBERS_CHOICE",
     nameResId = R.string.entry_unit_portion_name,
-    choices = listOf(
+    choices = persistentListOf(
         EntryUnitChoice(1.0, R.string.entry_unit_portion_choice_1),
         EntryUnitChoice(2.0, R.string.entry_unit_portion_choice_2),
         EntryUnitChoice(3.0, R.string.entry_unit_portion_choice_3),

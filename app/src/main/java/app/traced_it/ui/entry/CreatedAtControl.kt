@@ -2,11 +2,12 @@ package app.traced_it.ui.entry
 
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.gestures.stopScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.LayoutBoundsHolder
@@ -15,21 +16,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import app.traced_it.R
 import app.traced_it.lib.*
-import app.traced_it.ui.components.DayPagingSource
-import app.traced_it.ui.components.RangePagingSource
-import app.traced_it.ui.components.TracedControl
-import app.traced_it.ui.components.TracedTimePicker
-import app.traced_it.ui.components.TracedTimePickerItem
+import app.traced_it.ui.components.*
 import app.traced_it.ui.theme.AppTheme
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.indexOfFirst
 import kotlin.time.ExperimentalTime
 
 private suspend fun <T> reset(
@@ -119,7 +117,7 @@ private fun CreatedAtControl(
     val coroutineScope = rememberCoroutineScope()
     val hapticFeedback = LocalHapticFeedback.current
 
-    var day by remember {
+    var day by retain {
         mutableStateOf(
             TracedTimePickerItem(
                 value = initialCalendar.day,
@@ -127,7 +125,7 @@ private fun CreatedAtControl(
             )
         )
     }
-    var hour by remember {
+    var hour by retain {
         mutableStateOf(
             TracedTimePickerItem(
                 value = initialCalendar.hour,
@@ -135,7 +133,7 @@ private fun CreatedAtControl(
             )
         )
     }
-    var minute by remember {
+    var minute by retain {
         mutableStateOf(
             TracedTimePickerItem(
                 value = initialCalendar.minute,
@@ -161,7 +159,7 @@ private fun CreatedAtControl(
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
                         day = TracedTimePickerItem(initialCalendar.day, 0)
                         hour = TracedTimePickerItem(initialCalendar.hour, 0)
-                        minute = TracedTimePickerItem(initialCalendar.minute,0)
+                        minute = TracedTimePickerItem(initialCalendar.minute, 0)
                         onValueChange(initialCalendar.copy(day.value, hour.value, minute.value).timeInMillis)
                     }
                 },

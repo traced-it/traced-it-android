@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -50,7 +51,7 @@ fun EntryDetailDialog(
     val viewportBounds = remember { LayoutBoundsHolder() }
 
     val contentFocusRequester = remember { FocusRequester() }
-    var contentFieldValue by remember {
+    var contentFieldValue by retain {
         mutableStateOf(
             when (action) {
                 is EntryDetailAction.New -> ""
@@ -64,7 +65,7 @@ fun EntryDetailDialog(
             }
         )
     }
-    var createdAt by remember {
+    var createdAt by retain {
         mutableLongStateOf(
             when (action) {
                 is EntryDetailAction.New -> System.currentTimeMillis()
@@ -73,7 +74,7 @@ fun EntryDetailDialog(
             }
         )
     }
-    var unit by remember {
+    var unit by retain {
         mutableStateOf(
             when (action) {
                 is EntryDetailAction.New -> null
@@ -94,7 +95,7 @@ fun EntryDetailDialog(
             }
         )
     }
-    var amountRaw by remember {
+    var amountRaw by retain {
         mutableStateOf(
             unit.format(
                 resources,

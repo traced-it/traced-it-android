@@ -23,6 +23,8 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -138,15 +140,15 @@ private fun EntryListScreen(
     val coroutineScope = rememberCoroutineScope()
     val resources = LocalResources.current
 
-    val (deleteAllEntriesDialogOpen, setDeleteAllEntriesDialogOpen) = remember { mutableStateOf(false) }
-    var entryDetailAction by remember { mutableStateOf<EntryDetailAction>(EntryDetailAction.New()) }
-    var entryDetailOpen by remember { mutableStateOf(false) }
+    val (deleteAllEntriesDialogOpen, setDeleteAllEntriesDialogOpen) = retain { mutableStateOf(false) }
+    var entryDetailAction by retain { mutableStateOf<EntryDetailAction>(EntryDetailAction.New()) }
+    var entryDetailOpen by retain { mutableStateOf(false) }
     val filterFocusRequester = remember { FocusRequester() }
-    var focusedEntry by remember { mutableStateOf<Entry?>(null) }
+    var focusedEntry by retain { mutableStateOf<Entry?>(null) }
     val highlightedEntryUid by highlightedEntryUidFlow.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    val (selectedEntry, setSelectedEntry) = remember { mutableStateOf(initialSelectedEntry) }
+    val (selectedEntry, setSelectedEntry) = retain { mutableStateOf(initialSelectedEntry) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     val importLauncher =
