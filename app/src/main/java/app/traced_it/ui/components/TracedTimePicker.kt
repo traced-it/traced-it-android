@@ -1,7 +1,6 @@
 package app.traced_it.ui.components
 
 import android.text.format.DateUtils
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +21,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.LayoutBoundsHolder
 import androidx.compose.ui.layout.onVisibilityChanged
@@ -137,93 +141,92 @@ fun TracedTimePicker(
     zone: TimeZone,
 ) {
     val height = Spacing.inputHeight * 1.25f
-    val heightPx = with(LocalDensity.current) { (height * itemsPerHeight / 2).toPx() }
     val borderColor = MaterialTheme.colorScheme.outline
     val borderWidth = 1.dp
-    val borderWidthPx = with(LocalDensity.current) { 1.dp.toPx() }
     val today = gregorianCalendar(zone).day
 
     var userScrollEnabled by remember { mutableStateOf(false) }
 
     Surface(
-        modifier = Modifier.onVisibilityChanged(
-            minFractionVisible = 0.5f,
-            viewportBounds = viewportBounds,
-        ) { visible ->
-            userScrollEnabled = visible
-        },
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        modifier = Modifier
+            .drawWithContent {
+                drawContent()
+                drawRoundRect(
+                    color = borderColor,
+                    topLeft = Offset(0f, (height / itemsPerHeight).toPx()),
+                    size = Size(width = size.width, height = (height / itemsPerHeight).toPx()),
+                    cornerRadius = CornerRadius(4.dp.toPx()),
+                    style = Stroke(borderWidth.toPx()),
+                )
+            }
+            .onVisibilityChanged(
+                minFractionVisible = 0.5f,
+                viewportBounds = viewportBounds,
+            ) { visible ->
+                userScrollEnabled = visible
+            },
     ) {
-        Box(contentAlignment = Alignment.CenterStart) {
-            Row {
-                TracedTimePickerSegment(
-                    listState = dayListState,
-                    items = days,
-                    onChangeInProgress = onChangeInProgress,
-                    onValueChange = onDayChange,
-                    height = height,
-                    itemsPerHeight = itemsPerHeight,
-                    modifier = Modifier
-                        .testTag("tracedTimePickerDaySegment")
-                        .weight(3f)
-                        .rightBorder(borderColor, borderWidth),
-                    userScrollEnabled = userScrollEnabled,
-                ) { item ->
-                    if (item.value == today) {
-                        stringResource(R.string.detail_created_at_today)
-                    } else {
-                        DateUtils.formatDateTime(
-                            LocalContext.current,
-                            gregorianCalendar(zone, day = item.value).timeInMillis,
-                            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
-                        )
-                    }
-                }
-                TracedTimePickerSegment(
-                    listState = hourListState,
-                    items = hours,
-                    onChangeInProgress = onChangeInProgress,
-                    onValueChange = onHourChange,
-                    height = height,
-                    itemsPerHeight = itemsPerHeight,
-                    modifier = Modifier
-                        .testTag("tracedTimePickerHourSegment")
-                        .weight(1f)
-                        .rightBorder(borderColor, borderWidth),
-                    userScrollEnabled = userScrollEnabled,
-                ) { item ->
-                    if (item.value <= 9) {
-                        "0${item.value}"
-                    } else {
-                        item.value.toString()
-                    }
-                }
-                TracedTimePickerSegment(
-                    listState = minuteListState,
-                    items = minutes,
-                    onChangeInProgress = onChangeInProgress,
-                    onValueChange = onMinuteChange,
-                    height = height,
-                    itemsPerHeight = itemsPerHeight,
-                    userScrollEnabled = userScrollEnabled,
-                    modifier = Modifier
-                        .testTag("tracedTimePickerMinuteSegment")
-                        .weight(1f),
-                ) { item ->
-                    if (item.value <= 9) {
-                        "0${item.value}"
-                    } else {
-                        item.value.toString()
-                    }
+        Row {
+            TracedTimePickerSegment(
+                listState = dayListState,
+                items = days,
+                onChangeInProgress = onChangeInProgress,
+                onValueChange = onDayChange,
+                height = height,
+                itemsPerHeight = itemsPerHeight,
+                modifier = Modifier
+                    .testTag("tracedTimePickerDaySegment")
+                    .weight(3f)
+                    .rightBorder(borderColor, borderWidth),
+                userScrollEnabled = userScrollEnabled,
+            ) { item ->
+                if (item.value == today) {
+                    stringResource(R.string.detail_created_at_today)
+                } else {
+                    DateUtils.formatDateTime(
+                        LocalContext.current,
+                        gregorianCalendar(zone, day = item.value).timeInMillis,
+                        DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
+                    )
                 }
             }
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(height / itemsPerHeight)
-                    .border(borderWidth, borderColor, MaterialTheme.shapes.extraSmall)
-            )
+            TracedTimePickerSegment(
+                listState = hourListState,
+                items = hours,
+                onChangeInProgress = onChangeInProgress,
+                onValueChange = onHourChange,
+                height = height,
+                itemsPerHeight = itemsPerHeight,
+                modifier = Modifier
+                    .testTag("tracedTimePickerHourSegment")
+                    .weight(1f)
+                    .rightBorder(borderColor, borderWidth),
+                userScrollEnabled = userScrollEnabled,
+            ) { item ->
+                if (item.value <= 9) {
+                    "0${item.value}"
+                } else {
+                    item.value.toString()
+                }
+            }
+            TracedTimePickerSegment(
+                listState = minuteListState,
+                items = minutes,
+                onChangeInProgress = onChangeInProgress,
+                onValueChange = onMinuteChange,
+                height = height,
+                itemsPerHeight = itemsPerHeight,
+                userScrollEnabled = userScrollEnabled,
+                modifier = Modifier
+                    .testTag("tracedTimePickerMinuteSegment")
+                    .weight(1f),
+            ) { item ->
+                if (item.value <= 9) {
+                    "0${item.value}"
+                } else {
+                    item.value.toString()
+                }
+            }
         }
     }
 }
