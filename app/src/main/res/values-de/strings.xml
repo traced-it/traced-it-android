@@ -11,8 +11,8 @@
     <string name="list_item_time_ago_hours_and_minutes">vor %1$d h %2$02d min</string>
     <string name="list_item_time_ago_minutes">vor %1$d min</string>
     <plurals name="list_import_finished_imported">
-        <item quantity="one">%1$d Notiz wurde importiert.</item>
-        <item quantity="other">%1$d Notizen wurden importiert.</item>
+        <item quantity="one">%1$d Notiz wurde hinzugefügt.</item>
+        <item quantity="other">%1$d Notizen wurden hinzugefügt.</item>
     </plurals>
     <string name="list_item_update">Bearbeiten</string>
     <string name="list_item_delete">Löschen</string>
@@ -87,4 +87,19 @@
     <string name="list_item_copied_to_clipboard">Kopiert</string>
     <string name="list_selected_back">Notiz abwählen</string>
     <string name="list_selected_title">Ausgewählte Notiz</string>
+    <string name="detail_created_at_label">Zeit</string>
+    <string name="detail_created_at_reset">zurücksetzen</string>
+    <string name="detail_created_at_today">heute</string>
+    <string name="list_export_failed_unknown">Unbekannter Fehler beim Speichern von Notizen als CSV</string>
+    <string name="list_export_in_progress">Notizen werden als CSV gespeichert…</string>
+    <plurals name="list_export_finished">
+        <item quantity="one">%1$d Notiz wurde als CSV gespeichert</item>
+        <item quantity="other">%1$d Notizen wurden als CSV gespeichert</item>
+    </plurals>
+    <string name="list_import_failed_unknown">Unbekannter Fehler beim Importieren von Notizen</string>
+    <plurals name="list_import_finished_updated">
+        <item quantity="one">%1$d Notiz wurde bearbeitet.</item>
+        <item quantity="other">%1$d Notizen wurden bearbeitet.</item>
+    </plurals>
+    <string name="list_import_in_progress">Notizen werden importiert…</string>
 </resources>
