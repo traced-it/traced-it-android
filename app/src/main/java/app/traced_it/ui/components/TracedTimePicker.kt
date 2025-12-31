@@ -1,7 +1,7 @@
 package app.traced_it.ui.components
 
 import android.text.format.DateUtils
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +12,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -33,12 +40,23 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import app.traced_it.R
-import app.traced_it.lib.*
+import app.traced_it.lib.Day
+import app.traced_it.lib.day
+import app.traced_it.lib.generateDaysList
+import app.traced_it.lib.generateNumbersList
+import app.traced_it.lib.gregorianCalendar
+import app.traced_it.lib.hour
+import app.traced_it.lib.minute
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
-import java.util.*
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import java.util.Calendar
+import java.util.TimeZone
 import kotlin.math.roundToInt
 
 @Immutable
@@ -119,8 +137,10 @@ fun TracedTimePicker(
     zone: TimeZone,
 ) {
     val height = Spacing.inputHeight * 1.25f
+    val heightPx = with(LocalDensity.current) { (height * itemsPerHeight / 2).toPx() }
     val borderColor = MaterialTheme.colorScheme.outline
     val borderWidth = 1.dp
+    val borderWidthPx = with(LocalDensity.current) { 1.dp.toPx() }
     val today = gregorianCalendar(zone).day
 
     var userScrollEnabled by remember { mutableStateOf(false) }
@@ -133,71 +153,77 @@ fun TracedTimePicker(
             userScrollEnabled = visible
         },
         color = MaterialTheme.colorScheme.secondaryContainer,
-        shape = MaterialTheme.shapes.extraSmall,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        border = BorderStroke(width = borderWidth, color = MaterialTheme.colorScheme.outline),
     ) {
-        Row {
-            TracedTimePickerSegment(
-                listState = dayListState,
-                items = days,
-                onChangeInProgress = onChangeInProgress,
-                onValueChange = onDayChange,
-                height = height,
-                itemsPerHeight = itemsPerHeight,
-                modifier = Modifier
-                    .testTag("tracedTimePickerDaySegment")
-                    .weight(3f)
-                    .rightBorder(borderColor, borderWidth),
-                userScrollEnabled = userScrollEnabled,
-            ) { item ->
-                if (item.value == today) {
-                    stringResource(R.string.detail_created_at_today)
-                } else {
-                    DateUtils.formatDateTime(
-                        LocalContext.current,
-                        gregorianCalendar(zone, day = item.value).timeInMillis,
-                        DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
-                    )
+        Box(contentAlignment = Alignment.CenterStart) {
+            Row {
+                TracedTimePickerSegment(
+                    listState = dayListState,
+                    items = days,
+                    onChangeInProgress = onChangeInProgress,
+                    onValueChange = onDayChange,
+                    height = height,
+                    itemsPerHeight = itemsPerHeight,
+                    modifier = Modifier
+                        .testTag("tracedTimePickerDaySegment")
+                        .weight(3f)
+                        .rightBorder(borderColor, borderWidth),
+                    userScrollEnabled = userScrollEnabled,
+                ) { item ->
+                    if (item.value == today) {
+                        stringResource(R.string.detail_created_at_today)
+                    } else {
+                        DateUtils.formatDateTime(
+                            LocalContext.current,
+                            gregorianCalendar(zone, day = item.value).timeInMillis,
+                            DateUtils.FORMAT_SHOW_YEAR or DateUtils.FORMAT_SHOW_DATE,
+                        )
+                    }
+                }
+                TracedTimePickerSegment(
+                    listState = hourListState,
+                    items = hours,
+                    onChangeInProgress = onChangeInProgress,
+                    onValueChange = onHourChange,
+                    height = height,
+                    itemsPerHeight = itemsPerHeight,
+                    modifier = Modifier
+                        .testTag("tracedTimePickerHourSegment")
+                        .weight(1f)
+                        .rightBorder(borderColor, borderWidth),
+                    userScrollEnabled = userScrollEnabled,
+                ) { item ->
+                    if (item.value <= 9) {
+                        "0${item.value}"
+                    } else {
+                        item.value.toString()
+                    }
+                }
+                TracedTimePickerSegment(
+                    listState = minuteListState,
+                    items = minutes,
+                    onChangeInProgress = onChangeInProgress,
+                    onValueChange = onMinuteChange,
+                    height = height,
+                    itemsPerHeight = itemsPerHeight,
+                    userScrollEnabled = userScrollEnabled,
+                    modifier = Modifier
+                        .testTag("tracedTimePickerMinuteSegment")
+                        .weight(1f),
+                ) { item ->
+                    if (item.value <= 9) {
+                        "0${item.value}"
+                    } else {
+                        item.value.toString()
+                    }
                 }
             }
-            TracedTimePickerSegment(
-                listState = hourListState,
-                items = hours,
-                onChangeInProgress = onChangeInProgress,
-                onValueChange = onHourChange,
-                height = height,
-                itemsPerHeight = itemsPerHeight,
-                modifier = Modifier
-                    .testTag("tracedTimePickerHourSegment")
-                    .weight(1f)
-                    .rightBorder(borderColor, borderWidth),
-                userScrollEnabled = userScrollEnabled,
-            ) { item ->
-                if (item.value <= 9) {
-                    "0${item.value}"
-                } else {
-                    item.value.toString()
-                }
-            }
-            TracedTimePickerSegment(
-                listState = minuteListState,
-                items = minutes,
-                onChangeInProgress = onChangeInProgress,
-                onValueChange = onMinuteChange,
-                height = height,
-                itemsPerHeight = itemsPerHeight,
-                userScrollEnabled = userScrollEnabled,
-                modifier = Modifier
-                    .testTag("tracedTimePickerMinuteSegment")
-                    .weight(1f),
-            ) { item ->
-                if (item.value <= 9) {
-                    "0${item.value}"
-                } else {
-                    item.value.toString()
-                }
-            }
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(height / itemsPerHeight)
+                    .border(borderWidth, borderColor, MaterialTheme.shapes.extraSmall)
+            )
         }
     }
 }
