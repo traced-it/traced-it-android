@@ -1,7 +1,6 @@
 package app.traced_it.ui.components
 
 import android.text.format.DateUtils
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,9 +11,21 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.LayoutBoundsHolder
 import androidx.compose.ui.layout.onVisibilityChanged
@@ -33,12 +44,23 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import app.traced_it.R
-import app.traced_it.lib.*
+import app.traced_it.lib.Day
+import app.traced_it.lib.day
+import app.traced_it.lib.generateDaysList
+import app.traced_it.lib.generateNumbersList
+import app.traced_it.lib.gregorianCalendar
+import app.traced_it.lib.hour
+import app.traced_it.lib.minute
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Spacing
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
-import java.util.*
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import java.util.Calendar
+import java.util.TimeZone
 import kotlin.math.roundToInt
 
 @Immutable
@@ -126,16 +148,23 @@ fun TracedTimePicker(
     var userScrollEnabled by remember { mutableStateOf(false) }
 
     Surface(
-        modifier = Modifier.onVisibilityChanged(
-            minFractionVisible = 0.5f,
-            viewportBounds = viewportBounds,
-        ) { visible ->
-            userScrollEnabled = visible
-        },
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        shape = MaterialTheme.shapes.extraSmall,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        border = BorderStroke(width = borderWidth, color = MaterialTheme.colorScheme.outline),
+        modifier = Modifier
+            .drawWithContent {
+                drawContent()
+                drawRoundRect(
+                    color = borderColor,
+                    topLeft = Offset(0f, (height / itemsPerHeight).toPx()),
+                    size = Size(width = size.width, height = (height / itemsPerHeight).toPx()),
+                    cornerRadius = CornerRadius(4.dp.toPx()),
+                    style = Stroke(borderWidth.toPx()),
+                )
+            }
+            .onVisibilityChanged(
+                minFractionVisible = 0.5f,
+                viewportBounds = viewportBounds,
+            ) { visible ->
+                userScrollEnabled = visible
+            },
     ) {
         Row {
             TracedTimePickerSegment(
