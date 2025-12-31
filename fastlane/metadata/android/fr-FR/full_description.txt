@@ -17,8 +17,8 @@ CARACTÉRISTIQUES
 - Affichez toutes vos notes avec le temps écoulé depuis que vous avez écrit chaque note.
 - Touchez le bouton + pour ajouter une nouvelle note avec le même texte qu’une note existante.
 - Modifiez une note, supprimez-la, supprimez toutes les notes.
-- Sauvegarder toutes les notes dans un fichier de feuille de calcul (format CSV) et les importer.
-- Filtrer les notes et sauvegarder les notes filtrées.
+- Enregistrer toutes les notes dans un fichier de feuille de calcul (format CSV) et les importer.
+- Filtrer les notes et enregistrer les notes filtrées.
 
 CONFIDENTIALITÉ ET SÉCURITÉ
 

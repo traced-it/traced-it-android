@@ -12,7 +12,7 @@
     <string name="detail_content_label">Rédigez votre note</string>
     <string name="list_item_delete">Supprimer</string>
     <string name="list_menu">Menu</string>
-    <string name="list_menu_export_all">Sauvegarder dans un fichier CSV</string>
+    <string name="list_menu_export_all">Enregistrer en CSV</string>
     <string name="list_menu_delete_all">Supprimer tout</string>
     <string name="list_title">Vos notes (%1$d)</string>
     <string name="list_add">Ajouter une note</string>
@@ -35,9 +35,9 @@
     <string name="list_import_failed_column_parsing_error">Échec de l’analyse de la valeur « %2$s » de la colonne « %1$s »</string>
     <string name="list_import_failed_column_choice_unknown">La valeur « %3$s » de la colonne « %1$s » doit être l’une des suivantes %2$s</string>
     <plurals name="list_import_finished_imported">
-        <item quantity="one">%1$d note importée.</item>
-        <item quantity="many">%1$d notes importées.</item>
-        <item quantity="other">%1$d notes importées.</item>
+        <item quantity="one">%1$d note ajoutée.</item>
+        <item quantity="many">%1$d notes ajoutées.</item>
+        <item quantity="other">%1$d notes ajoutées.</item>
     </plurals>
     <plurals name="list_import_finished_skipped">
         <item quantity="one">%1$d note ignorée, car une note avec le même horodatage existe déjà.</item>
@@ -84,10 +84,27 @@
     <string name="list_export_filtered_filename">%1$s notes %2$s filtre %3$s.csv</string>
     <string name="list_filter_input_clear_content_description">Effacer la saisie</string>
     <string name="list_filter_submit">Filtrer</string>
-    <string name="list_filter_export">Sauvegarder</string>
+    <string name="list_filter_export">Enregistrer</string>
     <string name="list_item_find_with_similar_content">Filtrer les notes similaires</string>
     <string name="list_item_copy_to_clipboard">Copier dans le presse-papiers</string>
     <string name="list_item_copied_to_clipboard">Copié</string>
     <string name="list_selected_back">Désélectionner la note</string>
     <string name="list_selected_title">Note sélectionnée</string>
+    <string name="detail_created_at_label">Temps</string>
+    <string name="detail_created_at_reset">réinitialiser</string>
+    <string name="detail_created_at_today">aujourd’hui</string>
+    <string name="list_export_failed_unknown">Erreur inconnue lors de l’enregistrement des notes en CSV</string>
+    <string name="list_export_in_progress">Enregistrement des notes en CSV…</string>
+    <plurals name="list_export_finished">
+        <item quantity="one">%1$d note enregistrée en CSV</item>
+        <item quantity="many">%1$d notes enregistrées en CSV</item>
+        <item quantity="other">%1$d notes enregistrées en CSV</item>
+    </plurals>
+    <string name="list_import_failed_unknown">Erreur inconnue lors de l’importation de notes</string>
+    <plurals name="list_import_finished_updated">
+        <item quantity="one">%1$d note modifiée.</item>
+        <item quantity="many">%1$d notes modifiées.</item>
+        <item quantity="other">%1$d notes modifiées.</item>
+    </plurals>
+    <string name="list_import_in_progress">Importation de notes…</string>
 </resources>
