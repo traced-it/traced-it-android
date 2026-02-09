@@ -36,6 +36,7 @@ android {
                 "en",
                 "fr",
                 "iw",
+                "nl",
                 "pl",
                 "pt-rBR",
                 "ru",
