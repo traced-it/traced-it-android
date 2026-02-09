@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_app_icon_content_description">Applicatie icoon</string>
+    <string name="about_text"><![CDATA[<p>v%2$s</p><br><p><i>%1$s</i> is een niet-commerciële app, gemaakt door drie vrienden voor de lol.</p><br><p>Wil je met ons delen hoe je de app gebruikt? Stuur ons een <a href="mailto:android@traced-it.app">e-mail</a>.</p><br><p>Werkt er iets niet voor je of heb je ideeën voor verbetering? Meld een <a href="https://github.com/traced-it/traced-it-android/issues">issue</a>.</p><br><p>Vrijgegeven onder de <a href="https://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public License 3.0</a> of later. Je kunt de code vinden en meewerken op <a href="https://github.com/traced-it/traced-it-android">GitHub</a>.</p>]]></string>
+    <string name="about_title">Over deze app</string>
+    <string name="nav_back">Terug naar alle notities</string>
+    <string name="detail_cancel">Annuleren</string>
+    <string name="detail_update_save">Bijwerken</string>
+    <string name="detail_add_save">Opslaan</string>
+    <string name="detail_content_label">Beschrijf je notitie</string>
+    <string name="detail_created_at_label">Datum en tijd</string>
+    <string name="detail_created_at_reset">herstel</string>
+    <string name="detail_created_at_today">vandaag</string>
+    <string name="list_item_update">Bijwerken</string>
+    <string name="list_item_delete">Verwijderen</string>
+    <string name="list_menu">Menu</string>
+    <string name="list_menu_import">Importeer CSV</string>
+    <string name="list_menu_export_all">Opslaan als CSV</string>
+    <string name="list_menu_delete_all">Verwijder alles</string>
+    <string name="list_title">Mijn notities (%1$d)</string>
+    <string name="list_add">Notitie toevoegen</string>
+    <string name="list_item_add">Voeg notitie toe met dezelfde tekst</string>
+    <string name="list_delete_all_dialog_title">Verwijder alle notities?</string>
+    <string name="list_delete_all_dialog_text">Je staat op het punt alle notities te verwijderen</string>
+    <string name="list_delete_all_dialog_confirm">Verwijder alles</string>
+    <string name="list_export_failed_unknown">Onbekende fout bij het opslaan van notities als CSV</string>
+    <string name="list_export_in_progress">Opslaan van notities als CSV…</string>
+    <plurals name="list_export_finished">
+        <item quantity="one">%1$d notitie opgeslagen als CSV</item>
+        <item quantity="other">%1$d notities opgeslagen als CSV</item>
+    </plurals>
+    <string name="list_message_added">Notitie toegevoegd</string>
+    <string name="list_message_updated">Notitie bijgewerkt</string>
+    <string name="list_message_deleted">Notitie verwijderd</string>
+    <string name="list_message_deleted_action">Maak ongedaan</string>
+    <string name="list_message_all_deleted">Alle notities verwijderd</string>
+    <string name="list_message_all_deleted_action">Maak ongedaan</string>
+    <string name="list_item_time_at">om %1$s</string>
+    <string name="list_item_time_ago_seconds">%1$d s geleden</string>
+    <string name="list_item_time_ago_minutes">%1$d min geleden</string>
+    <string name="list_item_time_ago_hours_and_minutes">%1$d u %2$02d min geleden</string>
+    <string name="list_import_failed_column_missing">Ontbrekende kolom “%1$s”</string>
+    <string name="list_import_failed_column_empty">Lege waarde in kolom “%1$s”</string>
+    <string name="list_import_failed_column_parsing_error">Verwerken van de waarde “%2$s” mislukt in kolom “%1$s”</string>
+    <string name="list_import_failed_column_choice_unknown">Waarde “%3$s” in kolom “%1$s” moet één van %2$s zijn</string>
+    <string name="list_import_failed_unknown">Onbekende fout bij het importeren van notities</string>
+    <plurals name="list_import_finished_imported">
+        <item quantity="one">%1$d notitie toegevoegd.</item>
+        <item quantity="other">%1$d notities toegevoegd.</item>
+    </plurals>
+    <plurals name="list_import_finished_skipped">
+        <item quantity="one">%1$d notitie overgeslagen omdat er al een notitie bestaat met dezelfde tijdaanduiding.</item>
+        <item quantity="other">%1$d notities overgeslagen omdat er al een notitie bestaat met dezelfde tijdaanduiding.</item>
+    </plurals>
+    <plurals name="list_import_finished_updated">
+        <item quantity="one">%1$d notitie bijgewerkt.</item>
+        <item quantity="other">%1$d notities bijgewerkt.</item>
+    </plurals>
+    <string name="list_import_finished_empty">Leeg CSV bestand</string>
+    <string name="list_import_in_progress">Importeren van notities…</string>
+    <string name="detail_unit_label">Kies een waarde, indien gewenst</string>
+    <string name="detail_unit_dropdown_content_description">Lijst met eenheden openen</string>
+    <string name="input_clear_content_description">Invoer verwijderen</string>
+    <string name="list_delete_all_dialog_dismiss">Annuleren</string>
+    <string name="entry_unit_none_name">geen eenheid</string>
+    <string name="entry_unit_clothing_name">formaat</string>
+    <string name="entry_unit_clothing_choice_xs">XS</string>
+    <string name="entry_unit_clothing_choice_s">S</string>
+    <string name="entry_unit_clothing_choice_m">M</string>
+    <string name="entry_unit_clothing_choice_l">L</string>
+    <string name="entry_unit_clothing_choice_xl">XL</string>
+    <string name="entry_unit_fraction_name">breuk</string>
+    <string name="entry_unit_fraction_choice_one_quarter">¼</string>
+    <string name="entry_unit_fraction_choice_one_quarter_html"><![CDATA[<big>¼</big>]]></string>
+    <string name="entry_unit_fraction_choice_one_third">⅓</string>
+    <string name="entry_unit_fraction_choice_one_third_html"><![CDATA[<big>⅓</big>]]></string>
+    <string name="entry_unit_fraction_choice_one_half">½</string>
+    <string name="entry_unit_fraction_choice_one_half_html"><![CDATA[<big>½</big>]]></string>
+    <string name="entry_unit_fraction_choice_three_quarters">¾</string>
+    <string name="entry_unit_fraction_choice_three_quarters_html"><![CDATA[<big>¾</big>]]></string>
+    <string name="entry_unit_fraction_choice_whole">1</string>
+    <string name="entry_unit_fraction_choice_whole_html">1</string>
+    <string name="entry_unit_double_name">getal</string>
+    <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
+    <string name="detail_update_title">Notitie bijwerken</string>
+    <string name="detail_add_title">Notitie toevoegen</string>
+    <string name="list_message_restored">Notitie herstellen</string>
+    <string name="list_message_all_restored">Alle notities hersteld</string>
+    <string name="list_export_all_filename">%1$s notities %2$s.csv</string>
+    <string name="list_export_filtered_filename">%1$s notities %2$s filter %3$s.csv</string>
+    <string name="list_filter_input_placeholder">Notities filteren</string>
+    <string name="list_filter_input_clear_content_description">Verwijder invoer</string>
+    <string name="list_filter_submit">Filter</string>
+    <string name="list_filter_close_content_description">Sluit filter</string>
+    <plurals name="list_filter_status">
+        <item quantity="one">%1$d notitie van de %2$d</item>
+        <item quantity="other">%1$d notities van de %2$d</item>
+    </plurals>
+    <string name="list_filter_export">Opslaan</string>
+    <string name="list_item_find_with_similar_content">Vergelijkbare notities filteren</string>
+    <string name="list_item_copy_to_clipboard">Kopiëren naar klembord</string>
+    <string name="list_item_copied_to_clipboard">Gekopieerd</string>
+    <string name="list_selected_back">Selectie ongedaan maken</string>
+    <string name="list_selected_title">Selecteer notitie</string>
+</resources>

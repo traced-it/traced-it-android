@@ -1,0 +1,28 @@
+Een eenvoudige app voor korte tekstnotities, met bij elke invoer een duidelijk zichtbare tijdstempel. Voeg waarden toe aan je notities met behulp van vaste formaten (S, M, XL, 1/4, 1/2, 3/4) of met zelf ingevoerde getallen.
+
+De overzichtelijke en simpele interface maakt de app gemakkelijk en intuïtief in gebruik, zelfs wanneer je druk bezig bent met andere zaken.
+
+PERFECT VOOR
+
+- Bijhouden van een dagboek
+- Het registreren van dagelijkse routines
+- Het registreren van workouts
+- Het bijhouden vochtinname en supplementen
+- Het doseren van ingrediënten bij het koken
+- Het noteren van eenvoudige labresultaten
+
+FUNCTIES
+
+- Tekstnotities toevoegen met een optionele hoeveelheid (S, M, XL, 1/4, 1/2, 3/4, 5,813…).
+- Alle notities bekijken, inclusief de tijd die is verstreken sinds elke notitie is gemaakt.
+- Met de '+' knop gemakkelijk een nieuwe notitie toevoegen met bestaande tekst.
+- Notities bewerken, kopiëren naar het klembord, verwijderen of alle notities tegelijk verwijderen.
+- Gemakkelijk een gegevensexport maken van alle notities (CSV-formaat) en deze ook weer importeren.
+- Notities filteren en de gefilterde notities exporteren.
+
+PRIVACY & BEVEILIGING
+
+- De app gebruikt geen internet – alle notities worden uitsluitend op je telefoon opgeslagen.
+- De app heeft geen toegang tot persoonlijke gegevens en verzamelt geen gebruiksdata.
+- Geen advertenties
+- Gratis en open source
