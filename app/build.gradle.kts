@@ -68,7 +68,6 @@ android {
         aidl = false
         buildConfig = true
         compose = true
-        renderScript = false
         shaders = false
     }
     packaging {
@@ -82,7 +81,7 @@ android {
     }
     sourceSets {
         // Adds exported schema location as test app assets.
-        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+        getByName("androidTest").assets.directories.add("$projectDir/schemas")
     }
     lint {
         disable += "MissingTranslation"
