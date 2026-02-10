@@ -1,6 +1,6 @@
 .PHONY: build
 build: | check-env
-	-rm -r app/build
+	rm -r app/build/outputs/apk/release || true
 	./gradlew assembleRelease
 	zipalign -v -p 4 \
 		app/build/outputs/apk/release/app-release-unsigned.apk \
