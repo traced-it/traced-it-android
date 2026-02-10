@@ -2,18 +2,18 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt.gradle)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 android {
     namespace = "app.traced_it"
     compileSdk = 36
+    compileSdkMinor = 1
 
     defaultConfig {
         applicationId = "app.traced_it"
@@ -26,15 +26,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // The following argument makes the Android Test Orchestrator run its
-        // "pm clear" command after each test invocation. This command ensures
-        // that the app's state is completely cleared between tests.
-        testInstrumentationRunnerArguments += mapOf(
-            "clearPackageData" to "true",
-        )
 
         androidResources {
             @Suppress("UnstableApiUsage")
@@ -50,15 +41,19 @@ android {
                 "ru",
             )
         }
-    }
 
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // The following argument makes the Android Test Orchestrator run its "pm clear" command after each test
+        // invocation. This command ensures that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments += mapOf("clearPackageData" to "true")
+    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
         getByName("debug") {
@@ -67,10 +62,6 @@ android {
         create("demo") {
             initWith(getByName("debug"))
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         aidl = false
@@ -92,11 +83,11 @@ android {
         // Adds exported schema location as test app assets.
         getByName("androidTest").assets.srcDir("$projectDir/schemas")
     }
-    testOptions {
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
-    }
     lint {
         disable += "MissingTranslation"
+    }
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 }
 
