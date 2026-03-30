@@ -15,7 +15,6 @@ import org.junit.runner.RunWith
 open class MainActivityBehaviorTest {
 
     companion object {
-        const val PACKAGE_NAME = "app.traced_it.debug"
         const val ELEMENT_DOES_NOT_EXIST_TIMEOUT = 500L
     }
 
@@ -23,8 +22,8 @@ open class MainActivityBehaviorTest {
     fun before() = uiAutomator {
         pressHome()
         // Use shell command instead of startActivity() to support Xiaomi
-        device.executeShellCommand("monkey -p $PACKAGE_NAME 1")
-        waitForAppToBeVisible(PACKAGE_NAME)
+        device.executeShellCommand("monkey -p ${BuildConfig.APPLICATION_ID} 1")
+        waitForAppToBeVisible(BuildConfig.APPLICATION_ID)
     }
 
     @Test
@@ -107,11 +106,11 @@ open class MainActivityBehaviorTest {
 
         // Set created at
         onElement { viewIdResourceName == "tracedTimePickerDaySegment" }
-            .scroll(Direction.UP,0.5f) // Minus one day
+            .scroll(Direction.UP, 0.5f) // Minus one day
         onElement { viewIdResourceName == "tracedTimePickerHourSegment" }
-            .scroll(Direction.DOWN,0.5f) // Plus one hour
+            .scroll(Direction.DOWN, 0.5f) // Plus one hour
         onElement { viewIdResourceName == "tracedTimePickerMinuteSegment" }
-            .scroll(Direction.DOWN,0.5f) // Plus one minute
+            .scroll(Direction.DOWN, 0.5f) // Plus one minute
 
         // Save
         onElement { viewIdResourceName == "entryDetailSaveButton" }.click()
