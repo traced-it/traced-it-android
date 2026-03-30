@@ -9,7 +9,7 @@ private fun quoteTerm(unsafeTerm: String): String {
 }
 
 fun createFullTextQueryExpression(unsafeQuery: String): String =
-    queryRegex.findAll(unsafeQuery).map {
+    queryRegex.findAll(unsafeQuery).joinToString(" ") {
         when {
             // Operator
             it.groupValues[1].isNotEmpty() -> it.value
@@ -23,4 +23,4 @@ fun createFullTextQueryExpression(unsafeQuery: String): String =
             // Term
             else -> quoteTerm("*" + it.groupValues[0] + "*")
         }
-    }.joinToString(" ")
+    }
