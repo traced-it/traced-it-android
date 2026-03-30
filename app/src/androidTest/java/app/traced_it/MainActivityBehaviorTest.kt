@@ -1,4 +1,4 @@
-package app.traced_it.test
+package app.traced_it
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.uiautomator.Direction
