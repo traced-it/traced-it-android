@@ -3,7 +3,11 @@ package app.traced_it.data
 import android.annotation.SuppressLint
 import androidx.paging.PagingSource
 import androidx.room.util.convertByteToUUID
-import app.traced_it.data.local.database.*
+import app.traced_it.data.local.database.Entry
+import app.traced_it.data.local.database.EntryDao
+import app.traced_it.data.local.database.convertUnitIdToUnit
+import app.traced_it.data.local.database.createFullTextQueryExpression
+import app.traced_it.data.local.database.noneUnit
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 import javax.inject.Inject
@@ -60,7 +64,8 @@ class DefaultEntryRepository @Inject constructor(
                 yield(
                     Entry(
                         amount = cursor.getDouble(getColumnIndexOrThrow("amount")),
-                        amountUnit = convertUnitIdToUnit(cursor.getString(getColumnIndexOrThrow("amountUnit"))) ?: noneUnit,
+                        amountUnit = convertUnitIdToUnit(cursor.getString(getColumnIndexOrThrow("amountUnit")))
+                            ?: noneUnit,
                         content = cursor.getString(getColumnIndexOrThrow("content")),
                         createdAt = cursor.getLong(getColumnIndexOrThrow("createdAt")),
                         deleted = cursor.getInt(getColumnIndexOrThrow("deleted")) == 1,
