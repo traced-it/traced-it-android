@@ -2,36 +2,19 @@ package app.traced_it.data.di
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import app.traced_it.BuildConfig
-import app.traced_it.data.DefaultEntryRepository
 import app.traced_it.data.EntryRepository
-import app.traced_it.data.local.database.*
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import app.traced_it.data.local.database.Entry
+import app.traced_it.data.local.database.clothingSizeUnit
+import app.traced_it.data.local.database.doubleUnit
+import app.traced_it.data.local.database.fractionUnit
+import app.traced_it.data.local.database.noneUnit
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
-import java.util.*
-import javax.inject.Singleton
-
-@Module
-@InstallIn(SingletonComponent::class)
-class DataModule {
-
-    @Singleton
-    @Provides
-    @Suppress("KotlinConstantConditions", "SimplifyBooleanWithConstants")
-    fun provideEntryRepository(entryDao: EntryDao): EntryRepository =
-        if (BuildConfig.BUILD_TYPE == "demo") {
-            FakeEntryRepository(demoEntries)
-        } else {
-            DefaultEntryRepository(entryDao)
-        }
-}
+import java.util.Calendar
+import java.util.UUID
 
 class ListFlowPagingSource<T : Any>(
     private val listFlow: Flow<List<T>>,

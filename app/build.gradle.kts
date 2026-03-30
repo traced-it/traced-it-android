@@ -60,8 +60,20 @@ android {
         getByName("debug") {
             applicationIdSuffix = ".debug"
         }
+    }
+    flavorDimensions += "tier"
+    productFlavors {
+        create("free") {
+            isDefault = true
+            dimension = "tier"
+        }
+        create("pro") {
+            dimension = "tier"
+            applicationIdSuffix = ".pro"
+        }
         create("demo") {
-            initWith(getByName("debug"))
+            dimension = "tier"
+            applicationIdSuffix = ".demo"
         }
     }
     buildFeatures {
@@ -92,7 +104,6 @@ android {
 }
 
 dependencies {
-
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)

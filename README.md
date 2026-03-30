@@ -1,4 +1,4 @@
-# ![](./docs/icon-54.png) traced it
+# ![Application icon](./docs/icon-54.png) traced it
 
 A simple app for short text notes, with a prominent timestamp for each entry.
 Add quantities to your notes using preset formats (S, M, XL, 1/4, 1/2, 3/4) or
