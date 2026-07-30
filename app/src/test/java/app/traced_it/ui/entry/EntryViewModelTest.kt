@@ -98,7 +98,8 @@ class EntryViewModelTest {
                 SavedStateHandle(),
             )
 
-            @Suppress("SpellCheckingInspection")
+            @Suppress("GrazieInspectionRunner", "SpellCheckingInspection")
+            // language=csv
             val csv = """
                 createdAt,content,amountFormatted,amount,amountUnit,uuid
                 2025-02-01T18:00:22.755+01:00,"Red apples",,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
@@ -259,7 +260,8 @@ class EntryViewModelTest {
                 SavedStateHandle(),
             )
 
-            @Suppress("SpellCheckingInspection")
+            @Suppress("GrazieInspectionRunner", "SpellCheckingInspection")
+            // language=csv
             val csv = """
                 createdAt,content,amountFormatted,amount,amountUnit,uuid
                 2025-02-01T18:00:55.755+01:00,"Red apples updated",,5.9,DOUBLE,8be47977-3577-4534-993c-c14f2fccc8ef
@@ -330,6 +332,7 @@ class EntryViewModelTest {
                 entryRepository,
                 SavedStateHandle(),
             )
+            // language=csv
             val csv = """
                 createdAt,content,amountFormatted,amount,amountUnit
                 2025-02-01T18:00:22.755+01:00,"Red apples",,0.0,NONE
@@ -412,6 +415,7 @@ class EntryViewModelTest {
                 entryRepository,
                 SavedStateHandle(),
             )
+            // language=csv
             val csv = """
                 createdAt,content,amount,amountUnit
                 2025-02-01T18:00:22.755+01:00,"Red apples",0.0,no unit
@@ -525,7 +529,9 @@ class EntryViewModelTest {
                 entryRepository,
                 SavedStateHandle(),
             )
-            @Suppress("SpellCheckingInspection")
+
+            @Suppress("GrazieInspectionRunner", "SpellCheckingInspection")
+            // language=csv
             val csv = """
                 createdAt,content,amountFormatted,amount,amountUnit,uuid
                 2025-02-01T18:00:22.755+0100,"Red apples",,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
@@ -711,16 +717,14 @@ class EntryViewModelTest {
             entryViewModel.exportEntriesCsv(mockResources, outputStream, entryRepository.filterAsSequence()).join()
 
             assertEquals(
-                @Suppress("SpellCheckingInspection")
-                listOf(
-                    "createdAt,content,amountFormatted,amount,amountUnit,uuid",
-                    "2025-02-01T14:00:22.755-03:00,Red apples,,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef",
-                    "2025-02-01T11:18:43.189-03:00,Yellow bananas,2x,2.0,SMALL_NUMBERS_CHOICE,85f2ff1f-1424-40ac-b45e-e8381d84005b",
-                    "2025-02-01T11:16:56.985-03:00,Green kiwis,L,3.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f",
-                    "2025-02-01T11:00:00.000-03:00,Purple grapes,3.14,3.14,DOUBLE,eee93824-8533-455e-8622-0dc2a24ef584",
-                    "2025-02-01T03:00:00.000-03:00,Pineapple,1/3,0.333,FRACTION,7fa18ae8-191d-46d1-bd86-748e9014ef33",
-                    ""
-                ).joinToString("\r\n"),
+                """
+                    createdAt,content,amountFormatted,amount,amountUnit,uuid
+                    2025-02-01T14:00:22.755-03:00,Red apples,,0.0,NONE,8be47977-3577-4534-993c-c14f2fccc8ef
+                    2025-02-01T11:18:43.189-03:00,Yellow bananas,2x,2.0,SMALL_NUMBERS_CHOICE,85f2ff1f-1424-40ac-b45e-e8381d84005b
+                    2025-02-01T11:16:56.985-03:00,Green kiwis,L,3.0,CLOTHING_SIZE,98fb296e-29f3-4e6e-b7d2-646976cd2e0f
+                    2025-02-01T11:00:00.000-03:00,Purple grapes,3.14,3.14,DOUBLE,eee93824-8533-455e-8622-0dc2a24ef584
+                    2025-02-01T03:00:00.000-03:00,Pineapple,1/3,0.333,FRACTION,7fa18ae8-191d-46d1-bd86-748e9014ef33
+                """.trimIndent().replace("\n", "\r\n") + "\r\n",
                 outputStream.toString(),
             )
             assertEquals(
@@ -741,9 +745,9 @@ class EntryViewModelTest {
                 entryRepository,
                 SavedStateHandle(),
             )
-            entryViewModel.filter("unicode 0žš中 emoji \uD83D\uDE42 slash / backslash \\ dash - underscore _ dot . colon :")
+            entryViewModel.filter("Unicode 0žš中 emoji \uD83D\uDE42 slash / backslash \\ dash - underscore _ dot . colon :")
             assertEquals(
-                "unicode 0___ emoji _ slash _ backslash _ dash - underscore _ dot _ colon _",
+                "Unicode 0___ emoji _ slash _ backslash _ dash - underscore _ dot _ colon _",
                 entryViewModel.filterQuerySanitizedForFilename,
             )
         }
