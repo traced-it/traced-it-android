@@ -12,14 +12,13 @@ kotlin {
 
 android {
     namespace = "app.traced_it"
-    compileSdk = 36
-    compileSdkMinor = 1
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "app.traced_it"
         minSdk = 25
         // noinspection EditedTargetSdkVersion
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 15
         versionName = "1.7.0"
 
@@ -87,10 +86,6 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    room {
-        // Enable room auto-migrations.
-        schemaDirectory("$projectDir/schemas")
-    }
     sourceSets {
         // Adds exported schema location as test app assets.
         getByName("androidTest").assets.directories.add("$projectDir/schemas")
@@ -103,10 +98,14 @@ android {
     }
 }
 
+room {
+    // Enable room auto-migrations.
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
-    androidTestImplementation(composeBom)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material.icons)
