@@ -139,7 +139,6 @@ fun EntryDetailDialog(
                     )
                 )
         }
-        @Suppress("AssignedValueIsNeverRead")
         saveRequested = false
     }
 
@@ -211,11 +210,9 @@ fun EntryDetailDialog(
                 CreatedAtControl(
                     action = action,
                     onValueChange = {
-                        @Suppress("AssignedValueIsNeverRead")
                         createdAt = it
                     },
                     onChangeInProgress = {
-                        @Suppress("AssignedValueIsNeverRead")
                         changeInProgress = it
                     },
                     viewportBounds = viewportBounds,
@@ -230,7 +227,6 @@ fun EntryDetailDialog(
                     }
                 ),
                 onClick = {
-                    @Suppress("AssignedValueIsNeverRead")
                     saveRequested = true
                 },
                 modifier = Modifier.testTag("entryDetailSaveButton"),

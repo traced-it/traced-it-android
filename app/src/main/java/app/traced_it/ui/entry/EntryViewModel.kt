@@ -55,10 +55,8 @@ class EntryViewModel @Inject constructor(
         private const val FILTER_QUERY = "filterQuery"
     }
 
-    @Suppress("SpellCheckingInspection")
     private val csvDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US)
 
-    @Suppress("SpellCheckingInspection")
     private val oldCsvDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US)
 
     private val _message = MutableStateFlow<Message?>(null)
@@ -344,13 +342,15 @@ class EntryViewModel @Inject constructor(
                                             entryRepository.insert(parseResult.entry)
                                             importedCount++
                                         } else {
-                                            entryRepository.update(existingEntry.copy(
-                                                amount = parseResult.entry.amount,
-                                                amountUnit = parseResult.entry.amountUnit,
-                                                content = parseResult.entry.content,
-                                                createdAt = parseResult.entry.createdAt,
-                                                deleted = false,
-                                            ))
+                                            entryRepository.update(
+                                                existingEntry.copy(
+                                                    amount = parseResult.entry.amount,
+                                                    amountUnit = parseResult.entry.amountUnit,
+                                                    content = parseResult.entry.content,
+                                                    createdAt = parseResult.entry.createdAt,
+                                                    deleted = false,
+                                                )
+                                            )
                                             updatedCount++
                                         }
                                     } else {
