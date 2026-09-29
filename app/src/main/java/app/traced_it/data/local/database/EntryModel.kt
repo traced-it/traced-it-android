@@ -81,14 +81,13 @@ data class Entry(
             DateUtils.formatDateTime(context, createdAt, DateUtils.FORMAT_SHOW_TIME),
         )
 
-    fun getHeader(context: Context, prevEntry: Entry?): String? =
-        if (
-            prevEntry == null && !DateUtils.isToday(createdAt) ||
-            prevEntry != null && !isSameDay(context, prevEntry)
-        ) {
-            DateUtils.formatDateTime(context, createdAt, DateUtils.FORMAT_SHOW_DATE)
-        } else {
-            null
+    fun formatDate(context: Context): String =
+        DateUtils.formatDateTime(context, createdAt, DateUtils.FORMAT_SHOW_DATE)
+
+    fun hasHeader(context: Context, prevEntry: Entry?): Boolean =
+        when (prevEntry) {
+            null -> !DateUtils.isToday(createdAt)
+            else -> !isSameDay(context, prevEntry)
         }
 }
 

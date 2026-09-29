@@ -4,7 +4,12 @@ import android.content.res.Resources
 import androidx.lifecycle.SavedStateHandle
 import app.traced_it.R
 import app.traced_it.data.di.FakeEntryRepository
-import app.traced_it.data.local.database.*
+import app.traced_it.data.local.database.Entry
+import app.traced_it.data.local.database.clothingSizeUnit
+import app.traced_it.data.local.database.doubleUnit
+import app.traced_it.data.local.database.fractionUnit
+import app.traced_it.data.local.database.noneUnit
+import app.traced_it.data.local.database.smallNumbersChoiceUnit
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -16,7 +21,8 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.util.*
+import java.util.TimeZone
+import java.util.UUID
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -748,7 +754,7 @@ class EntryViewModelTest {
             entryViewModel.filter("Unicode 0žš中 emoji \uD83D\uDE42 slash / backslash \\ dash - underscore _ dot . colon :")
             assertEquals(
                 "Unicode 0___ emoji _ slash _ backslash _ dash - underscore _ dot _ colon _",
-                entryViewModel.filterQuerySanitizedForFilename,
+                entryViewModel.filterQuerySanitizedForFilename.first { it.isNotEmpty() },
             )
         }
 }

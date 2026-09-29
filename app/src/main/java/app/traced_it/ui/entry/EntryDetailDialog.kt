@@ -42,7 +42,7 @@ sealed interface EntryDetailAction {
 @Composable
 fun EntryDetailDialog(
     action: EntryDetailAction,
-    latestEntryUnitFlow: StateFlow<EntryUnit?>,
+    latestEntryUnit: StateFlow<EntryUnit?>,
     onInsert: (Entry) -> Unit,
     onUpdate: (Entry) -> Unit,
     onDismiss: () -> Unit,
@@ -199,7 +199,7 @@ fun EntryDetailDialog(
                 UnitControl(
                     amountRaw = amountRaw,
                     selectedUnit = unit,
-                    latestEntryUnitFlow = latestEntryUnitFlow,
+                    latestEntryUnit = latestEntryUnit,
                     onAmountRawChange = { amountRaw = it },
                     onUnitChange = { unit = it },
                     onVisibleUnitChange = {
@@ -244,7 +244,7 @@ private fun DefaultPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.New(),
-            latestEntryUnitFlow = MutableStateFlow(null),
+            latestEntryUnit = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -258,7 +258,7 @@ private fun LightPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.New(),
-            latestEntryUnitFlow = MutableStateFlow(null),
+            latestEntryUnit = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -272,7 +272,7 @@ private fun PrefilledPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.Prefill(defaultFakeEntries[0]),
-            latestEntryUnitFlow = MutableStateFlow(null),
+            latestEntryUnit = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -286,7 +286,7 @@ private fun EditPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.Edit(defaultFakeEntries[0]),
-            latestEntryUnitFlow = MutableStateFlow(null),
+            latestEntryUnit = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -306,7 +306,7 @@ private fun InvisibleUnitPreview() {
                     amountUnit = smallNumbersChoiceUnit,
                 )
             ),
-            latestEntryUnitFlow = MutableStateFlow(null),
+            latestEntryUnit = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -324,7 +324,7 @@ private fun SmallPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.Prefill(defaultFakeEntries[0]),
-            latestEntryUnitFlow = MutableStateFlow(null),
+            latestEntryUnit = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},
@@ -342,7 +342,7 @@ private fun TabletPreview() {
     AppTheme {
         EntryDetailDialog(
             action = EntryDetailAction.Prefill(defaultFakeEntries[0]),
-            latestEntryUnitFlow = MutableStateFlow(null),
+            latestEntryUnit = MutableStateFlow(null),
             onInsert = {},
             onUpdate = {},
             onDismiss = {},

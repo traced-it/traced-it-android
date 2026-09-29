@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt.gradle)
+    alias(libs.plugins.kotlin.plugin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
 }
@@ -60,11 +61,12 @@ android {
             applicationIdSuffix = ".debug"
         }
     }
-    flavorDimensions += "tier"
+    flavorDimensions += listOf("tier", "lifecycle")
     productFlavors {
+        // Tier
         create("free") {
-            isDefault = true
             dimension = "tier"
+            isDefault = true
         }
         create("pro") {
             dimension = "tier"
@@ -73,6 +75,15 @@ android {
         create("demo") {
             dimension = "tier"
             applicationIdSuffix = ".demo"
+        }
+        // Lifecycle
+        create("active") {
+            dimension = "lifecycle"
+            isDefault = true
+        }
+        create("legacy") {
+            dimension = "lifecycle"
+            versionNameSuffix = "-legacy"
         }
     }
     buildFeatures {
