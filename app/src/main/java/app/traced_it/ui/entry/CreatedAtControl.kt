@@ -25,25 +25,11 @@ import app.traced_it.R
 import app.traced_it.lib.*
 import app.traced_it.ui.components.*
 import app.traced_it.ui.theme.AppTheme
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.time.ExperimentalTime
-
-private suspend fun <T> reset(
-    items: LazyPagingItems<TracedTimePickerItem<T>>,
-    listState: LazyListState,
-    itemsPerHeight: Int,
-) {
-    val middleItemIndexAdjustment = itemsPerHeight / 2
-    val initialItemIndex = -middleItemIndexAdjustment
-    val initialTracedTimePickerItemListIndex =
-        items.itemSnapshotList.items.indexOfFirst { it.index == initialItemIndex }
-    if (initialTracedTimePickerItemListIndex != -1) {
-        listState.stopScroll(MutatePriority.UserInput)
-        listState.scrollToItem(initialTracedTimePickerItemListIndex)
-    }
-}
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -58,34 +44,40 @@ fun CreatedAtControl(
     val hoursPageSize = 12
     val minutesPageSize = 30
 
-    val zone = TimeZone.getDefault()
-    val initialValue = when (action) {
-        // Reading action here and not in EntryDetailDialog reduces the number of recompositions
-        is EntryDetailAction.New -> System.currentTimeMillis()
-        is EntryDetailAction.Edit -> action.entry.createdAt
-        is EntryDetailAction.Prefill -> System.currentTimeMillis()
+    val zone = remember { TimeZone.getDefault() }
+    val initialValue = remember(action) {
+        when (action) {
+            is EntryDetailAction.New -> System.currentTimeMillis()
+            is EntryDetailAction.Edit -> action.entry.createdAt
+            is EntryDetailAction.Prefill -> System.currentTimeMillis()
+        }
     }
-    val initialCalendar = gregorianCalendar(zone, initialValue)
-
-    val days = Pager(PagingConfig(pageSize = daysPageSize, enablePlaceholders = true)) {
-        DayPagingSource(initialCalendar, daysPageSize, itemsPerHeight)
-    }.flow.collectAsLazyPagingItems()
-    val hours = Pager(PagingConfig(pageSize = hoursPageSize, enablePlaceholders = true)) {
-        RangePagingSource(
-            0..23,
-            initialCalendar.hour,
-            hoursPageSize,
-            itemsPerHeight
-        )
-    }.flow.collectAsLazyPagingItems()
-    val minutes = Pager(PagingConfig(pageSize = minutesPageSize, enablePlaceholders = true)) {
-        RangePagingSource(
-            0..59,
-            initialCalendar.minute,
-            minutesPageSize,
-            itemsPerHeight
-        )
-    }.flow.collectAsLazyPagingItems()
+    val initialCalendar = remember(zone, initialValue) { gregorianCalendar(zone, initialValue) }
+    val days = remember(initialCalendar) {
+        Pager(PagingConfig(pageSize = daysPageSize, enablePlaceholders = true)) {
+            DayPagingSource(initialCalendar, daysPageSize, itemsPerHeight)
+        }.flow
+    }
+    val hours = remember(initialCalendar) {
+        Pager(PagingConfig(pageSize = hoursPageSize, enablePlaceholders = true)) {
+            RangePagingSource(
+                0..23,
+                initialCalendar.hour,
+                hoursPageSize,
+                itemsPerHeight
+            )
+        }.flow
+    }
+    val minutes = remember(initialCalendar) {
+        Pager(PagingConfig(pageSize = minutesPageSize, enablePlaceholders = true)) {
+            RangePagingSource(
+                0..59,
+                initialCalendar.minute,
+                minutesPageSize,
+                itemsPerHeight
+            )
+        }.flow
+    }
 
     CreatedAtControl(
         initialCalendar = initialCalendar,
@@ -103,19 +95,22 @@ fun CreatedAtControl(
 @Composable
 private fun CreatedAtControl(
     initialCalendar: Calendar,
-    days: LazyPagingItems<TracedTimePickerItem<Day>>,
-    hours: LazyPagingItems<TracedTimePickerItem<Int>>,
-    minutes: LazyPagingItems<TracedTimePickerItem<Int>>,
+    days: Flow<PagingData<TracedTimePickerItem<Day>>>,
+    hours: Flow<PagingData<TracedTimePickerItem<Int>>>,
+    minutes: Flow<PagingData<TracedTimePickerItem<Int>>>,
     onValueChange: (value: Long) -> Unit,
     onChangeInProgress: (changeInProgress: Boolean) -> Unit,
     @Suppress("SameParameterValue")
     itemsPerHeight: Int,
     viewportBounds: LayoutBoundsHolder?,
 ) {
-    val middleItemIndexAdjustment = itemsPerHeight / 2
-
     val coroutineScope = rememberCoroutineScope()
     val hapticFeedback = LocalHapticFeedback.current
+
+    val middleItemIndexAdjustment = itemsPerHeight / 2
+    val days = days.collectAsLazyPagingItems()
+    val hours = hours.collectAsLazyPagingItems()
+    val minutes = minutes.collectAsLazyPagingItems()
 
     var day by retain {
         mutableStateOf(
@@ -153,9 +148,9 @@ private fun CreatedAtControl(
                     coroutineScope.launch {
                         // Reset segments in sequence and set state in sequence, because when doing it in parallel,
                         // a segment sometimes ends up showing an incorrect value for some reason.
-                        reset(days, dayListState, itemsPerHeight)
-                        reset(hours, hourListState, itemsPerHeight)
-                        reset(minutes, minuteListState, itemsPerHeight)
+                        dayListState.reset(days, itemsPerHeight)
+                        hourListState.reset(hours, itemsPerHeight)
+                        minuteListState.reset(minutes, itemsPerHeight)
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
                         day = TracedTimePickerItem(initialCalendar.day, 0)
                         hour = TracedTimePickerItem(initialCalendar.hour, 0)
@@ -229,7 +224,7 @@ private fun DefaultPreview() {
                                 )
                             }
                     )
-                ).collectAsLazyPagingItems(),
+                ),
                 hours = flowOf(
                     PagingData.from(
                         (0..23).generateNumbersList(
@@ -242,7 +237,7 @@ private fun DefaultPreview() {
                                 )
                             }
                     )
-                ).collectAsLazyPagingItems(),
+                ),
                 minutes = flowOf(
                     PagingData.from(
                         (0..59).generateNumbersList(
@@ -255,12 +250,26 @@ private fun DefaultPreview() {
                                 )
                             }
                     )
-                ).collectAsLazyPagingItems(),
+                ),
                 onValueChange = {},
                 onChangeInProgress = {},
                 itemsPerHeight = itemsPerHeight,
                 viewportBounds = null,
             )
         }
+    }
+}
+
+private suspend fun <T> LazyListState.reset(
+    items: LazyPagingItems<TracedTimePickerItem<T>>,
+    itemsPerHeight: Int,
+) {
+    val middleItemIndexAdjustment = itemsPerHeight / 2
+    val initialItemIndex = -middleItemIndexAdjustment
+    val initialTracedTimePickerItemListIndex =
+        items.itemSnapshotList.items.indexOfFirst { it.index == initialItemIndex }
+    if (initialTracedTimePickerItemListIndex != -1) {
+        stopScroll(MutatePriority.UserInput)
+        scrollToItem(initialTracedTimePickerItemListIndex)
     }
 }
