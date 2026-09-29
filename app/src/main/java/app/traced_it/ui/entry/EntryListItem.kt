@@ -49,20 +49,76 @@ private enum class DragValue { Start, Center, End }
 @OptIn(ExperimentalFoundationApi::class, FlowPreview::class)
 @Composable
 fun LazyItemScope.EntryListItem(
+    entry: Entry?,
+    prevEntry: Entry?,
+    focusedEntry: Entry?,
+    highlightedEntryUid: Int?,
+    index: Int,
+    now: Long = System.currentTimeMillis(),
+    selectedEntry: Entry?,
+    animationsEnabled: Boolean = true,
+    onAddWithSameText: (entry: Entry) -> Unit,
+    onDelete: (entry: Entry) -> Unit,
+    onFocus: (entry: Entry) -> Unit,
+    onSelect: (entry: Entry?) -> Unit,
+    onUnsetHighlightedEntry: () -> Unit,
+    onUpdate: (entry: Entry) -> Unit,
+) {
+    if (entry == null) {
+        PlaceholderEntryListItem()
+    } else if (entry.hasHeader(LocalContext.current, prevEntry)) {
+        Column {
+            HeaderEntryListItem(entry)
+            StandardEntryListItem(
+                entry = entry,
+                focused = focusedEntry == entry,
+                highlighted = highlightedEntryUid == entry.uid,
+                now = now,
+                odd = index % 2 != 0,
+                selected = selectedEntry == entry,
+                animationsEnabled = animationsEnabled,
+                onAddWithSameText = onAddWithSameText,
+                onDelete = onDelete,
+                onFocus = onFocus,
+                onSelect = onSelect,
+                onUnsetHighlightedEntry = onUnsetHighlightedEntry,
+                onUpdate = onUpdate,
+            )
+        }
+    } else {
+        StandardEntryListItem(
+            entry = entry,
+            focused = focusedEntry == entry,
+            highlighted = highlightedEntryUid == entry.uid,
+            now = now,
+            odd = index % 2 != 0,
+            selected = selectedEntry == entry,
+            animationsEnabled = animationsEnabled,
+            onAddWithSameText = onAddWithSameText,
+            onDelete = onDelete,
+            onFocus = onFocus,
+            onSelect = onSelect,
+            onUnsetHighlightedEntry = onUnsetHighlightedEntry,
+            onUpdate = onUpdate,
+        )
+    }
+}
+
+@Composable
+private fun LazyItemScope.StandardEntryListItem(
     entry: Entry,
-    prevEntry: Entry? = null,
     now: Long = System.currentTimeMillis(),
     highlighted: Boolean = false,
     odd: Boolean = false,
     selected: Boolean = false,
     focused: Boolean = false,
     animationsEnabled: Boolean = true,
-    onAddWithSameText: () -> Unit,
-    onDelete: () -> Unit,
-    onFocus: () -> Unit,
-    onToggle: () -> Unit,
+    onAddWithSameText: (entry: Entry) -> Unit,
+    onDelete: (entry: Entry) -> Unit,
+    onFocus: (entry: Entry) -> Unit,
+    onSelect: (entry: Entry?) -> Unit,
     onUnsetHighlightedEntry: () -> Unit,
-    onUpdate: () -> Unit,
+    onUpdate: (entry: Entry) -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -103,7 +159,7 @@ fun LazyItemScope.EntryListItem(
         snapshotFlow { draggableState.currentValue }
             .filter { it != DragValue.Center }
             .collect {
-                onFocus()
+                onFocus(entry)
             }
     }
 
@@ -128,20 +184,15 @@ fun LazyItemScope.EntryListItem(
         }
     }
 
-    entry.getHeader(context, prevEntry)?.let { header ->
-        Text(
-            header,
-            Modifier.padding(
-                horizontal = Spacing.windowPadding,
-                vertical = Spacing.small,
-            ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
-
     Box(
-        (if (animationsEnabled) Modifier.animateItem() else Modifier)
+        Modifier
+            .run {
+                if (animationsEnabled) {
+                    animateItem()
+                } else {
+                    this
+                }
+            }
             .background(containerColor)
             .clip(RectangleShape),
     ) {
@@ -152,10 +203,8 @@ fun LazyItemScope.EntryListItem(
                     drawRect(animatedBackground.value)
                 }
                 .clickable {
-                    // Mark the item as focused, when selected or deselected
-                    onFocus()
-                    // Select or deselect the item
-                    onToggle()
+                    onFocus(entry)
+                    onSelect(if (selected) null else entry)
                 }
                 .fillMaxWidth()
                 .padding(
@@ -203,7 +252,7 @@ fun LazyItemScope.EntryListItem(
                 color = contentColor,
             )
             Button(
-                onClick = onAddWithSameText,
+                onClick = { onAddWithSameText(entry) },
                 modifier = Modifier
                     .testTag("entryListItemAddButton")
                     .size(Spacing.listButtonSize),
@@ -225,7 +274,7 @@ fun LazyItemScope.EntryListItem(
                     coroutineScope.launch {
                         draggableState.animateTo(DragValue.Center)
                     }
-                    onUpdate()
+                    onUpdate(entry)
                 },
                 Modifier
                     .testTag("entryListItemEditButton")
@@ -253,7 +302,7 @@ fun LazyItemScope.EntryListItem(
                     coroutineScope.launch {
                         draggableState.animateTo(DragValue.Center)
                     }
-                    onDelete()
+                    onDelete(entry)
                 },
                 Modifier
                     .testTag("entryListItemDeleteButton")
@@ -280,6 +329,24 @@ fun LazyItemScope.EntryListItem(
     }
 }
 
+@Composable
+fun PlaceholderEntryListItem() {
+    Spacer(Modifier.height(10.dp))
+}
+
+@Composable
+fun HeaderEntryListItem(entry: Entry) {
+    Text(
+        entry.formatDate(LocalContext.current),
+        Modifier.padding(
+            horizontal = Spacing.windowPadding,
+            vertical = Spacing.small,
+        ),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.bodyMedium,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun DefaultPreview() {
@@ -289,12 +356,17 @@ private fun DefaultPreview() {
                 item {
                     EntryListItem(
                         entry = defaultFakeEntries[0],
+                        prevEntry = null,
+                        index = 0,
+                        focusedEntry = null,
+                        highlightedEntryUid = null,
+                        selectedEntry = null,
                         animationsEnabled = false,
                         onAddWithSameText = {},
                         onDelete = {},
                         onUnsetHighlightedEntry = {},
                         onFocus = {},
-                        onToggle = {},
+                        onSelect = {},
                         onUpdate = {},
                     )
                 }
@@ -302,13 +374,16 @@ private fun DefaultPreview() {
                     EntryListItem(
                         entry = defaultFakeEntries[1],
                         prevEntry = defaultFakeEntries[0],
-                        highlighted = true,
+                        index = 1,
+                        focusedEntry = null,
+                        highlightedEntryUid = defaultFakeEntries[1].uid,
+                        selectedEntry = null,
                         animationsEnabled = false,
                         onAddWithSameText = {},
                         onDelete = {},
                         onUnsetHighlightedEntry = {},
                         onFocus = {},
-                        onToggle = {},
+                        onSelect = {},
                         onUpdate = {},
                     )
                 }
@@ -316,13 +391,16 @@ private fun DefaultPreview() {
                     EntryListItem(
                         entry = defaultFakeEntries[2],
                         prevEntry = defaultFakeEntries[1],
-                        odd = true,
+                        index = 2,
+                        focusedEntry = null,
+                        highlightedEntryUid = null,
+                        selectedEntry = null,
                         animationsEnabled = false,
                         onAddWithSameText = {},
                         onDelete = {},
                         onUnsetHighlightedEntry = {},
                         onFocus = {},
-                        onToggle = {},
+                        onSelect = {},
                         onUpdate = {},
                     )
                 }
@@ -330,13 +408,16 @@ private fun DefaultPreview() {
                     EntryListItem(
                         entry = defaultFakeEntries[3],
                         prevEntry = defaultFakeEntries[2],
-                        selected = true,
+                        index = 3,
+                        focusedEntry = null,
+                        highlightedEntryUid = null,
+                        selectedEntry = defaultFakeEntries[3],
                         animationsEnabled = false,
                         onAddWithSameText = {},
                         onDelete = {},
                         onUnsetHighlightedEntry = {},
                         onFocus = {},
-                        onToggle = {},
+                        onSelect = {},
                         onUpdate = {},
                     )
                 }

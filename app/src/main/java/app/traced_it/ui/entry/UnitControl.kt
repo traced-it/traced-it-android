@@ -37,12 +37,12 @@ import kotlinx.coroutines.flow.StateFlow
 fun UnitControl(
     amountRaw: String,
     selectedUnit: EntryUnit,
-    latestEntryUnitFlow: StateFlow<EntryUnit?>,
+    latestEntryUnit: StateFlow<EntryUnit?>,
     onAmountRawChange: (newAmountRaw: String) -> Unit,
     onUnitChange: (newUnit: EntryUnit) -> Unit,
     onVisibleUnitChange: () -> Unit,
 ) {
-    val latestEntryUnit by latestEntryUnitFlow.collectAsStateWithLifecycle()
+    val latestEntryUnit by latestEntryUnit.collectAsStateWithLifecycle()
     var expanded by retain { mutableStateOf(false) }
     var visibleUnit by retain {
         mutableStateOf(
@@ -147,7 +147,7 @@ private fun DefaultPreview() {
             UnitControl(
                 amountRaw = "",
                 selectedUnit = noneUnit,
-                latestEntryUnitFlow = MutableStateFlow(clothingSizeUnit),
+                latestEntryUnit = MutableStateFlow(clothingSizeUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -164,7 +164,7 @@ private fun ClothingSizePreview() {
             UnitControl(
                 amountRaw = "S",
                 selectedUnit = clothingSizeUnit,
-                latestEntryUnitFlow = MutableStateFlow(clothingSizeUnit),
+                latestEntryUnit = MutableStateFlow(clothingSizeUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -181,7 +181,7 @@ private fun SmallNumbersChoicePreview() {
             UnitControl(
                 amountRaw = "2x",
                 selectedUnit = smallNumbersChoiceUnit,
-                latestEntryUnitFlow = MutableStateFlow(smallNumbersChoiceUnit),
+                latestEntryUnit = MutableStateFlow(smallNumbersChoiceUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -198,7 +198,7 @@ private fun FractionPreview() {
             UnitControl(
                 amountRaw = "⅓",
                 selectedUnit = fractionUnit,
-                latestEntryUnitFlow = MutableStateFlow(fractionUnit),
+                latestEntryUnit = MutableStateFlow(fractionUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -215,7 +215,7 @@ private fun DoublePreview() {
             UnitControl(
                 amountRaw = "",
                 selectedUnit = doubleUnit,
-                latestEntryUnitFlow = MutableStateFlow(doubleUnit),
+                latestEntryUnit = MutableStateFlow(doubleUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},
@@ -232,7 +232,7 @@ private fun DoubleFrenchPreview() {
             UnitControl(
                 amountRaw = "",
                 selectedUnit = doubleUnit,
-                latestEntryUnitFlow = MutableStateFlow(doubleUnit),
+                latestEntryUnit = MutableStateFlow(doubleUnit),
                 onAmountRawChange = {},
                 onUnitChange = {},
                 onVisibleUnitChange = {},

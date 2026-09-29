@@ -44,17 +44,6 @@ class EntryViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private companion object {
-        private const val COLUMN_AMOUNT_FORMATTED = "amountFormatted"
-        private const val COLUMN_AMOUNT_UNIT = "amountUnit"
-        private const val COLUMN_AMOUNT = "amount"
-        private const val COLUMN_CONTENT = "content"
-        private const val COLUMN_CREATED_AT = "createdAt"
-        private const val COLUMN_UUID = "uuid"
-        private const val FILTER_EXPANDED = "filerExpanded"
-        private const val FILTER_QUERY = "filterQuery"
-    }
-
     private val csvDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US)
 
     private val oldCsvDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US)
@@ -69,15 +58,16 @@ class EntryViewModel @Inject constructor(
 
     val filterQuery: StateFlow<String> = savedStateHandle.getStateFlow(FILTER_QUERY, "")
 
-    val filterQuerySanitizedForFilename: String
-        get() = filterQuery.value.replace("""[^\w -]""".toRegex(), "_")
+    val filterQuerySanitizedForFilename: StateFlow<String> = filterQuery
+        .map { it.replace("""[^\w -]""".toRegex(), "_") }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "")
 
     val allEntriesCount: StateFlow<Int> = entryRepository.count()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), 0)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val filteredEntries: StateFlow<PagingData<Entry>> =
-        filterQuery.flatMapLatest { filterQuery ->
+    val filteredEntries: StateFlow<PagingData<Entry>> = filterQuery
+        .flatMapLatest { filterQuery ->
             Pager(PagingConfig(pageSize = 20, enablePlaceholders = true)) {
                 entryRepository.filter(filterQuery)
             }.flow
@@ -480,4 +470,15 @@ class EntryViewModel @Inject constructor(
                 )
             }
         }
+
+    private companion object {
+        private const val COLUMN_AMOUNT_FORMATTED = "amountFormatted"
+        private const val COLUMN_AMOUNT_UNIT = "amountUnit"
+        private const val COLUMN_AMOUNT = "amount"
+        private const val COLUMN_CONTENT = "content"
+        private const val COLUMN_CREATED_AT = "createdAt"
+        private const val COLUMN_UUID = "uuid"
+        private const val FILTER_EXPANDED = "filerExpanded"
+        private const val FILTER_QUERY = "filterQuery"
+    }
 }
