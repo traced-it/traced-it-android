@@ -4,15 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import app.traced_it.ui.entry.EntryViewModel
+import androidx.compose.runtime.CompositionLocalProvider
+import app.traced_it.ui.components.LocalClock
 import app.traced_it.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import kotlin.time.Clock
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val viewModel: EntryViewModel by viewModels()
+    @Inject
+    lateinit var clock: Clock
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +23,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-                MainNavigation(viewModel)
+                CompositionLocalProvider(LocalClock provides clock) {
+                    MainNavigation()
+                }
             }
         }
     }

@@ -4,30 +4,27 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import app.traced_it.ui.entry.EntryListScreen
-import app.traced_it.ui.entry.EntryViewModel
 import kotlinx.serialization.Serializable
 
 @Serializable
-object AboutRoute
+data object AboutRoute
 
 @Serializable
-object EntriesRoute
+data object MainRoute
 
 @Composable
-fun MainNavigation(viewModel: EntryViewModel) {
+fun MainNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = EntriesRoute) {
+    NavHost(navController = navController, startDestination = MainRoute) {
         composable<AboutRoute> {
             AboutScreen(
-                onNavigateToEntries = { navController.navigate(EntriesRoute) }
+                onNavigateToMainScreen = { navController.navigate(MainRoute) },
             )
         }
-        composable<EntriesRoute> {
-            EntryListScreen(
+        composable<MainRoute> {
+            MainScreen(
                 onNavigateToAboutScreen = { navController.navigate(AboutRoute) },
-                viewModel = viewModel,
             )
         }
     }

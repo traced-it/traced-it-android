@@ -2,7 +2,7 @@ package app.traced_it.data.di
 
 import app.traced_it.data.DefaultEntryRepository
 import app.traced_it.data.EntryRepository
-import app.traced_it.data.local.database.EntryDao
+import app.traced_it.data.database.EntryDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

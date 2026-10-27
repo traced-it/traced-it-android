@@ -1,9 +1,14 @@
 package app.traced_it.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 private val darkScheme = darkColorScheme(
     // Bright purple button
@@ -26,7 +31,7 @@ private val darkScheme = darkColorScheme(
     surface = Darkest,
     onSurface = Lightest,
 
-    // Lower emphasis text and text field bottom border
+    // Lower emphasis text and text field indicator
     onSurfaceVariant = Light,
 
     // App background
@@ -64,7 +69,7 @@ private val darkScheme = darkColorScheme(
 val lightScheme = darkScheme.copy(
     background = darkScheme.inverseSurface,
     onBackground = darkScheme.inverseOnSurface,
-    onPrimaryContainer = darkScheme.inverseOnSurface,
+    onPrimaryContainer = Darkest,
 )
 
 @Composable
@@ -78,3 +83,48 @@ fun AppTheme(
         content = content,
     )
 }
+
+@Composable
+fun textFieldColors(
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
+    disabledTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorIndicatorColor: Color = MaterialTheme.colorScheme.primary,
+    indicatorColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    placeholderColor: Color = Gray,
+    selectionColor: Color = MaterialTheme.colorScheme.primary,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+) = TextFieldDefaults.colors(
+    focusedTextColor = textColor,
+    unfocusedTextColor = textColor,
+    disabledTextColor = disabledTextColor,
+    focusedContainerColor = containerColor,
+    unfocusedContainerColor = containerColor,
+    disabledContainerColor = containerColor,
+    errorContainerColor = containerColor,
+    cursorColor = textColor,
+    errorCursorColor = textColor,
+    selectionColors = TextSelectionColors(
+        handleColor = selectionColor,
+        backgroundColor = selectionColor,
+    ),
+    errorIndicatorColor = errorIndicatorColor,
+    focusedIndicatorColor = indicatorColor,
+    unfocusedIndicatorColor = indicatorColor,
+    disabledIndicatorColor = indicatorColor,
+    focusedTrailingIconColor = indicatorColor,
+    unfocusedTrailingIconColor = indicatorColor,
+    disabledTrailingIconColor = indicatorColor,
+    errorTrailingIconColor = indicatorColor,
+    focusedPlaceholderColor = placeholderColor,
+    unfocusedPlaceholderColor = placeholderColor,
+    disabledPlaceholderColor = placeholderColor,
+    errorPlaceholderColor = placeholderColor,
+)
+
+@Composable
+fun topAppBarColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+    containerColor = MaterialTheme.colorScheme.background,
+    navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    actionIconContentColor = MaterialTheme.colorScheme.onBackground,
+)

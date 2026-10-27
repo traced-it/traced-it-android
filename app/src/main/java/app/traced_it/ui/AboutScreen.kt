@@ -2,7 +2,11 @@ package app.traced_it.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -11,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,28 +31,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.traced_it.BuildConfig
 import app.traced_it.R
-import app.traced_it.ui.components.TracedScaffold
-import app.traced_it.ui.components.TracedTopAppBar
+import app.traced_it.ui.components.StyledScaffold
 import app.traced_it.ui.theme.AppTheme
 import app.traced_it.ui.theme.Light
 import app.traced_it.ui.theme.Spacing
+import app.traced_it.ui.theme.topAppBarColors
 
 @Composable
-fun AboutScreen(
-    onNavigateToEntries: () -> Unit = {},
-) {
-    TracedScaffold(
+fun AboutScreen(onNavigateToMainScreen: () -> Unit) {
+    StyledScaffold(
         topBar = {
-            TracedTopAppBar(
+            TopAppBar(
                 title = { Text(stringResource(R.string.about_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateToEntries) {
+                    IconButton(onClick = onNavigateToMainScreen) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,
                             contentDescription = stringResource(R.string.nav_back)
                         )
                     }
                 },
+                colors = topAppBarColors(),
             )
         },
     ) { innerPadding ->
@@ -99,7 +103,7 @@ fun AboutScreen(
 @Composable
 private fun DefaultPreview() {
     AppTheme {
-        AboutScreen()
+        AboutScreen(onNavigateToMainScreen = {})
     }
 }
 
@@ -107,6 +111,6 @@ private fun DefaultPreview() {
 @Composable
 private fun LightPreview() {
     AppTheme {
-        AboutScreen()
+        AboutScreen(onNavigateToMainScreen = {})
     }
 }

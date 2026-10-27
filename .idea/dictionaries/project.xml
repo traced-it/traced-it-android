@@ -2,6 +2,7 @@
   <dictionary name="project">
     <words>
       <w>placeables</w>
+      <w>saveable</w>
       <w>snackbar</w>
       <w>toolate</w>
       <w>weblate</w>

@@ -3,18 +3,21 @@ package app.traced_it.data.di
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import app.traced_it.data.EntryRepository
-import app.traced_it.data.local.database.Entry
-import app.traced_it.data.local.database.clothingSizeUnit
-import app.traced_it.data.local.database.doubleUnit
-import app.traced_it.data.local.database.fractionUnit
-import app.traced_it.data.local.database.noneUnit
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import app.traced_it.data.database.ClothingSizeUnit
+import app.traced_it.data.database.DoubleUnit
+import app.traced_it.data.database.Entry
+import app.traced_it.data.database.EntryDraft
+import app.traced_it.data.database.FractionUnit
+import app.traced_it.data.database.IndexAndUid
+import app.traced_it.data.database.NoneUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import java.util.Calendar
 import java.util.UUID
+import javax.inject.Inject
+import kotlin.time.Clock
 
 class ListFlowPagingSource<T : Any>(
     private val listFlow: Flow<List<T>>,
@@ -57,33 +60,36 @@ class ListFlowPagingSource<T : Any>(
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class FakeEntryRepository(
-    initialFakeEntries: List<Entry> = defaultFakeEntries,
+class FakeEntryRepository @Inject constructor(
+    initialEntries: List<Entry> = defaultFakeEntries,
+    initialEntryDrafts: List<EntryDraft> = emptyList(),
 ) : EntryRepository {
-    private val _fakeEntries: MutableStateFlow<List<Entry>> =
-        MutableStateFlow(initialFakeEntries)
-    val fakeEntries: Flow<List<Entry>> = _fakeEntries.mapLatest {
-        it
-            .filter { entry -> !entry.deleted }
-            .sortedBy { entry -> entry.createdAt }
-            .reversed()
-    }
+    override val clock: Clock = Clock.System
+
+    private val _entries: MutableStateFlow<List<Entry>> = MutableStateFlow(initialEntries)
+    val entries: Flow<List<Entry>> =
+        _entries.map {
+            it
+                .filter { entry -> !entry.deleted }
+                .sortedBy { entry -> entry.createdAt }
+                .reversed()
+        }
+
     private var lastPagingSource: PagingSource<Int, Entry>? = null
 
     private fun updateEntries(entries: List<Entry>) {
-        _fakeEntries.value = entries
+        _entries.value = entries
         lastPagingSource?.invalidate()
     }
 
-    override fun count(): Flow<Int> = _fakeEntries.mapLatest { it.size }
+    override fun count() = _entries.map { it.size }
 
-    override fun filter(unsafeQuery: String): PagingSource<Int, Entry> =
+    override fun filter(unsafeQuery: String) =
         ListFlowPagingSource(
             if (unsafeQuery.isEmpty()) {
-                fakeEntries
+                entries
             } else {
-                fakeEntries.mapLatest {
+                entries.map {
                     it.filter { entry -> unsafeQuery in entry.content }
                 }
             }
@@ -91,73 +97,154 @@ class FakeEntryRepository(
             lastPagingSource = it
         }
 
-    override fun filterAsSequence(unsafeQuery: String): Sequence<Entry> =
-        _fakeEntries.value
+    override fun filterAsSequence(unsafeQuery: String) =
+        _entries.value
             .filter { entry -> !entry.deleted && unsafeQuery.isEmpty() || unsafeQuery in entry.content }
             .sortedBy { entry -> entry.createdAt }
             .reversed()
             .asSequence()
 
-    override suspend fun getByUuid(uuid: UUID): Entry? =
-        _fakeEntries.value.find { it.uuid == uuid }
+    override suspend fun getByUid(uid: Int) =
+        _entries.value.firstOrNull { it.uid == uid }
 
-    override suspend fun getByCreatedAt(createdAt: Long): Entry? =
-        _fakeEntries.value.find { it.createdAt == createdAt }
+    override suspend fun getByUuid(uuid: UUID) =
+        _entries.value.firstOrNull { it.uuid == uuid }
 
-    override fun getLatest(): Flow<Entry?> =
-        _fakeEntries.mapLatest { entries ->
-            entries
-                .filter { !it.deleted && it.amountUnit != noneUnit }
-                .maxByOrNull { it.createdAt }
-        }
+    override suspend fun getByCreatedAt(createdAt: Long) =
+        _entries.value.firstOrNull { it.createdAt == createdAt }
 
-    override suspend fun insert(entry: Entry): Long =
-        (_fakeEntries.value + listOf(entry)).also {
-            updateEntries(it)
-        }.size.toLong()
+    private suspend fun getIndexOf(uid: Int): Int {
+        val entry = getByUid(uid) ?: return 0
+        return _entries.value
+            .filter { !it.deleted && it.createdAt > entry.createdAt }
+            .size
+    }
 
-    override suspend fun update(vararg entries: Entry) {
+    override suspend fun insert(entry: Entry): Long {
+        updateEntries(_entries.value + listOf(entry))
+        return _entries.value.size.toLong()
+    }
+
+    override suspend fun update(vararg entries: Entry): Int {
+        var updatedCount = 0
         for (entry in entries) {
-            updateEntries(_fakeEntries.value.map {
-                if (it.uid == entry.uid) {
-                    entry
-                } else {
-                    it
+            updateEntries(
+                _entries.value.map {
+                    if (it.uid == entry.uid) {
+                        updatedCount++
+                        entry
+                    } else {
+                        it
+                    }
                 }
-            })
+            )
         }
+        return updatedCount
     }
 
     override suspend fun delete(uid: Int) {
-        updateEntries(_fakeEntries.value.map {
-            if (it.uid == uid) {
-                it.copy(deleted = true)
-            } else {
-                it
+        updateEntries(
+            _entries.value.map {
+                if (it.uid == uid) {
+                    it.copy(deleted = true)
+                } else {
+                    it
+                }
             }
-        })
+        )
     }
 
-    override suspend fun restore(uid: Int) {
-        updateEntries(_fakeEntries.value.map {
-            if (it.uid == uid) {
-                it.copy(deleted = false)
-            } else {
-                it
+    override suspend fun restoreAndGetIndex(uid: Int): Int {
+        updateEntries(
+            _entries.value.map {
+                if (it.uid == uid) {
+                    it.copy(deleted = false)
+                } else {
+                    it
+                }
             }
-        })
+        )
+        return getIndexOf(uid)
     }
 
     override suspend fun deleteAll() {
-        updateEntries(_fakeEntries.value.map { it.copy(deleted = true) })
+        updateEntries(_entries.value.map { it.copy(deleted = true) })
     }
 
     override suspend fun restoreAll() {
-        updateEntries(_fakeEntries.value.map { it.copy(deleted = false) })
+        updateEntries(_entries.value.map { it.copy(deleted = false) })
     }
 
     override suspend fun cleanupDeleted() {
-        updateEntries(_fakeEntries.value.filterNot { it.deleted })
+        updateEntries(_entries.value.filterNot { it.deleted })
+    }
+
+    private val _drafts: MutableStateFlow<List<EntryDraft>> = MutableStateFlow(initialEntryDrafts)
+
+    override suspend fun getFirstDraft() =
+        _drafts.value.firstOrNull()
+
+    override fun draft() =
+        _drafts.map { it.firstOrNull() }
+
+    override suspend fun upsertEntryFromDraft(draft: EntryDraft): IndexAndUid {
+        val newEntryUid = if (draft.entryUid == -1) {
+            val rowId = insert(
+                with(draft) {
+                    Entry(
+                        amount = amount,
+                        amountUnit = amountUnit,
+                        content = content,
+                        createdAt = createdAt,
+                    )
+                }
+            )
+            rowId.toInt()
+        } else {
+            updateEntries(
+                _entries.value.map {
+                    if (it.uid == draft.entryUid) {
+                        with(draft) {
+                            it.copy(
+                                amount = amount,
+                                amountUnit = amountUnit,
+                                content = content,
+                                createdAt = createdAt,
+                            )
+                        }
+                    } else {
+                        it
+                    }
+                }
+            )
+            draft.entryUid
+        }
+        deleteDraft(draft)
+        val index = getIndexOf(newEntryUid)
+        return index to newEntryUid
+    }
+
+    override suspend fun insertDraft(draft: EntryDraft): Long {
+        _drafts.value += draft
+        return _drafts.value.size.toLong()
+    }
+
+    override suspend fun upsertDraft(draft: EntryDraft) {
+        _drafts.value = if (draft.uid == 0) {
+            _drafts.value + draft
+        } else {
+            _drafts.value.map {
+                if (it.uid == draft.uid) {
+                    draft
+                } else {
+                    it
+                }
+            }
+        }
+    }
+
+    override suspend fun deleteDraft(draft: EntryDraft) {
+        _drafts.value = _drafts.value.filterNot { it == draft }
     }
 }
 
@@ -166,8 +253,8 @@ class FakeEntryRepository(
 val demoEntries = listOf(
     Entry(
         amount = 4.0,
-        amountUnit = clothingSizeUnit,
-        content = "Coffee",
+        amountUnit = ClothingSizeUnit,
+        content = "Dewberry",
         createdAt = Calendar.getInstance().run {
             add(Calendar.SECOND, -30)
             time.time
@@ -176,7 +263,7 @@ val demoEntries = listOf(
     ),
     Entry(
         amount = 0.0,
-        amountUnit = noneUnit,
+        amountUnit = NoneUnit,
         content = "Watered plants",
         createdAt = Calendar.getInstance().run {
             add(Calendar.MINUTE, -9)
@@ -186,7 +273,7 @@ val demoEntries = listOf(
     ),
     Entry(
         amount = 25.0,
-        amountUnit = noneUnit,
+        amountUnit = NoneUnit,
         content = "Woke up",
         createdAt = Calendar.getInstance().run {
             set(Calendar.HOUR_OF_DAY, 7)
@@ -199,7 +286,7 @@ val demoEntries = listOf(
     ),
     Entry(
         amount = 0.5,
-        amountUnit = fractionUnit,
+        amountUnit = FractionUnit,
         content = "Sleeping pill",
         createdAt = Calendar.getInstance().run {
             add(Calendar.DAY_OF_MONTH, -1)
@@ -213,7 +300,7 @@ val demoEntries = listOf(
     ),
     Entry(
         amount = 35.0,
-        amountUnit = doubleUnit,
+        amountUnit = DoubleUnit,
         content = "Pull-ups",
         createdAt = Calendar.getInstance().run {
             add(Calendar.DAY_OF_MONTH, -1)
@@ -227,7 +314,7 @@ val demoEntries = listOf(
     ),
     Entry(
         amount = 50.0,
-        amountUnit = doubleUnit,
+        amountUnit = DoubleUnit,
         content = "Squats",
         createdAt = Calendar.getInstance().run {
             add(Calendar.DAY_OF_MONTH, -1)
@@ -241,7 +328,7 @@ val demoEntries = listOf(
     ),
     Entry(
         amount = 0.0,
-        amountUnit = noneUnit,
+        amountUnit = NoneUnit,
         content = "Started using traced it",
         createdAt = Calendar.getInstance().run {
             add(Calendar.DAY_OF_MONTH, -1)
@@ -259,7 +346,7 @@ val defaultFakeEntries = listOf(
     *demoEntries.toTypedArray(),
     Entry(
         amount = 0.0,
-        amountUnit = clothingSizeUnit,
+        amountUnit = ClothingSizeUnit,
         content = """
             Jetpack Compose is Android’s recommended modern toolkit for building native UI. It simplifies and
             accelerates UI development on Android. Quickly bring your app to life with less code, powerful tools, and
@@ -277,7 +364,7 @@ val defaultFakeEntries = listOf(
     ),
     Entry(
         amount = 0.0,
-        amountUnit = noneUnit,
+        amountUnit = NoneUnit,
         content = "Future",
         createdAt = Calendar.getInstance().run {
             add(Calendar.DAY_OF_MONTH, 1)
