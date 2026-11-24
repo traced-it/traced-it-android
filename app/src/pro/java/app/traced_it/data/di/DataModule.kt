@@ -8,13 +8,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import kotlin.time.Clock
 
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
-
-    @Singleton
     @Provides
-    fun provideEntryRepository(entryDao: EntryDao): EntryRepository =
-        DefaultEntryRepository(entryDao)
+    @Singleton
+    fun provideEntryRepository(clock: Clock, entryDao: EntryDao): EntryRepository =
+        DefaultEntryRepository(clock, entryDao)
 }
