@@ -67,7 +67,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         // Dismiss detail
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_DISMISS).performClick()
         // Check list
-        onListTitle(totalCount = 0)
+        onListTitle(totalCount = 0).assertExists()
 
         // Click insert
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
@@ -79,7 +79,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         // Dismiss detail
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_DISMISS).performClick()
         // Check list
-        onListTitle(totalCount = 0)
+        onListTitle(totalCount = 0).assertExists()
 
         // Click insert
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
@@ -91,7 +91,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         // Dismiss detail
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_DISMISS).performClick()
         // Check list
-        onListTitle(totalCount = 0)
+        onListTitle(totalCount = 0).assertExists()
 
         // Click insert
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()

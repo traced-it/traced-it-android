@@ -25,6 +25,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemLeft()
         onListItemDeleteButton("Dewberry (3.14)").performClick()
         // Check list
+        composeRule.waitForIdle()
         onListTitle(totalCount = 1).assertExists()
         onListItem("Dewberry (3.14)").assertDoesNotExist()
         onListItem("Fig (½)").assertExists()
@@ -44,6 +45,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemLeft()
         onListItemDeleteButton("Dewberry (3.14)").performClick()
         // Check list
+        composeRule.waitForIdle()
         onListTitle(totalCount = 1).assertExists()
         onListItem("Dewberry (3.14)").assertDoesNotExist()
         onListItem("Fig (½)").assertExists()
