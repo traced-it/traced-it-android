@@ -296,7 +296,6 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         // Click update
         composeRule.onNode(hasTestTag(TestTags.ENTRY_LIST_SELECTED_UPDATE)).performClick()
         // Check detail
-        waitForDetail()
         onDetailContent("Apples and oranges").assertExists()
         // Dismiss detail
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_DISMISS).performClick()

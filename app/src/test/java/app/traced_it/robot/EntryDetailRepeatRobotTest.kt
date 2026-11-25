@@ -25,7 +25,6 @@ class EntryDetailRepeatRobotTest : BaseRobotTest() {
         // Click repeat
         onListItemRepeatButton("Dewberry (3.14)").performClick()
         // Check detail
-        waitForDetail()
         onDetailContent("Dewberry").assertExists()
         onDetailAmount(DoubleUnit, 3.14).assertExists()
         onDetailCreatedAtDate(now.date).performScrollTo().assertIsDisplayed()
@@ -107,7 +106,6 @@ class EntryDetailRepeatRobotTest : BaseRobotTest() {
         // Click repeat
         onListItemRepeatButton("Fig (½)").performClick()
         // Check detail
-        waitForDetail()
         onDetailContent("Fig").assertExists()
         onDetailUnitChoice(FractionUnit, "½").assertIsSelected()
         onDetailCreatedAtDate(now.date).performScrollTo().assertIsDisplayed()

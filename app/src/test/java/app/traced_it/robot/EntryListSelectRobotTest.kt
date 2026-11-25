@@ -43,7 +43,6 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         // Click update
         composeRule.onNode(hasTestTag(TestTags.ENTRY_LIST_SELECTED_UPDATE)).performClick()
         // Check detail
-        waitForDetail()
         onDetailContent("Dewberry").assertExists()
     }
 
@@ -74,7 +73,6 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         // Click update
         composeRule.onNode(hasTestTag(TestTags.ENTRY_LIST_SELECTED_UPDATE)).performClick()
         // Check detail
-        waitForDetail()
         onDetailContent("Dewberry").assertExists()
         // Dismiss detail
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_DISMISS).performClick()
@@ -109,7 +107,6 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_SELECTED_MENU).performClick()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_SELECTED_MENU_REPEAT).performClick()
         // Check detail
-        waitForDetail()
         onDetailContent("Dewberry").assertExists()
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_SAVE_INSERT).assertExists()
     }

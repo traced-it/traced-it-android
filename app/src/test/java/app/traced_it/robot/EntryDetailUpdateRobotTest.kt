@@ -85,7 +85,6 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry edited (M)").swipeListItemRight()
         onListItemUpdateButton("Dewberry edited (M)").performClick()
         // Check detail
-        waitForDetail()
         onDetailContent("Dewberry edited").assertExists()
         onDetailUnitChoice(ClothingSizeUnit, "M").assertIsSelected()
         onDetailCreatedAtDate(createdAt.date.plusDateOffset(-3)).performScrollTo().assertIsDisplayed()
@@ -117,7 +116,6 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Fig (½)").swipeListItemRight()
         onListItemUpdateButton("Fig (½)").performClick()
         // Check detail
-        waitForDetail()
         onDetailContent("Fig").assertExists()
         onDetailUnitChoice(FractionUnit, "½").assertIsSelected()
         val secondCreatedAt = Instant.fromEpochMilliseconds(entryWithFractionUnit.createdAt).toLocalDateTime(timeZone)

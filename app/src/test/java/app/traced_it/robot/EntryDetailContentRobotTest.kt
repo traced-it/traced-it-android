@@ -23,7 +23,6 @@ class EntryDetailContentRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Check content field
-        waitForDetail()
         onDetailContent("Dewberry").assertExists().assertIsFocused()
     }
 
