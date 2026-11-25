@@ -19,15 +19,13 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         onListItem("Fig (½)").assertExists()
         // Click delete
         onListItem("Dewberry (3.14)").swipeListItemLeft()
         onListItemDeleteButton("Dewberry (3.14)").performClick()
         // Check list
-        composeRule.waitForIdle()
-        onListTitle(totalCount = 1).assertExists()
+        waitForListTitle(totalCount = 1)
         onListItem("Dewberry (3.14)").assertDoesNotExist()
         onListItem("Fig (½)").assertExists()
     }
@@ -40,21 +38,19 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         onListItem("Fig (½)").assertExists()
         // Click delete
         onListItem("Dewberry (3.14)").swipeListItemLeft()
         onListItemDeleteButton("Dewberry (3.14)").performClick()
         // Check list
-        composeRule.waitForIdle()
-        onListTitle(totalCount = 1).assertExists()
+        waitForListTitle(totalCount = 1)
         onListItem("Dewberry (3.14)").assertDoesNotExist()
         onListItem("Fig (½)").assertExists()
         // Click undo
         composeRule.onNodeWithText("Undo").performClick()
         // Check list
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         onListItem("Dewberry (3.14)").assertExists()
         onListItem("Fig (½)").assertExists()
     }
@@ -67,8 +63,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         onListItem("Dewberry (3.14)").assertExists()
         onListItem("Fig (½)").assertExists()
         // Click delete all
@@ -77,7 +72,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         // Confirm delete all
         composeRule.onNodeWithTag(TestTags.CONFIRMATION_DIALOG_CONFIRM).performClick()
         // Check list
-        onListTitle(totalCount = 0).assertExists()
+        waitForListTitle(totalCount = 0)
         onListItem("Dewberry (3.14)").assertDoesNotExist()
         onListItem("Fig (½)").assertDoesNotExist()
     }
@@ -90,8 +85,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         onListItem("Dewberry (3.14)").assertExists()
         onListItem("Fig (½)").assertExists()
         // Click delete all
@@ -100,13 +94,13 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         // Confirm delete all
         composeRule.onNodeWithTag(TestTags.CONFIRMATION_DIALOG_CONFIRM).performClick()
         // Check list
-        onListTitle(totalCount = 0).assertExists()
+        waitForListTitle(totalCount = 0)
         onListItem("Dewberry (3.14)").assertDoesNotExist()
         onListItem("Fig (½)").assertDoesNotExist()
         // Click undo
         composeRule.onNodeWithText("Undo").performClick()
         // Check list
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         onListItem("Dewberry (3.14)").assertExists()
         onListItem("Fig (½)").assertExists()
     }
@@ -119,8 +113,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         onListItem("Dewberry (3.14)").assertExists()
         onListItem("Fig (½)").assertExists()
         // Click delete all
@@ -129,7 +122,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         // Dismiss delete all
         composeRule.onNodeWithTag(TestTags.CONFIRMATION_DIALOG_DISMISS).performClick()
         // Check list
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         onListItem("Dewberry (3.14)").assertExists()
         onListItem("Fig (½)").assertExists()
     }

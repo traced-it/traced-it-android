@@ -60,8 +60,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Check filter bar
@@ -78,8 +77,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Click back
@@ -95,8 +93,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Hide IME by focusing another node
@@ -114,8 +111,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Set query to one that only the first entry matches
@@ -152,8 +148,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Set query
@@ -172,8 +167,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Set query
@@ -198,8 +192,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Set query
@@ -224,8 +217,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Set query
@@ -252,8 +244,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Set query
@@ -288,8 +279,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Set query
@@ -324,8 +314,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
         // Set query

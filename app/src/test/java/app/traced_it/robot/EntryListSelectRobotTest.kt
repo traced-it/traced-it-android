@@ -125,8 +125,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 2).assertExists()
+        waitForListTitle(totalCount = 2)
         onListItem("Fig (½)").assertExists()
         // Select list item
         onListItem("Dewberry (3.14)").performClick()

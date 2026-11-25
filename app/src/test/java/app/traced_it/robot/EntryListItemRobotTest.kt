@@ -41,8 +41,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
     fun `when there are no entries in the database, then the list is empty`() {
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 0).assertExists()
+        waitForListTitle(totalCount = 0)
     }
 
     @Test
@@ -66,8 +65,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 3).assertExists()
+        waitForListTitle(totalCount = 3)
         onListItem("Coconut (S)", secondsAgo = 3).assertExists()
         onListItem("Dewberry (3.14)", minutesAgo = 2).assertExists()
         onListItem("Fig (½)", hoursAgo = 1, minutesAgo = 30).assertExists()
@@ -95,8 +93,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
-        waitForList()
-        onListTitle(totalCount = 3).assertExists()
+        waitForListTitle(totalCount = 3)
         onListHeading(now.date.minus(DatePeriod(days = 1))).assertExists()
         onListItem("Coconut (S)", hoursAgo = 2).assertExists()
         onListItem("Dewberry (3.14)", hoursAgo = 8).assertExists()

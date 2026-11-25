@@ -113,6 +113,13 @@ abstract class BaseRobotTest {
     protected fun onListTitle(totalCount: Int): SemanticsNodeInteraction =
         composeRule.onNode(hasTestTag(TestTags.ENTRY_LIST_TITLE) and hasText("($totalCount)", substring = true))
 
+    @OptIn(ExperimentalTestApi::class)
+    protected fun waitForListTitle(totalCount: Int) {
+        composeRule.waitUntilExactlyOneExists(
+            hasTestTag(TestTags.ENTRY_LIST_TITLE) and hasText("($totalCount)", substring = true)
+        )
+    }
+
     @Suppress("SameParameterValue")
     protected fun onListFilter(itemCount: Int, totalCount: Int): SemanticsNodeInteraction =
         composeRule.onNodeWithTag(TestTags.entryListFilterStatus(itemCount, totalCount))
