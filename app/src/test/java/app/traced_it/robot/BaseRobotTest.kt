@@ -190,10 +190,12 @@ abstract class BaseRobotTest {
 
     protected fun SemanticsNodeInteraction.swipeListItemLeft() {
         performTouchInput { swipeLeft(startX = centerX, endX = left) }
+        composeRule.waitForIdle()
     }
 
     protected fun SemanticsNodeInteraction.swipeListItemRight() {
         performTouchInput { swipeRight(startX = centerX, endX = right) }
+        composeRule.waitForIdle()
     }
 
     protected fun onListHeading(): SemanticsNodeInteraction =
