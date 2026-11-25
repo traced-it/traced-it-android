@@ -48,6 +48,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
+        waitForDetail()
         onDetailContent().performTextInput(" edited")
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_UNIT_MENU).performClick()
         composeRule.onNodeWithTag(TestTags.entryDetailUnitMenuItem(ClothingSizeUnit)).performClick()
@@ -85,6 +86,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry edited (M)").swipeListItemRight()
         onListItemUpdateButton("Dewberry edited (M)").performClick()
         // Check detail
+        waitForDetail()
         onDetailContent("Dewberry edited").assertExists()
         onDetailUnitChoice(ClothingSizeUnit, "M").assertIsSelected()
         onDetailCreatedAtDate(createdAt.date.plusDateOffset(-3)).performScrollTo().assertIsDisplayed()
@@ -181,6 +183,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
+        waitForDetail()
         onDetailContent().performTextInput(" edited")
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_UNIT_MENU).performClick()
         composeRule.onNodeWithTag(TestTags.entryDetailUnitMenuItem(ClothingSizeUnit)).performClick()
@@ -246,6 +249,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
+        waitForDetail()
         onDetailContent().performTextInput(" edited")
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_UNIT_MENU).performClick()
         composeRule.onNodeWithTag(TestTags.entryDetailUnitMenuItem(ClothingSizeUnit)).performClick()
