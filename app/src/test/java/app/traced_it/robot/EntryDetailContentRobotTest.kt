@@ -31,7 +31,6 @@ class EntryDetailContentRobotTest : BaseRobotTest() {
     fun `when content is not set in the database, then the content field is empty and focused`() {
         launch()
         // Click insert
-        composeRule.waitForIdle()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Check content field
         onDetailContent("").assertExists().assertIsFocused()
@@ -41,7 +40,6 @@ class EntryDetailContentRobotTest : BaseRobotTest() {
     fun `when the content field is set, then the save button is enabled`() {
         launch()
         // Click insert
-        composeRule.waitForIdle()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Check save button
         composeRule.onNode(hasTestTag(TestTags.ENTRY_DETAIL_SAVE_INSERT) and isNotEnabled()).assertExists()
@@ -55,7 +53,6 @@ class EntryDetailContentRobotTest : BaseRobotTest() {
     fun `when the content field clear button is clicked, then the content field is cleared and the save button is disabled`() {
         launch()
         // Click insert
-        composeRule.waitForIdle()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content field
         onDetailContent().performTextInput("Dewberry")
@@ -71,7 +68,6 @@ class EntryDetailContentRobotTest : BaseRobotTest() {
     fun `when content is not set in the database and the content field is set and configuration changes, then the content field does not change`() {
         launch()
         // Click insert
-        composeRule.waitForIdle()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content field
         onDetailContent().performTextInput("Dewberry")

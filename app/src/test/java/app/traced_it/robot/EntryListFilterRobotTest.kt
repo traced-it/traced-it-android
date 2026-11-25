@@ -261,7 +261,6 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         // Click update
         composeRule.onNode(hasTestTag(TestTags.ENTRY_LIST_SELECTED_UPDATE)).performClick()
         // Change detail
-        waitForDetail()
         onDetailContent().performTextInput(" edited")
         // Save detail
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_SAVE_UPDATE).performClick()

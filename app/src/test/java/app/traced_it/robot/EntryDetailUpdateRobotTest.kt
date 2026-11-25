@@ -48,7 +48,6 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
-        waitForDetail()
         onDetailContent().performTextInput(" edited")
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_UNIT_MENU).performClick()
         composeRule.onNodeWithTag(TestTags.entryDetailUnitMenuItem(ClothingSizeUnit)).performClick()
@@ -105,7 +104,6 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
-        waitForDetail()
         onDetailContent().performTextInput(" edited")
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_UNIT_MENU).performClick()
         composeRule.onNodeWithTag(TestTags.entryDetailUnitMenuItem(ClothingSizeUnit)).performClick()
@@ -183,7 +181,6 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
-        waitForDetail()
         onDetailContent().performTextInput(" edited")
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_UNIT_MENU).performClick()
         composeRule.onNodeWithTag(TestTags.entryDetailUnitMenuItem(ClothingSizeUnit)).performClick()
@@ -216,7 +213,6 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
-        waitForDetail()
         onDetailContent().performTextInput(" edited")
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_UNIT_MENU).performClick()
         composeRule.onNodeWithTag(TestTags.entryDetailUnitMenuItem(ClothingSizeUnit)).performClick()
@@ -249,7 +245,6 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
-        waitForDetail()
         onDetailContent().performTextInput(" edited")
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_UNIT_MENU).performClick()
         composeRule.onNodeWithTag(TestTags.entryDetailUnitMenuItem(ClothingSizeUnit)).performClick()

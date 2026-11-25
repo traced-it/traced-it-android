@@ -98,6 +98,7 @@ abstract class BaseRobotTest {
 
     protected fun launch() {
         scenario = ActivityScenario.launch(MainScreenTestActivity::class.java)
+        composeRule.waitForIdle()
     }
 
     @After
@@ -216,14 +217,18 @@ abstract class BaseRobotTest {
                 hasEditableText(amount?.toString().orEmpty())
         )
 
-    protected fun onDetailContent(): SemanticsNodeInteraction =
-        composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT)
+    protected fun onDetailContent(): SemanticsNodeInteraction {
+        waitForDetail()
+        return composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT)
+    }
 
-    protected fun onDetailContent(content: String): SemanticsNodeInteraction =
-        composeRule.onNode(
+    protected fun onDetailContent(content: String): SemanticsNodeInteraction {
+        waitForDetail()
+        return composeRule.onNode(
             hasTestTag(TestTags.ENTRY_DETAIL_CONTENT) and isEnabled() and hasEditableText(content),
             useUnmergedTree = true,
         )
+    }
 
     private val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
 
