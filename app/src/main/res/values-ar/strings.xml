@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="entry_unit_fraction_choice_one_half">½</string>
-    <string name="entry_unit_fraction_choice_three_quarters">¾</string>
-    <string name="entry_unit_fraction_choice_whole">1</string>
     <string name="entry_unit_double_name">عدد</string>
-    <string name="entry_formatted_content_with_amount_and_created_at">%1$s، %2$s</string>
     <string name="detail_update_title">تحديث الملاحظة</string>
     <string name="detail_add_title">إضافة ملاحظة</string>
     <string name="list_message_restored">تم استعادة الملاحظة</string>
@@ -67,7 +63,6 @@
     <string name="entry_unit_clothing_choice_l">L</string>
     <string name="entry_unit_clothing_choice_xl">XL</string>
     <string name="entry_unit_fraction_name">كسر</string>
-    <string name="entry_unit_fraction_choice_one_quarter">¼</string>
     <string name="nav_back">العودة إلى قائمة الملاحظات</string>
     <string name="detail_cancel">إلغاء</string>
     <string name="detail_update_save">تحديث</string>
@@ -93,5 +88,4 @@
     <string name="list_import_failed_column_parsing_error">فشل في تحليل القيمة %2$s للعمود %1$s</string>
     <string name="list_import_failed_column_choice_unknown">يجب أن تكون القيمة %3$s للعمود %1$s واحدة من %2$s</string>
     <string name="list_import_finished_empty">ملف CSV فارغ</string>
-    <string name="entry_unit_fraction_choice_one_third">⅓</string>
 </resources>

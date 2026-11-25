@@ -49,8 +49,6 @@
     <string name="list_import_finished_empty">Prázdný soubor CSV</string>
     <string name="detail_unit_label">Zvolte množství, pokud chcete</string>
     <string name="detail_unit_dropdown_content_description">Rozbalit seznam jednotek</string>
-    <string name="entry_unit_fraction_choice_three_quarters">¾</string>
-    <string name="entry_unit_fraction_choice_whole">1</string>
     <string name="entry_unit_double_name">číslo</string>
     <string name="entry_unit_none_name">žádná jednotka</string>
     <string name="entry_unit_clothing_name">velikost</string>
@@ -59,9 +57,6 @@
     <string name="entry_unit_clothing_choice_m">M</string>
     <string name="entry_unit_clothing_choice_l">L</string>
     <string name="entry_unit_clothing_choice_xl">XL</string>
-    <string name="entry_unit_fraction_choice_one_quarter">¼</string>
-    <string name="entry_unit_fraction_choice_one_third">⅓</string>
-    <string name="entry_unit_fraction_choice_one_half">½</string>
     <string name="input_clear_content_description">Smazat text</string>
     <string name="list_delete_all_dialog_dismiss">Zrušit</string>
     <string name="entry_unit_fraction_name">zlomek</string>
@@ -70,7 +65,6 @@
     <string name="list_message_restored">Poznámka obnovena</string>
     <string name="list_message_all_restored">Všechny poznámky obnoveny</string>
     <string name="list_export_all_filename">%1$s poznámky %2$s.csv</string>
-    <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
     <string name="list_export_filtered_filename">%1$s poznámky %2$s filtr %3$s.csv</string>
     <string name="list_filter_input_placeholder">Filtrovat poznámky</string>
     <string name="list_filter_input_clear_content_description">Vymazat</string>
