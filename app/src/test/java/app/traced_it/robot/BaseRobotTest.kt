@@ -98,7 +98,6 @@ abstract class BaseRobotTest {
 
     protected fun launch() {
         scenario = ActivityScenario.launch(MainScreenTestActivity::class.java)
-        composeRule.waitForIdle()
     }
 
     @After
@@ -191,12 +190,10 @@ abstract class BaseRobotTest {
 
     protected fun SemanticsNodeInteraction.swipeListItemLeft() {
         performTouchInput { swipeLeft(startX = centerX, endX = left) }
-        composeRule.waitForIdle()
     }
 
     protected fun SemanticsNodeInteraction.swipeListItemRight() {
         performTouchInput { swipeRight(startX = centerX, endX = right) }
-        composeRule.waitForIdle()
     }
 
     protected fun onListHeading(): SemanticsNodeInteraction =
@@ -310,6 +307,11 @@ abstract class BaseRobotTest {
     @OptIn(ExperimentalTestApi::class)
     protected fun waitForDetail() {
         composeRule.waitUntilAtLeastOneExists(hasTestTag(TestTags.ENTRY_DETAIL_CONTENT))
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    protected fun waitForList() {
+        composeRule.waitUntilAtLeastOneExists(hasTestTag(TestTags.ENTRY_LIST_INSERT))
     }
 
     protected fun waitForListItem(content: String) {

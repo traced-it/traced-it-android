@@ -23,6 +23,7 @@ class EntryDetailRepeatRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click repeat
+        waitForListItem("Dewberry (3.14)")
         onListItemRepeatButton("Dewberry (3.14)").performClick()
         // Check detail
         onDetailContent("Dewberry").assertExists()
@@ -38,6 +39,7 @@ class EntryDetailRepeatRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click repeat
+        waitForListItem("Dewberry (3.14)")
         onListItemRepeatButton("Dewberry (3.14)").performClick()
         // Dismiss detail
         waitForDetail()
@@ -51,6 +53,7 @@ class EntryDetailRepeatRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click repeat
+        waitForListItem("Dewberry (3.14)")
         onListItemRepeatButton("Dewberry (3.14)").performClick()
         // Dismiss detail
         waitForDetail()
@@ -64,6 +67,7 @@ class EntryDetailRepeatRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click repeat
+        waitForListItem("Dewberry (3.14)")
         onListItemRepeatButton("Dewberry (3.14)").performClick()
         // Change detail
         onDetailContent().performTextInput(" repeated")
@@ -92,6 +96,7 @@ class EntryDetailRepeatRobotTest : BaseRobotTest() {
         }
         launch()
         // Click repeat
+        waitForListItem("Dewberry (3.14)")
         onListItemRepeatButton("Dewberry (3.14)").performClick()
         // Change detail
         onDetailContent().performTextInput(" repeated")

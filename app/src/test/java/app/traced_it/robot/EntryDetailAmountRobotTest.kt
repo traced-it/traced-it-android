@@ -28,6 +28,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         launch()
 
         // Clothing size: Click update
+        waitForListItem("Coconut (S)")
         onListItem("Coconut (S)").swipeListItemRight()
         onListItemUpdateButton("Coconut (S)").performClick()
         // Clothing size: Check unit
@@ -58,6 +59,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         launch()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Check unit
         onDetailUnitChoices(ClothingSizeUnit).assertCountEquals(5).assertAll(isNotSelected())
@@ -70,6 +72,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         onListTitle(totalCount = 0).assertExists()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Check unit
         onDetailAmount(DoubleUnit, null).assertExists()
@@ -82,6 +85,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         onListTitle(totalCount = 0).assertExists()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Check unit
         onDetailUnitChoices(FractionUnit).assertCountEquals(5).assertAll(isNotSelected())
@@ -94,6 +98,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         onListTitle(totalCount = 0).assertExists()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Check unit
         onDetailUnitChoices(ClothingSizeUnit).assertCountEquals(5).assertAll(isNotSelected())
@@ -106,6 +111,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         }
         launch()
         // Click update
+        waitForListItem("Nectarine")
         onListItem("Nectarine").swipeListItemRight()
         onListItemUpdateButton("Nectarine").performClick()
         // Check unit
@@ -125,6 +131,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         launch()
 
         // Clothing size: Click update
+        waitForListItem("Coconut (S)")
         onListItem("Coconut (S)").swipeListItemRight()
         onListItemUpdateButton("Coconut (S)").performClick()
         // Clothing size: Change unit to double
@@ -200,6 +207,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         launch()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT).performTextInput("Coconut")
@@ -215,6 +223,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         onListItem("Coconut").assertExists()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT).performTextInput("Dewberry")
@@ -228,6 +237,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         onListItem("Dewberry").assertExists()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT).performTextInput("Fig")
@@ -246,6 +256,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         launch()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT).performTextInput("Coconut")
@@ -263,6 +274,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         onListItem("Coconut (XL)").assertExists()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT).performTextInput("Dewberry")
@@ -278,6 +290,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         onListItem("Dewberry (7.89)").assertExists()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT).performTextInput("Fig")
@@ -303,6 +316,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         launch()
 
         // Clothing size: Click update
+        waitForListItem("Coconut (S)")
         onListItem("Coconut (S)").swipeListItemRight()
         onListItemUpdateButton("Coconut (S)").performClick()
         // Clothing size: Change unit to double
@@ -350,6 +364,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         launch()
 
         // Clothing size: Click update
+        waitForListItem("Coconut (S)")
         onListItem("Coconut (S)").swipeListItemRight()
         onListItemUpdateButton("Coconut (S)").performClick()
         // Clothing size: Change unit to double
@@ -445,6 +460,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         launch()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT).performTextInput("Coconut")
@@ -463,6 +479,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_DISMISS).performClick()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT).performTextInput("Dewberry")
@@ -479,6 +496,7 @@ class EntryDetailAmountRobotTest : BaseRobotTest() {
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_DISMISS).performClick()
 
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change content
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_CONTENT).performTextInput("Fig")

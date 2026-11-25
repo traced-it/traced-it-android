@@ -30,6 +30,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Check form
@@ -45,6 +46,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
@@ -69,6 +71,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
@@ -100,6 +103,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
@@ -130,6 +134,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Dismiss detail
@@ -144,6 +149,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Dismiss detail
@@ -158,6 +164,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Restart app
@@ -176,6 +183,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
@@ -208,6 +216,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
@@ -240,6 +249,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail
@@ -266,6 +276,7 @@ class EntryDetailUpdateRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Click update
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         onListItemUpdateButton("Dewberry (3.14)").performClick()
         // Change detail

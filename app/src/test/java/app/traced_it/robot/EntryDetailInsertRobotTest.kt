@@ -26,6 +26,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked, then the form is open and it is empty`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Check detail
         onDetailContent("").assertExists()
@@ -39,6 +40,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked and the form is changed and saved, then the list shows a new entry`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change detail
         onDetailContent().performTextInput("Coconut")
@@ -59,6 +61,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked and the form is changed and saved and the insert button is clicked again, then the form is open and it is empty`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change detail
         onDetailContent().performTextInput("Coconut")
@@ -69,6 +72,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
         // Save detail
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_SAVE_INSERT).performClick()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Check detail
         onDetailContent("").assertExists()
@@ -82,6 +86,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked and the form is dismissed, then the list does not show a new entry`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Dismiss detail
         composeRule.onNodeWithTag(TestTags.ENTRY_DETAIL_DISMISS).performClick()
@@ -93,6 +98,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked and the back gesture is performed, then the list does not show a new entry`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Dismiss detail
         waitForDetail()
@@ -105,6 +111,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked and the app is restarted, then the form is open and it is empty`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Restart app
         restartActivity()
@@ -120,6 +127,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked and the form is changed and the app is restarted and the form is saved, then the list shows a new entry`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change detail
         onDetailContent().performTextInput("Fig")
@@ -150,6 +158,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked and the form is changed and the app is restarted and the form is changed and the form is saved, then the list shows a new entry`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change detail
         onDetailContent().performTextInput("Fig")
@@ -180,6 +189,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked and the form is changed and the app is restarted and the form is dismissed, then the list does not show a new entry`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change detail
         onDetailContent().performTextInput("Fig")
@@ -201,6 +211,7 @@ class EntryDetailInsertRobotTest : BaseRobotTest() {
     fun `when the insert button is clicked and the form is changed and dismissed and the app is restarted, then the form is not open`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change detail
         onDetailContent().performTextInput("Fig")

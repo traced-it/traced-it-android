@@ -22,6 +22,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Select list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Check list
         onListItem(
@@ -39,6 +40,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Select list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Click update
         composeRule.onNode(hasTestTag(TestTags.ENTRY_LIST_SELECTED_UPDATE)).performClick()
@@ -51,6 +53,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Select list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Click update
         composeRule.onNode(hasTestTag(TestTags.ENTRY_LIST_SELECTED_UPDATE)).performClick()
@@ -69,6 +72,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Select list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Click update
         composeRule.onNode(hasTestTag(TestTags.ENTRY_LIST_SELECTED_UPDATE)).performClick()
@@ -87,6 +91,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Select list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Click delete
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_SELECTED_DELETE).performClick()
@@ -102,6 +107,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Select list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Click repeat
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_SELECTED_MENU).performClick()
@@ -119,6 +125,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         onListItem("Fig (½)").assertExists()
         // Select list item
@@ -141,6 +148,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Select list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Click back
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_SELECTED_BACK).performClick()
@@ -155,6 +163,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Select list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Check list
         onListItem("Dewberry (3.14)").assertIsSelected()
@@ -171,6 +180,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         runBlocking { entryRepository.insert(entryWithDoubleUnit) }
         launch()
         // Select list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Check list
         onListItem("Dewberry (3.14)").assertIsSelected()
@@ -190,6 +200,7 @@ class EntryListSelectRobotTest : BaseRobotTest() {
         }
         launch()
         // Select first list item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").performClick()
         // Check list
         onListItem("Dewberry (3.14)").assertIsSelected()

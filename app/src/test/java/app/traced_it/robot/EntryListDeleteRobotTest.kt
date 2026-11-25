@@ -19,6 +19,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         onListItem("Fig (½)").assertExists()
         // Click delete
@@ -39,6 +40,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         onListItem("Fig (½)").assertExists()
         // Click delete
@@ -65,6 +67,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         onListItem("Dewberry (3.14)").assertExists()
         onListItem("Fig (½)").assertExists()
@@ -87,6 +90,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         onListItem("Dewberry (3.14)").assertExists()
         onListItem("Fig (½)").assertExists()
@@ -115,6 +119,7 @@ class EntryListDeleteRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         onListItem("Dewberry (3.14)").assertExists()
         onListItem("Fig (½)").assertExists()

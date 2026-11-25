@@ -60,6 +60,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -77,6 +78,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -93,6 +95,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -111,6 +114,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -148,6 +152,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -167,6 +172,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -192,6 +198,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -217,6 +224,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -244,6 +252,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -279,6 +288,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()
@@ -314,6 +324,7 @@ class EntryListFilterRobotTest : BaseRobotTest() {
         runBlocking { entries.forEach { entryRepository.insert(it) } }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 2).assertExists()
         // Expand filter bar
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_FILTER_EXPAND).performClick()

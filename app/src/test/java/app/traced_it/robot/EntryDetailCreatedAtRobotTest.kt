@@ -18,6 +18,7 @@ class EntryDetailCreatedAtRobotTest : BaseRobotTest() {
     fun `when created-at is not set in the database and the created-at field is changed and configuration changes, then the created-at field does not change`() {
         launch()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change created-at field
         onDetailCreatedAtDate().performScrollTo().performVerticalScroll(-3)

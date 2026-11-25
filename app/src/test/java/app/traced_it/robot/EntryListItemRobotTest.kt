@@ -41,6 +41,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
     fun `when there are no entries in the database, then the list is empty`() {
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 0).assertExists()
     }
 
@@ -65,6 +66,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 3).assertExists()
         onListItem("Coconut (S)", secondsAgo = 3).assertExists()
         onListItem("Dewberry (3.14)", minutesAgo = 2).assertExists()
@@ -93,6 +95,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         }
         launch()
         // Check list
+        waitForList()
         onListTitle(totalCount = 3).assertExists()
         onListHeading(now.date.minus(DatePeriod(days = 1))).assertExists()
         onListItem("Coconut (S)", hoursAgo = 2).assertExists()
@@ -110,6 +113,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         }
         launch()
         // Swipe first item
+        waitForListItem("Dewberry (3.14)")
         onListItem("Dewberry (3.14)").swipeListItemRight()
         // Check list
         onListItemUpdateButton("Dewberry (3.14)").assertIsDisplayed()
@@ -126,6 +130,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         runBlocking { orderedEntries.forEach { entryRepository.insert(it) } }
         launch()
         // Scroll to middle
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_COLUMN).performTouchInput { swipeUp(bottom, centerY) }
         // Check list
         onListItem("Entry 0 minutes ago").assertIsNotDisplayed()
@@ -138,6 +143,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         onListItem("Entry 14 minutes ago").assertIsNotDisplayed()
         onListItem("Entry 16 minutes ago").assertIsNotDisplayed()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change detail
         onDetailContent().performTextInput("New entry 1 minute ago")
@@ -160,6 +166,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         runBlocking { orderedEntries.forEach { entryRepository.insert(it) } }
         launch()
         // Scroll to middle
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_COLUMN).performTouchInput { swipeUp(bottom, centerY) }
         // Check list
         onListItem("Entry 0 minutes ago").assertIsNotDisplayed()
@@ -172,6 +179,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         onListItem("Entry 14 minutes ago").assertIsNotDisplayed()
         onListItem("Entry 16 minutes ago").assertIsNotDisplayed()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change detail
         onDetailContent().performTextInput("New entry 5 minutes ago")
@@ -196,6 +204,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         runBlocking { orderedEntries.forEach { entryRepository.insert(it) } }
         launch()
         // Scroll to middle
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_COLUMN).performTouchInput { swipeUp(bottom, centerY) }
         // Check list
         onListItem("Entry 0 minutes ago").assertIsNotDisplayed()
@@ -208,6 +217,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         onListItem("Entry 14 minutes ago").assertIsNotDisplayed()
         onListItem("Entry 16 minutes ago").assertIsNotDisplayed()
         // Click insert
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_INSERT).performClick()
         // Change detail
         onDetailContent().performTextInput("New entry 15 minutes ago")
@@ -231,6 +241,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         runBlocking { orderedEntries.forEach { entryRepository.insert(it) } }
         launch()
         // Scroll to middle
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_COLUMN).performTouchInput { swipeUp(bottom, centerY) }
         // Check list
         onListItem("Entry 0 minutes ago").assertIsNotDisplayed()
@@ -268,6 +279,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         runBlocking { orderedEntries.forEach { entryRepository.insert(it) } }
         launch()
         // Scroll to middle
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_COLUMN).performTouchInput { swipeUp(bottom, centerY) }
         // Check list
         onListItem("Entry 0 minutes ago").assertIsNotDisplayed()
@@ -310,6 +322,7 @@ class EntryListItemRobotTest : BaseRobotTest() {
         runBlocking { orderedEntries.forEach { entryRepository.insert(it) } }
         launch()
         // Scroll to middle
+        waitForList()
         composeRule.onNodeWithTag(TestTags.ENTRY_LIST_COLUMN).performTouchInput { swipeUp(bottom, centerY) }
         // Check list
         onListItem("Entry 0 minutes ago").assertIsNotDisplayed()
