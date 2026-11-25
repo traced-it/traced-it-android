@@ -262,6 +262,7 @@ private fun FilterEntryListTopBar(
                     indicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent,
                     placeholderColor = if (isSystemInDarkTheme()) Gray else Darker,
+                    textColor = MaterialTheme.colorScheme.onBackground,
                 ),
                 contentPadding = PaddingValues.Zero,
             )
@@ -508,6 +509,31 @@ private fun ReadOnlyPreview() {
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun FilterPreview() {
+    AppTheme {
+        EntryListTopBar(
+            loading = false,
+            query = MutableStateFlow("ee"),
+            readOnly = false,
+            selectedUid = remember { mutableStateOf(null) },
+            totalCount = MutableStateFlow(defaultFakeEntries.size),
+            onCopyToClipboard = {},
+            onDelete = {},
+            onDeleteAll = {},
+            onFilter = {},
+            onFilterSimilar = {},
+            onNavigateToAboutScreen = {},
+            onRepeat = {},
+            onRequestExportAll = {},
+            onRequestImport = {},
+            onSelect = {},
+            onUpdate = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LightFilterPreview() {
     AppTheme {
         EntryListTopBar(
             loading = false,
