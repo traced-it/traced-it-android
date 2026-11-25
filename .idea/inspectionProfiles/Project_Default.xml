@@ -1,6 +1,9 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="CheckImageSize" enabled="true" level="WARNING" enabled_by_default="false">
+      <scope name="HTML Source Files" level="WARNING" enabled="true" />
+    </inspection_tool>
     <inspection_tool class="ComposePreviewDimensionRespectsLimit" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="composableFile" value="true" />
       <option name="previewFile" value="true" />
@@ -31,6 +34,15 @@
     </inspection_tool>
     <inspection_tool class="GrazieInspection" enabled="true" level="GRAMMAR_ERROR" enabled_by_default="false">
       <scope name="English Source Files" level="GRAMMAR_ERROR" enabled="true" />
+    </inspection_tool>
+    <inspection_tool class="HtmlDeprecatedAttribute" enabled="true" level="WARNING" enabled_by_default="false">
+      <scope name="HTML Source Files" level="WARNING" enabled="true" />
+    </inspection_tool>
+    <inspection_tool class="HtmlRequiredAltAttribute" enabled="true" level="WARNING" enabled_by_default="false">
+      <scope name="HTML Source Files" level="WARNING" enabled="true" />
+    </inspection_tool>
+    <inspection_tool class="HtmlRequiredLangAttribute" enabled="true" level="WARNING" enabled_by_default="false">
+      <scope name="HTML Source Files" level="WARNING" enabled="true" />
     </inspection_tool>
     <inspection_tool class="LanguageDetectionInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="PreviewAnnotationInFunctionWithParameters" enabled="true" level="ERROR" enabled_by_default="true">

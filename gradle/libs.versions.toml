@@ -1,38 +1,46 @@
 [versions]
-agp = "9.4.1"
-androidxActivityCompose = "1.13.0"
-androidxComposeBom = "2026.09.00"
+agp = "9.5.2"
+androidToolsDesugar = "2.1.5"
+androidxComposeMaterial3 = "1.5.0"
 androidxComposeMaterial3Adaptive = "1.3.0"
+androidxComposeMaterialIcons = "1.7.8"
 androidxCore = "1.19.1"
+androidxDatastorePreferences = "1.3.0"
 androidxHiltNavigationCompose = "1.4.0"
 androidxNavigationCompose = "2.10.2"
-androidxPaging = "3.5.1"
+androidxPaging = "3.5.3"
 androidxRoom = "2.8.5"
 androidxTestExt = "1.3.0"
 androidxTestOrchestrator = "1.6.1"
 androidxTestRunner = "1.7.0"
-androidxTestUiAutomator = "2.4.0"
+androidxTestUiAutomator = "2.4.1"
 # Pin Apache Commons CSV to 1.12.0, because newer versions crash with `Didn't find class "java.nio.file.OpenOption"`
 # on Android 7.1.2.
 #noinspection NewerVersionAvailable
 commonsCsv = "1.12.0"
 hilt = "2.60.1"
 junit = "4.13.2"
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 kotlinxCollectionsImmutable = "0.5.2"
 kotlinxCoroutinesTest = "1.11.0"
+kotlinxDatetime = "0.8.0"
 ksp = "2.3.6"
 mockitoKotlin = "6.4.0"
+robolectric = "4.18.1"
 
 [libraries]
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
-androidx-compose-material-icons = { group = "androidx.compose.material", name = "material-icons-core-android" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+android-tools-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "androidToolsDesugar" }
+androidx-compose-material-icons = { group = "androidx.compose.material", name = "material-icons-core-android", version.ref = "androidxComposeMaterialIcons" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "androidxComposeMaterial3" }
 androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive", version.ref = "androidxComposeMaterial3Adaptive" }
+androidx-compose-material3-adaptive-layout = { group = "androidx.compose.material3.adaptive", name = "adaptive-layout", version.ref = "androidxComposeMaterial3Adaptive" }
+androidx-compose-material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation", version.ref = "androidxComposeMaterial3Adaptive" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastorePreferences" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigationCompose" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "androidxPaging" }
@@ -49,11 +57,15 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "android
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidxTestUiAutomator" }
 commons-csv = { group = "org.apache.commons", name = "commons-csv", version.ref = "commonsCsv" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime-jvm", version.ref = "kotlinxDatetime" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

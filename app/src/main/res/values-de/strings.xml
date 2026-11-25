@@ -36,26 +36,16 @@
         <item quantity="one">%1$d Notiz wurde übersprungen, weil bereits eine Notiz mit demselben Zeitstempel existiert.</item>
         <item quantity="other">%1$d Notizen wurden übersprungen, weil bereits Notizen mit denselben Zeitstempeln existieren.</item>
     </plurals>
-    <string name="entry_unit_fraction_choice_one_third">⅓</string>
-    <string name="entry_unit_fraction_choice_one_third_html"><![CDATA[<big>⅓</big>]]></string>
     <string name="entry_unit_clothing_choice_xs">XS</string>
     <string name="entry_unit_clothing_choice_s">S</string>
     <string name="entry_unit_clothing_choice_m">M</string>
     <string name="entry_unit_clothing_choice_l">L</string>
     <string name="entry_unit_clothing_choice_xl">XL</string>
-    <string name="entry_unit_fraction_choice_one_quarter">¼</string>
-    <string name="entry_unit_fraction_choice_one_half">½</string>
-    <string name="entry_unit_fraction_choice_one_half_html"><![CDATA[<big>½</big>]]></string>
     <string name="list_import_finished_empty">Leere CSV-Datei</string>
     <string name="input_clear_content_description">Eingabe löschen</string>
     <string name="entry_unit_none_name">keine Einheit</string>
-    <string name="entry_unit_fraction_choice_three_quarters">¾</string>
-    <string name="entry_unit_fraction_choice_three_quarters_html"><![CDATA[<big>¾</big>]]></string>
-    <string name="entry_unit_fraction_choice_whole">1</string>
-    <string name="entry_unit_fraction_choice_whole_html">1</string>
     <string name="entry_unit_double_name">Nummer</string>
     <string name="entry_unit_clothing_name">Größe</string>
-    <string name="entry_unit_fraction_choice_one_quarter_html"><![CDATA[<big>¼</big>]]></string>
     <string name="entry_unit_fraction_name">Bruch</string>
     <string name="list_message_deleted_action">Zurücknehmen</string>
     <string name="list_message_all_deleted_action">Zurücknehmen</string>
@@ -71,7 +61,6 @@
     <string name="detail_unit_label">Wähle eine Menge, wenn du willst</string>
     <string name="detail_unit_dropdown_content_description">Liste der Einheiten aufklappen</string>
     <string name="list_delete_all_dialog_text">Du bist dabei, alle Notizen zu löschen</string>
-    <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
     <string name="list_export_filtered_filename">%1$s Notizen %2$s Filter %3$s.csv</string>
     <string name="list_filter_input_placeholder">Filtere deine Notizen</string>
     <string name="list_filter_input_clear_content_description">Eingabe löschen</string>

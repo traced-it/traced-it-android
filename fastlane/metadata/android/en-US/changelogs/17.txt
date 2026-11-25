@@ -1,0 +1,3 @@
+- Improved form by remembering values when closing or killing the app.
+- Improved form by preselecting last used unit.
+- Improved layout on tablets.

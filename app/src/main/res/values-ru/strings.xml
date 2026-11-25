@@ -31,16 +31,6 @@
     <string name="list_item_time_ago_hours_and_minutes">%1$d ч %2$02d мин назад</string>
     <string name="list_message_all_deleted">Все заметки были удалены</string>
     <string name="list_import_failed_column_empty">Пустое значение колонки «%1$s»</string>
-    <string name="entry_unit_fraction_choice_one_quarter">¼</string>
-    <string name="entry_unit_fraction_choice_one_quarter_html"><![CDATA[<big>¼</big>]]></string>
-    <string name="entry_unit_fraction_choice_one_third">⅓</string>
-    <string name="entry_unit_fraction_choice_one_third_html"><![CDATA[<big>⅓</big>]]></string>
-    <string name="entry_unit_fraction_choice_one_half">½</string>
-    <string name="entry_unit_fraction_choice_one_half_html"><![CDATA[<big>½</big>]]></string>
-    <string name="entry_unit_fraction_choice_three_quarters">¾</string>
-    <string name="entry_unit_fraction_choice_three_quarters_html"><![CDATA[<big>¾</big>]]></string>
-    <string name="entry_unit_fraction_choice_whole">1</string>
-    <string name="entry_unit_fraction_choice_whole_html">1</string>
     <string name="detail_update_title">Обновить заметку</string>
     <string name="detail_add_title">Добавить заметку</string>
     <string name="list_import_finished_empty">Пустой CSV файл</string>
@@ -65,7 +55,6 @@
     <string name="entry_unit_clothing_choice_l">L</string>
     <string name="entry_unit_clothing_choice_xl">XL</string>
     <string name="list_export_all_filename">%1$s заметки %2$s.csv</string>
-    <string name="entry_formatted_content_with_amount_and_created_at">%1$s, %2$s</string>
     <string name="list_filter_input_placeholder">Фильтруйте свои заметки</string>
     <string name="list_filter_input_clear_content_description">Очистить ввод</string>
     <string name="list_filter_submit">Отфильтровать</string>
